@@ -15,6 +15,7 @@ import Attribute from "./assets/Pages/Attributes.jsx"
 import Unit from "./assets/Pages/Unit.jsx"
 import Role from "./assets/Pages/Role.jsx"
 import AddProduct from "./assets/Pages/Product/AddProduct.jsx"
+import Products from "./assets/Pages/Product/Products.jsx"
 import Sidebar from "./assets/Main/Sidebar.jsx"
 import ManagementSection from "./assets/Main/ManagementSection.jsx"
 
@@ -33,8 +34,7 @@ function App() {
     dispatch(ProfileAction())
   }, [dispatch])
 
-  console.log(" ActivePage", ActivePage)
-  useEffect(() => {
+   useEffect(() => {
     if (ActivePage !== '/sign-in' && ActivePage !== '/sign-up') {
       if (authentication.isAuthenticated === false) {
         Navigate("/sign-in")
@@ -59,7 +59,7 @@ function App() {
         <Route path="/unit" element={<  Unit />} />
         <Route path="/role" element={<Role />} />
         <Route path="/product-add" element={<AddProduct />} />d
-        <Route path="/product-list" element={<AddProduct />} />d
+        <Route path="/product-list" element={<Products />} />d
 
       </Routes>
       <Footer />

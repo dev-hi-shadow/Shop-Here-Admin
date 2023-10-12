@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 
-const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRemovedCombinations }) => {
+
+const PriceTable = ({ attributes, values, setValues, RemovedCombinations, setRemovedCombinations }) => {
+
   const ProductTax = 12;
   const generateCombinations = (arr, i, result, current) => {
     if (i === arr.length) {
@@ -17,86 +19,26 @@ const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRem
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const combinations = [];
   generateCombinations(attributes, 0, combinations, []);
-
-
-  const handlePriceChange = (data) => {
-    const UpdatePrices = [...values.price];
-    const PriceIndex = UpdatePrices?.findIndex((price) => {
-      const array1 = price?.attribute_ids?.sort().toString();
-      const array2 = data?.attribute_ids?.sort().toString();
-      return array1 === array2;
-    });
-
-    if (PriceIndex === -1) {
-      UpdatePrices?.push(data);      
-    }else{
-      if (typeof data.mfg === "number") {
-        UpdatePrices[PriceIndex].mfg = Number(data.mfg)?.toFixed(2);
-        const selling =  Number(UpdatePrices[PriceIndex].selling || 0)
-        const tax = (selling * ProductTax?.toFixed(2)) / 100;
-        const ctc = selling - tax;
-        const margin = ctc - Number(data.mfg)?.toFixed(2);
-        UpdatePrices[PriceIndex].selling = Number(selling)?.toFixed(2);
-        UpdatePrices[PriceIndex].margin = margin?.toFixed(2);
-        UpdatePrices[PriceIndex].ctc = ctc?.toFixed(2);
-        UpdatePrices[PriceIndex].tax = tax?.toFixed(2);
-  
-      }
-      if (typeof data.selling === "number") {
-  
-        const selling = Number(data.selling);
-        const tax = (selling * ProductTax) / 100;
-        const ctc = selling - tax;
-        const margin = ctc - (UpdatePrices[PriceIndex]?.mfg || 0);
-        UpdatePrices[PriceIndex].selling = Number(selling)?.toFixed(2);
-        UpdatePrices[PriceIndex].margin = margin?.toFixed(2);
-        UpdatePrices[PriceIndex].ctc = ctc?.toFixed(2);
-        UpdatePrices[PriceIndex].tax = tax?.toFixed(2);
-      }
+ 
+  const handlePriceChange = (PriceIndex, data) => {
+    const UpdatePrices = [...values.price]
+    const manufacture_price = typeof data?.manufacture_price === "number" ? parseFloat(data?.manufacture_price) : (UpdatePrices[PriceIndex]?.manufacture_price || 0)
+    const retail_price = typeof data?.retail_price === "number" ? parseFloat(data?.retail_price) : (UpdatePrices[PriceIndex]?.retail_price || 0)
+    const tax = (retail_price * ProductTax) / 100;
+    const company_cost = retail_price - tax;
+    const margin = company_cost - (manufacture_price || 0);
+    UpdatePrices[PriceIndex] = {
+      attribute_ids: data?.attribute_ids,
+      manufacture_price,
+      retail_price,
+      tax,
+      company_cost,
+      margin
     }
+    setValues({ ...values, price: UpdatePrices })
+  }
+ 
 
-    setValues({ ...values, price: UpdatePrices });
-  };
-
-
-
-  const PriceFind = (combination) => {
-    return (
-      values.price &&
-      values.price.find((value) => {
-        return (
-          value.attribute_ids.sort().toString() ===
-          combination
-            .map(({ value }) => value._id)
-            .sort()
-            .toString()
-        );
-      })
-    );
-  };
-
-  const handleRemove = (combination) => {
-    setRemovedCombinations([
-      ...RemovedCombinations,
-      combination
-        .map(({ value }) => value._id)
-        .sort()
-        .toString(),
-    ]);
-    const UpdatePrices = [...values.price];
-    const PriceIndex = UpdatePrices?.findIndex((price) => {
-      const array1 = price?.attribute_ids?.sort().toString();
-      const array2 = combination
-        .map(({ value }) => value._id)
-        .sort()
-        .toString();
-      return array1 === array2;
-    });
-    if (PriceIndex !== -1) {
-      UpdatePrices.splice(PriceIndex, 1);
-      setValues({ ...values, price: UpdatePrices });
-    }
-  };
 
   return (
     <div className="table-responsive">
@@ -114,13 +56,9 @@ const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRem
         </thead>
         <tbody>
           {combinations.map((combination, index) => {
-            return combination.length > 0 ? (
-              !RemovedCombinations.includes(
-                combination
-                  .map(({ value }) => value._id)
-                  .sort()
-                  .toString()
-              ) && (
+            return combination.length > 0 ?
+              !RemovedCombinations.includes(combination.map(({ value }) => value._id).sort().toString()) &&
+              (
                 <tr key={index}>
                   <td>
                     {combination.map(({ value }) => value.name).join(" - ")}
@@ -128,12 +66,13 @@ const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRem
                   <td>
                     <div className="form-group">
                       <input
+                        value={values.price[index]?.manufacture_price}
                         onChange={(event) =>
-                          handlePriceChange({
+                          handlePriceChange(index, {
                             attribute_ids: combination.map(
                               ({ value }) => value._id
                             ),
-                            mfg: Number(event.target.value),
+                            manufacture_price: parseFloat(event.target.value),
                           })
                         }
                         id="name"
@@ -150,12 +89,13 @@ const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRem
                   <td>
                     <div className="form-group">
                       <input
+                        value={values.price[index]?.retail_price}
                         onChange={(event) =>
-                          handlePriceChange({
+                          handlePriceChange(index, {
                             attribute_ids: combination.map(
                               ({ value }) => value._id
                             ),
-                            selling: Number(event.target.value),
+                            retail_price: parseFloat(event.target.value || 0),
                           })
                         }
                         id="name"
@@ -169,26 +109,27 @@ const PriceTable = ({ attributes, setValues, values, RemovedCombinations, setRem
                       />
                     </div>
                   </td>
-                  <td>{PriceFind(combination)?.tax || 0}</td>
-                  <td>{PriceFind(combination)?.ctc || 0}</td>
-                  <td>{PriceFind(combination)?.margin || 0}</td>
+
+                  <td>{values.price[index]?.tax || 0.00}</td>
+                  <td>{values.price[index]?.company_cost || 0.00}</td>
+                  <td>{values.price[index]?.margin || 0.00}</td>
                   <td className="text-center">
                     <i
                       className="fas fa-xmark text-red fs-3"
-                      onClick={() => handleRemove(combination)}
+                      onClick={() => setRemovedCombinations([...RemovedCombinations, (combination.map(({ value }) => value._id).sort().toString())])}
                     ></i>
                   </td>
                 </tr>
-              )
-            ) : (
-              <tr>
-                <td className="card-body" colSpan={4}>
-                  <h5 className="card-title text-center">
-                    Please kindly select atleast one attribute from the product
-                  </h5>
-                </td>
-              </tr>
-            );
+              ) :
+              (
+                <tr>
+                  <td className="card-body" colSpan={4}>
+                    <h5 className="card-title text-center">
+                      Please kindly select atleast one attribute from the product
+                    </h5>
+                  </td>
+                </tr>
+              );
           })}
         </tbody>
       </table>

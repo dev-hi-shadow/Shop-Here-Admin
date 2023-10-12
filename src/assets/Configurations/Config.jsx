@@ -1,6 +1,5 @@
-export const disable_sidebar = ["/sign-in", "/sign-up"]
-export const disable_subbar = ["/sign-in", "/sign-up"]
-
+export const disable_sidebar = ["/sign-in", "/sign-up"];
+export const disable_subbar = ["/sign-in", "/sign-up"];
 
 // AXIOS CONFIGURATION
 
@@ -13,11 +12,11 @@ export const disable_subbar = ["/sign-in", "/sign-up"]
 //     }
 // }
 
-export const baseUrl = import.meta.env.VITE_NODE_SERVER_API
+export const baseUrl = import.meta.env.VITE_NODE_SERVER_API;
 export const config = {
-    headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-    },
-    withCredentials: true,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+  },
+  withCredentials: true,
 };
