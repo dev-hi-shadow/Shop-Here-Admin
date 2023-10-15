@@ -62,10 +62,8 @@ export const ProductInitialState = {
   when_out_of_stock: false,
   meta_title: "",
   meta_description: "",
-  price: [],
   guarantee: "",
   warranty: "",
-
 
 
 

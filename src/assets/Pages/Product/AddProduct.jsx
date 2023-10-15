@@ -12,7 +12,6 @@ import { GetSubCategoryAction } from "../../../Services/Actions/SubCategory";
 import { GetBrandAction } from "../../../Services/Actions/Brand";
 import { GetUnitAction } from "../../../Services/Actions/Unit";
 import { GetAttributeAction } from "../../../Services/Actions/Attribute";
-import PriceTable from "./PriceTable";
 import {
     GetProductAction,
 } from "../../../Services/Actions/Product";
@@ -31,7 +30,7 @@ const AddProduct = () => {
     const [SelectedAttribute, setSelectedAttribute] = useState();
     const [SelectedAttributes, setSelectedAttributes] = useState();
     const [AttributeValues, setAttributeValues] = useState();
-    const [RemovedCombinations, setRemovedCombinations] = useState([]);
+
 
     const handleProduct = (values) => {
         console.log(" dispatch body", values)
@@ -48,6 +47,7 @@ const AddProduct = () => {
 
     const {
         setValues,
+        setTouched, setErrors,
         values,
         errors,
         touched,
@@ -58,7 +58,7 @@ const AddProduct = () => {
         setFieldValue,
         setFieldTouched,
     } = useFormik({
-        initialValues: ProductInitialState,
+        initialValues: { ...ProductInitialState },
         validationSchema: ProductSchema,
         onSubmit: () => {
             handleProduct(values);
@@ -80,7 +80,6 @@ const AddProduct = () => {
         productState?.error,
         resetForm,
     ]);
-    console.log(productState);
     useEffect(() => {
         const ActiveSubCategories = subcategoryState?.GetSubCategory?.filter(
             (subcategory) => {
@@ -146,7 +145,56 @@ const AddProduct = () => {
 
         setFieldValue("attributes", uniqueData);
     }, [SelectedAttributes, setFieldValue]);
- 
+
+    // const ProductTax = 12;
+
+    useEffect(() => {
+
+        const generateCombinations = (arr, i, result, current) => {
+            if (i === arr.length) {
+                result.push([...current]);
+                return;
+            }
+            for (const value of arr[i].values) {
+                current.push({ attribute: arr[i], value });
+                generateCombinations(arr, i + 1, result, current);
+                current.pop();
+            }
+
+        };
+        const combinations = [];
+        if (values?.attributes?.length > 0) {
+            generateCombinations(values?.attributes, 0, combinations, []);
+        }
+        const Combinations = combinations.map((combination) => {
+            return {
+                attribute_ids: combination.map(({ value }) => value._id),
+                variation: combination.map(({ value }) => value.name).toString().split(",").join("-"),
+                manufacture_price: "",
+                retail_price: "",
+                company_cost: "",
+                margin: "",
+                tax: "",
+            }
+        })
+        setFieldValue("price", Combinations)
+
+    }, [setFieldValue, values?.attributes])
+
+    const handleRemove = (index) => {
+        const updatePrice = [...values.price]
+        updatePrice.splice(index, 1)
+        setValues({ ...values, price: updatePrice })
+        const updateErrors = [...errors.price]
+        updateErrors.splice(index, 1)
+        setErrors({ ...errors, price: updateErrors })
+        const updateTouched = [...touched.price]
+        updateTouched.splice(index, 1)
+        setTouched({ ...touched, price: updateTouched })
+    }
+
+
+
     return (
         <>
             <div className="page-wrapper">
@@ -469,13 +517,71 @@ const AddProduct = () => {
 
                                                 <div className={Section !== "Prices" && "d-none"}>
                                                     {values?.attributes?.length > 0 ? (
-                                                        <PriceTable
-                                                            RemovedCombinations={RemovedCombinations}
-                                                            setRemovedCombinations={setRemovedCombinations}
-                                                            attributes={values.attributes}
-                                                            setValues={setValues}
-                                                            values={values}
-                                                        />
+                                                        <div className="table-responsive">
+                                                            <table className="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Model</th>
+                                                                        <th>Manufacture Price </th>
+                                                                        <th>Selling Price</th>
+                                                                        <th>Tax (12% GST)</th>
+                                                                        <th>CTC</th>
+                                                                        <th>Margin </th>
+                                                                        <th className="text-center">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {values?.price?.map((combination, index) => {
+                                                                        return <tr key={index}>
+                                                                            <td>
+                                                                                {combination?.variation}
+                                                                            </td>
+                                                                            <td>
+                                                                                <div className="form-group">
+                                                                                    <input
+                                                                                        value={values?.price?.[index]?.manufacture_price}
+                                                                                        onChange={handleChange}
+                                                                                        onBlur={handleBlur}
+                                                                                        className={` form-control  ${touched.price?.[index]?.manufacture_price && errors.price?.[index]?.manufacture_price && "is-invalid"
+                                                                                            } `}
+                                                                                        name={`price.${[index]}.manufacture_price`}
+                                                                                        type="number"
+                                                                                        required
+                                                                                        placeholder={touched.price?.[index]?.manufacture_price && errors.price?.[index]?.manufacture_price}
+                                                                                    />
+                                                                                </div>
+                                                                             </td>
+                                                                            <td>
+                                                                                <div className="form-group">
+                                                                                    <input
+                                                                                        value={values?.price[index]?.retail_price}
+                                                                                        onChange={handleChange}
+                                                                                        onBlur={handleBlur}
+                                                                                        className={` form-control  ${touched?.price?.[index]?.retail_price && errors.price?.[index]?.retail_price && "is-invalid"
+                                                                                            }  `}
+                                                                                        name={`price.${[index]}.retail_price`}
+                                                                                        type="number"
+                                                                                        required
+                                                                                        placeholder={touched.price?.[index]?.retail_price && errors.price?.[index]?.retail_price}
+                                                                                    />
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>{values.price[index]?.tax || 0.00}</td>
+                                                                            <td>{values.price[index]?.company_cost || 0.00}</td>
+                                                                            <td>{values.price[index]?.margin || 0.00}</td>
+                                                                            <td className="text-center">
+                                                                                <i
+                                                                                    className="fas fa-xmark text-red fs-3"
+                                                                                    onClick={() => handleRemove(index)}
+                                                                                ></i>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    })}
+                                                                </tbody>
+                                                            </table>
+                                                        </div >
                                                     ) : (
                                                         "Please select atleast one attribute from product"
                                                     )}
@@ -700,7 +806,7 @@ const AddProduct = () => {
                                                             Attribute
                                                         </label>
                                                         <div className="row">
-                                                            <div className="col-10">
+                                                            <div className="col">
                                                                 <ReactSelect
                                                                     className="my-2"
                                                                     onChange={(event) =>
@@ -735,7 +841,7 @@ const AddProduct = () => {
                                                                     })}
                                                                 />
                                                             </div>
-                                                            <div className="col d-flex flex-column my-2  ">
+                                                            {/* <div className="col d-flex flex-column my-2  ">
                                                                 <button
                                                                     className=" btn btn-dark"
                                                                     data-bs-toggle="modal"
@@ -744,7 +850,7 @@ const AddProduct = () => {
                                                                 >
                                                                     Show Attributes
                                                                 </button>
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 </div>
