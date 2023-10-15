@@ -24,7 +24,7 @@ const Sidebar = () => {
                                 </Link>
                             </li>
                             <li className="nav-item mb-3">
-                                <Link className="nav-link d-flex flex-column " to="/product"  >
+                                <Link className="nav-link d-flex flex-column " to="/product-list "  >
                                     <lord-icon
                                         src="https://cdn.lordicon.com/nocovwne.json"
                                         trigger="hover"

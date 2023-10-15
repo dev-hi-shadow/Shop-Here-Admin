@@ -4,8 +4,7 @@ import { SubBar } from "../Configurations/ManagementSection"
 
 const ManagementSection = () => {
     const [Module, setModule] = useState()
-    console.log(" Module", Module)
-    const Location = useLocation()
+     const Location = useLocation()
     useEffect(() => {
         setModule(Location.pathname.split("/")[1])
     }, [Location])

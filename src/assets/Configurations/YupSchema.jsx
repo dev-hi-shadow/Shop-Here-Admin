@@ -67,4 +67,13 @@ export const ProductSchema = yup.object({
   type: yup.string().required(),
   friendly_url: yup.string().required(),
   when_out_of_stock: yup.boolean().nullable(),
-});
+  price: yup.array()
+    .of(
+      yup.object().shape({
+        attribute_ids: yup.array().of(yup.string().required()).required().min(1),
+        manufacture_price: yup.number().required("manufacture price is required").positive([0, "manufacture price can not be negative"]),
+        retail_price: yup.number().required("retail price is required ").positive([0, "retail price can not be negative"]) 
+      })
+    )
+    .required().min(1)
+})

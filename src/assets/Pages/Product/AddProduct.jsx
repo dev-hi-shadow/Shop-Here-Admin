@@ -12,8 +12,9 @@ import { GetSubCategoryAction } from "../../../Services/Actions/SubCategory";
 import { GetBrandAction } from "../../../Services/Actions/Brand";
 import { GetUnitAction } from "../../../Services/Actions/Unit";
 import { GetAttributeAction } from "../../../Services/Actions/Attribute";
-import PriceTable from "./PriceTable";
-import { CreateProductAction, GetProductAction } from "../../../Services/Actions/Product";
+import {
+    GetProductAction,
+} from "../../../Services/Actions/Product";
 
 const AddProduct = () => {
     const dispatch = useDispatch();
@@ -21,28 +22,19 @@ const AddProduct = () => {
     const categoryState = useSelector((state) => state.categoryState);
     const subcategoryState = useSelector((state) => state.subcategoryState);
     const attributeState = useSelector((state) => state.attributeState);
-    const unitState = useSelector(state => state.unitState)
-    const productState = useSelector(state => state.productState)
+    const unitState = useSelector((state) => state.unitState);
+    const productState = useSelector((state) => state.productState);
     const [Section, setSection] = useState("Information");
     const [SubCategories, setSubCategories] = useState([]);
     const [Attributes, setAttributes] = useState([]);
     const [SelectedAttribute, setSelectedAttribute] = useState();
     const [SelectedAttributes, setSelectedAttributes] = useState();
     const [AttributeValues, setAttributeValues] = useState();
-    const [RemovedCombinations, setRemovedCombinations] = useState([]);
+
 
     const handleProduct = (values) => {
-        const body = {
-            ...values,
-            attributes: values.attributes?.map((attribute) => {
-                return {
-                    _id: attribute.attribute_id,
-                    values: attribute.values.map((value) => value._id)
-                }
-            })
-        }
-        dispatch(CreateProductAction(body))
-    }
+        console.log(" dispatch body", values)
+    };
 
     useEffect(() => {
         dispatch(GetBrandAction());
@@ -53,10 +45,9 @@ const AddProduct = () => {
         dispatch(GetProductAction());
     }, [dispatch]);
 
-
-
     const {
         setValues,
+        setTouched, setErrors,
         values,
         errors,
         touched,
@@ -67,18 +58,28 @@ const AddProduct = () => {
         setFieldValue,
         setFieldTouched,
     } = useFormik({
-        initialValues: ProductInitialState,
+        initialValues: { ...ProductInitialState },
         validationSchema: ProductSchema,
         onSubmit: () => {
-            handleProduct(values)
+            handleProduct(values);
         },
     });
     useEffect(() => {
-        if (productState?.error || productState?.DeleteRecoverProduct || productState?.EditProduct || productState?.AddProduct) {
-            resetForm()
+        if (
+            productState?.error ||
+            productState?.DeleteRecoverProduct ||
+            productState?.EditProduct ||
+            productState?.AddProduct
+        ) {
+            resetForm();
         }
-    }, [productState?.AddProduct, productState?.DeleteRecoverProduct, productState?.EditProduct, productState?.error, resetForm])
-console.log(productState)
+    }, [
+        productState?.AddProduct,
+        productState?.DeleteRecoverProduct,
+        productState?.EditProduct,
+        productState?.error,
+        resetForm,
+    ]);
     useEffect(() => {
         const ActiveSubCategories = subcategoryState?.GetSubCategory?.filter(
             (subcategory) => {
@@ -145,6 +146,54 @@ console.log(productState)
         setFieldValue("attributes", uniqueData);
     }, [SelectedAttributes, setFieldValue]);
 
+    // const ProductTax = 12;
+
+    useEffect(() => {
+
+        const generateCombinations = (arr, i, result, current) => {
+            if (i === arr.length) {
+                result.push([...current]);
+                return;
+            }
+            for (const value of arr[i].values) {
+                current.push({ attribute: arr[i], value });
+                generateCombinations(arr, i + 1, result, current);
+                current.pop();
+            }
+
+        };
+        const combinations = [];
+        if (values?.attributes?.length > 0) {
+            generateCombinations(values?.attributes, 0, combinations, []);
+        }
+        const Combinations = combinations.map((combination) => {
+            return {
+                attribute_ids: combination.map(({ value }) => value._id),
+                variation: combination.map(({ value }) => value.name).toString().split(",").join("-"),
+                manufacture_price: "",
+                retail_price: "",
+                company_cost: "",
+                margin: "",
+                tax: "",
+            }
+        })
+        setFieldValue("price", Combinations)
+
+    }, [setFieldValue, values?.attributes])
+
+    const handleRemove = (index) => {
+        const updatePrice = [...values.price]
+        updatePrice.splice(index, 1)
+        setValues({ ...values, price: updatePrice })
+        const updateErrors = [...errors.price]
+        updateErrors.splice(index, 1)
+        setErrors({ ...errors, price: updateErrors })
+        const updateTouched = [...touched.price]
+        updateTouched.splice(index, 1)
+        setTouched({ ...touched, price: updateTouched })
+    }
+
+
 
     return (
         <>
@@ -185,14 +234,20 @@ console.log(productState)
                                             className={`p-2 d-flex align-items-center cursor-pointer  text-${Section === "Prices" ? "dark" : "secondary"
                                                 } `}
                                         >
-                                            <i className="fas fa-inr me-2"></i>Prices
+                                            <i className="fas fa-inr me-2"></i>
+                                            {values?.product_type === "Standard"
+                                                ? "Prices"
+                                                : "Variations"}
                                         </p>
                                     </div>
                                     <div
                                         className="card card-body p-0 mb-3"
                                         onClick={() => setSection("SEO")}
                                     >
-                                        <p className={`p-2 d-flex align-items-center cursor-pointer  text-${Section === "SEO" ? "dark" : "secondary"} `}>
+                                        <p
+                                            className={`p-2 d-flex align-items-center cursor-pointer  text-${Section === "SEO" ? "dark" : "secondary"
+                                                } `}
+                                        >
                                             <i className="fas fa-book me-2"></i>SEO
                                         </p>
                                     </div>
@@ -254,9 +309,17 @@ console.log(productState)
                                                         Add Product / {Section}
                                                     </h6>
                                                     <div className="d-flex ">
-                                                        <a onClick={() => resetForm()} className="card-title btn btn-outline-danger text-dark text-decoration-none  p-2 mx-1"> Reset Product  </a>
-                                                        <input type="submit" className="card-title btn btn-green text-decoration-none ms-1 border p-2" value={"Save Product"} />
-
+                                                        <a
+                                                            onClick={() => resetForm()}
+                                                            className="card-title btn btn-outline-danger text-dark text-decoration-none  p-1 mx-1"
+                                                        >
+                                                            Reset Product
+                                                        </a>
+                                                        <input
+                                                            type="submit"
+                                                            className="card-title p-1 nav-link text-decoration-none ms-1 border border-secondary rounded bg-green"
+                                                            value={"Save Product"}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className={Section !== "Information" && "d-none"}>
@@ -290,7 +353,7 @@ console.log(productState)
                                                                 </span>
                                                             </label>
                                                         </div>
-                                                        <div className="form-selectgroup d-flex align-items-center">
+                                                        <div className="form-selectgroup d-flex align-items-center me-2">
                                                             <label className="form-label me-2">
                                                                 Freshness :
                                                             </label>
@@ -331,6 +394,37 @@ console.log(productState)
                                                                 />
                                                                 <span className="form-selectgroup-label">
                                                                     Refurbished
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                        <div className="form-selectgroup d-flex align-items-center">
+                                                            <label className="form-label me-2">
+                                                                Product Type :
+                                                            </label>
+                                                            <label className="form-selectgroup-item">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="product_type"
+                                                                    value="Standard"
+                                                                    className="form-selectgroup-input"
+                                                                    onChange={handleChange}
+                                                                    checked={values.product_type === "Standard"}
+                                                                />
+                                                                <span className="form-selectgroup-label">
+                                                                    Standard
+                                                                </span>
+                                                            </label>
+                                                            <label className="form-selectgroup-item">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="product_type"
+                                                                    value="Variable"
+                                                                    className="form-selectgroup-input"
+                                                                    onChange={handleChange}
+                                                                    checked={values.product_type === "Variable"}
+                                                                />
+                                                                <span className="form-selectgroup-label">
+                                                                    Variable
                                                                 </span>
                                                             </label>
                                                         </div>
@@ -423,20 +517,76 @@ console.log(productState)
 
                                                 <div className={Section !== "Prices" && "d-none"}>
                                                     {values?.attributes?.length > 0 ? (
-                                                        <PriceTable
-                                                            RemovedCombinations={RemovedCombinations}
-                                                            setRemovedCombinations={setRemovedCombinations}
-                                                            attributes={values.attributes}
-                                                            setValues={setValues}
-                                                            values={values}
-                                                        />
+                                                        <div className="table-responsive">
+                                                            <table className="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Model</th>
+                                                                        <th>Manufacture Price </th>
+                                                                        <th>Selling Price</th>
+                                                                        <th>Tax (12% GST)</th>
+                                                                        <th>CTC</th>
+                                                                        <th>Margin </th>
+                                                                        <th className="text-center">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {values?.price?.map((combination, index) => {
+                                                                        return <tr key={index}>
+                                                                            <td>
+                                                                                {combination?.variation}
+                                                                            </td>
+                                                                            <td>
+                                                                                <div className="form-group">
+                                                                                    <input
+                                                                                        value={values?.price?.[index]?.manufacture_price}
+                                                                                        onChange={handleChange}
+                                                                                        onBlur={handleBlur}
+                                                                                        className={` form-control  ${touched.price?.[index]?.manufacture_price && errors.price?.[index]?.manufacture_price && "is-invalid"
+                                                                                            } `}
+                                                                                        name={`price.${[index]}.manufacture_price`}
+                                                                                        type="number"
+                                                                                        required
+                                                                                        placeholder={touched.price?.[index]?.manufacture_price && errors.price?.[index]?.manufacture_price}
+                                                                                    />
+                                                                                </div>
+                                                                             </td>
+                                                                            <td>
+                                                                                <div className="form-group">
+                                                                                    <input
+                                                                                        value={values?.price[index]?.retail_price}
+                                                                                        onChange={handleChange}
+                                                                                        onBlur={handleBlur}
+                                                                                        className={` form-control  ${touched?.price?.[index]?.retail_price && errors.price?.[index]?.retail_price && "is-invalid"
+                                                                                            }  `}
+                                                                                        name={`price.${[index]}.retail_price`}
+                                                                                        type="number"
+                                                                                        required
+                                                                                        placeholder={touched.price?.[index]?.retail_price && errors.price?.[index]?.retail_price}
+                                                                                    />
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>{values.price[index]?.tax || 0.00}</td>
+                                                                            <td>{values.price[index]?.company_cost || 0.00}</td>
+                                                                            <td>{values.price[index]?.margin || 0.00}</td>
+                                                                            <td className="text-center">
+                                                                                <i
+                                                                                    className="fas fa-xmark text-red fs-3"
+                                                                                    onClick={() => handleRemove(index)}
+                                                                                ></i>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    })}
+                                                                </tbody>
+                                                            </table>
+                                                        </div >
                                                     ) : (
                                                         "Please select atleast one attribute from product"
                                                     )}
                                                 </div>
-                                                <div className={Section !== "Prices" && "d-none"}>
-
-                                                </div>
+                                                <div className={Section !== "Prices" && "d-none"}></div>
 
                                                 <div className={Section !== "SEO" && "d-none"}>
                                                     <div className="form-group mb-3">
@@ -461,7 +611,6 @@ console.log(productState)
                                                             </p>
                                                         )}
                                                     </div>
-
 
                                                     <div className="form-group mb-3">
                                                         <label htmlFor="name">Meta Description</label>
@@ -618,30 +767,46 @@ console.log(productState)
                                                         <ReactSelect
                                                             className="bg-primary text-primary my-1"
                                                             value={
-                                                                values?.unit_id ? {
-                                                                    value: values?.unit_id,
-                                                                    label: values?.unit_id?.name + " (" + values?.unit_id?.unit_code + ") "
-                                                                } : null
+                                                                values?.unit_id
+                                                                    ? {
+                                                                        value: values?.unit_id,
+                                                                        label:
+                                                                            values?.unit_id?.name +
+                                                                            " (" +
+                                                                            values?.unit_id?.unit_code +
+                                                                            ") ",
+                                                                    }
+                                                                    : null
                                                             }
                                                             onBlur={() => setFieldTouched("unit_id", true)}
-                                                            onChange={(value) => { setFieldValue("unit_id", value.values) }}
+                                                            onChange={(value) => {
+                                                                setFieldValue("unit_id", value.values);
+                                                            }}
                                                             name="unit_id"
-                                                            options={Array.isArray(unitState.GetUnit) && unitState.GetUnit?.map((unit) => {
-                                                                return {
-                                                                    label: unit?.name + " (" + unit?.unit_code + ")",
-                                                                    values: unit
-                                                                }
-                                                            })}
+                                                            options={
+                                                                Array.isArray(unitState.GetUnit) &&
+                                                                unitState.GetUnit?.map((unit) => {
+                                                                    return {
+                                                                        label:
+                                                                            unit?.name + " (" + unit?.unit_code + ")",
+                                                                        values: unit,
+                                                                    };
+                                                                })
+                                                            }
                                                         />
                                                     </div>
-                                                    {(touched.unit_id && errors.unit_id) && <p className="h6 text-danger mt-1"> Product {errors.unit_id} </p>}
+                                                    {touched.unit_id && errors.unit_id && (
+                                                        <p className="h6 text-danger mt-1">
+                                                            Product {errors.unit_id}
+                                                        </p>
+                                                    )}
 
                                                     <div className="form-group mb-3">
                                                         <label htmlFor="name" className="my-1">
                                                             Attribute
                                                         </label>
                                                         <div className="row">
-                                                            <div className="col-10">
+                                                            <div className="col">
                                                                 <ReactSelect
                                                                     className="my-2"
                                                                     onChange={(event) =>
@@ -676,7 +841,7 @@ console.log(productState)
                                                                     })}
                                                                 />
                                                             </div>
-                                                            <div className="col d-flex flex-column my-2  ">
+                                                            {/* <div className="col d-flex flex-column my-2  ">
                                                                 <button
                                                                     className=" btn btn-dark"
                                                                     data-bs-toggle="modal"
@@ -685,28 +850,65 @@ console.log(productState)
                                                                 >
                                                                     Show Attributes
                                                                 </button>
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 </div>
 
-
                                                 <div className={Section !== "Others" && "d-none"}>
                                                     <div className="mb-3 d-flex ">
                                                         <label className="form-check form-switch mx-2">
-                                                            <input className="form-check-input" type="checkbox" name="cancellable" onChange={(event) => setFieldValue("cancellable", event.target.checked)} checked={values.cancellable} />
-                                                            <span className="form-check-label">Cancellable</span>
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                name="cancellable"
+                                                                onChange={(event) =>
+                                                                    setFieldValue(
+                                                                        "cancellable",
+                                                                        event.target.checked
+                                                                    )
+                                                                }
+                                                                checked={values.cancellable}
+                                                            />
+                                                            <span className="form-check-label">
+                                                                Cancellable
+                                                            </span>
                                                         </label>
                                                         <label className="form-check form-switch mx-2">
-                                                            <input className="form-check-input" type="checkbox" name="replaceable" onChange={(event) => setFieldValue("replaceable", event.target.checked)} checked={values.replaceable} />
-                                                            <span className="form-check-label">Replaceable</span>
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                name="replaceable"
+                                                                onChange={(event) =>
+                                                                    setFieldValue(
+                                                                        "replaceable",
+                                                                        event.target.checked
+                                                                    )
+                                                                }
+                                                                checked={values.replaceable}
+                                                            />
+                                                            <span className="form-check-label">
+                                                                Replaceable
+                                                            </span>
                                                         </label>
                                                         <label className="form-check form-switch mx-2">
-                                                            <input className="form-check-input" type="checkbox" name="returnable" onChange={(event) => setFieldValue("returnable", event.target.checked)} checked={values.returnable} />
-                                                            <span className="form-check-label">Returnable</span>
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                name="returnable"
+                                                                onChange={(event) =>
+                                                                    setFieldValue(
+                                                                        "returnable",
+                                                                        event.target.checked
+                                                                    )
+                                                                }
+                                                                checked={values.returnable}
+                                                            />
+                                                            <span className="form-check-label">
+                                                                Returnable
+                                                            </span>
                                                         </label>
                                                     </div>
-
 
                                                     <div className="form-group mb-3 ">
                                                         <label htmlFor="name">Minimum Order Quantity</label>
@@ -724,11 +926,12 @@ console.log(productState)
                                                             required
                                                             placeholder="Enter Minimum Order Quantity "
                                                         />
-                                                        {touched.min_order_quantity && errors.min_order_quantity && (
-                                                            <p className="h6 text-danger mt-1">
-                                                                Product {errors.min_order_quantity}
-                                                            </p>
-                                                        )}
+                                                        {touched.min_order_quantity &&
+                                                            errors.min_order_quantity && (
+                                                                <p className="h6 text-danger mt-1">
+                                                                    Product {errors.min_order_quantity}
+                                                                </p>
+                                                            )}
                                                     </div>
 
                                                     <div className="form-group mb-3 ">
@@ -747,11 +950,12 @@ console.log(productState)
                                                             required
                                                             placeholder="Enter Maximum Order Quantity"
                                                         />
-                                                        {touched.max_order_quantity && errors.max_order_quantity && (
-                                                            <p className="h6 text-danger mt-1">
-                                                                Product {errors.max_order_quantity}
-                                                            </p>
-                                                        )}
+                                                        {touched.max_order_quantity &&
+                                                            errors.max_order_quantity && (
+                                                                <p className="h6 text-danger mt-1">
+                                                                    Product {errors.max_order_quantity}
+                                                                </p>
+                                                            )}
                                                     </div>
 
                                                     <div className="form-group mb-3 ">
@@ -798,10 +1002,7 @@ console.log(productState)
                                                             </p>
                                                         )}
                                                     </div>
-
                                                 </div>
-
-
                                             </form>
                                         </div>
                                     </div>
