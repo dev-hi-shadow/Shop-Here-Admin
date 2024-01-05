@@ -13,6 +13,7 @@ import { GetBrandAction } from "../../../Services/Actions/Brand";
 import { GetUnitAction } from "../../../Services/Actions/Unit";
 import { GetAttributeAction } from "../../../Services/Actions/Attribute";
 import {
+    CreateProductAction,
     GetProductAction,
 } from "../../../Services/Actions/Product";
 
@@ -33,7 +34,7 @@ const AddProduct = () => {
 
 
     const handleProduct = (values) => {
-        console.log(" dispatch body", values)
+        dispatch(CreateProductAction(values));
     };
 
     useEffect(() => {
@@ -550,7 +551,7 @@ const AddProduct = () => {
                                                                                         placeholder={touched.price?.[index]?.manufacture_price && errors.price?.[index]?.manufacture_price}
                                                                                     />
                                                                                 </div>
-                                                                             </td>
+                                                                            </td>
                                                                             <td>
                                                                                 <div className="form-group">
                                                                                     <input

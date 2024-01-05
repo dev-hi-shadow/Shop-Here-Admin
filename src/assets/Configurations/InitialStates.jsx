@@ -64,6 +64,8 @@ export const ProductInitialState = {
   meta_description: "",
   guarantee: "",
   warranty: "",
+  product_type : "",
+
 
 
 

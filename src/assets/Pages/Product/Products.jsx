@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   EditProductAction,
   GetProductAction,
-} from "../../../Services/Actions/Product";
+ } from "../../../Services/Actions/Product";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 
@@ -15,6 +15,16 @@ const Products = () => {
 
   const handlePublish = (productId, state) => {
     dispatch(EditProductAction({ _id: productId, is_publish: state }));
+  };
+
+  const handlePublishVariation = (id, state) => {
+    // dispatch(
+    //   VariationActiveDeactive({
+    //     _id: ViewProduct?._id,
+    //     variation_id: id,
+    //     is_publish: state,
+    //   })
+    // );
   };
 
   useEffect(() => {
@@ -139,6 +149,12 @@ const Products = () => {
           <div className="modal-content">
             <div className="modal-body">
               <div className="container">
+                <div className="d-flex justify-content-end">
+                  <i
+                    className="fas fa-xmark  fs-1 text-red cursor-pointer"
+                    data-bs-dismiss="modal"
+                  ></i>
+                </div>
                 {ViewProduct && (
                   <div className="row">
                     <div className="col-6">
@@ -244,9 +260,10 @@ const Products = () => {
                               return (
                                 <>
                                   <div className="d-flex mb-1" key={index}>
-                                    <p className="badge bg-red me-3 m-0">
+                                    <p className="badge me-3 bg-red m-0">
                                       {attribute?.attribute_id?.name}
                                     </p>
+                                    :
                                     {Array.isArray(attribute?.values) &&
                                       attribute?.values?.map((value, index) => {
                                         return (
@@ -262,35 +279,88 @@ const Products = () => {
                                 </>
                               );
                             })}
-                         </div>
+                        </div>
+
+                        <p className="mb-3 d-flex">
+                          <span className="me-3">description : </span>{" "}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: ViewProduct?.description?.substring(
+                                0,
+                                50
+                              ),
+                            }}
+                          ></span>
+                        </p>
+
                         <p className="mb-3"> Variants:</p>
                         <div className="table-responsive">
                           <table className="table table-vcenter card-table">
                             <thead>
                               <tr>
-                                <th>#</th>
-                                <th>Variant</th>
-                                <th>Publish</th>
+                                <th className="text-center">Variant</th>
+                                <th className="text-center">#</th>
+                                <th className="text-center">
+                                  Manufacture Price
+                                </th>
+                                <th className="text-center">Retail Price</th>
+                                <th className="text-center">Publish</th>
                                 <th className="text-center">Actions</th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                <td>1</td>
-                                <td>Forest Green - 4GB - 128GB</td>
+                              {Array.isArray(ViewProduct?.price) &&
+                                ViewProduct?.price.map((variation) => {
+                                  return (
+                                    <tr key={variation?._id}>
+                                      <td className="text-center">1</td>
+                                      <td className="text-center">
+                                        {variation.variation}
+                                      </td>
+                                      <td className="text-center">
+                                        {variation.manufacture_price}
+                                      </td>
+                                      <td className="text-center">
+                                        {variation.retail_price}
+                                      </td>
 
-                                <td>
-                                  <Link className="text-green">
-                                    &nbsp;Active&nbsp;
-                                  </Link>
-                                  <Link className="text-red">Unactive</Link>
-                                </td>
-                                <td className="text-center">
-                                  <Link className="p-2 bg-red rounded">
-                                    <i className="fas fa-trash text-white"></i>
-                                  </Link>
-                                </td>
-                              </tr>
+                                      <td className="text-center">
+                                        {variation?.is_publish && (
+                                          <Link
+                                            className="text-decoration-none text-red"
+                                            onClick={() =>
+                                              handlePublishVariation(
+                                                variation?._id,
+                                                true
+                                              )
+                                            }
+                                          >
+                                            Unactive
+                                          </Link>
+                                        )}
+
+                                        {!variation?.is_publish && (
+                                          <Link
+                                            className="text-green text-decoration-none"
+                                            onClick={() =>
+                                              handlePublishVariation(
+                                                variation?._id,
+                                                false
+                                              )
+                                            }
+                                          >
+                                            &nbsp;Active&nbsp;
+                                          </Link>
+                                        )}
+                                      </td>
+                                      <td className="text-center">
+                                        <Link className="p-2 bg-red rounded">
+                                          <i className="fas fa-trash text-white"></i>
+                                        </Link>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
                             </tbody>
                           </table>
                         </div>
@@ -299,22 +369,6 @@ const Products = () => {
                   </div>
                 )}
               </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn me-auto"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                data-bs-dismiss="modal"
-              >
-                Save changes
-              </button>
             </div>
           </div>
         </div>

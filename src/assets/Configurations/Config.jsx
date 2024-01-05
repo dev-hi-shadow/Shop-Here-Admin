@@ -17,7 +17,8 @@ export const config = {
   headers: {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-    "Content-Type": "Application/JSON"
+    "Content-Type": "Application/JSON",
+    Authorization: localStorage.getItem("accessToken"),
   },
   withCredentials: true,
 };
