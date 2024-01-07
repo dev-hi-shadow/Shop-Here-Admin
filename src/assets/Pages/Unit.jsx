@@ -1,216 +1,260 @@
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useRef, useState } from "react"
-import { UnitInitialState } from "../Configurations/InitialStates"
-import { UnitSchema } from "../Configurations/YupSchema"
-import { useFormik } from "formik"
-import { CreateUnitAction, DeleteUnitAction, EditUnitAction, GetUnitAction } from "../../Services/Actions/Unit"
-import moment from "moment/moment"
-
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { UnitInitialState } from "../Configurations/InitialStates";
+import { UnitSchema } from "../Configurations/YupSchema";
+import { useFormik } from "formik";
+import {
+  CreateUnitAction,
+  DeleteUnitAction,
+  EditUnitAction,
+  GetUnitAction,
+} from "../../Services/Actions/Unit";
+import moment from "moment/moment";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Table,
+  TableCell,
+  TableColumn,
+  TableRow,
+  useDisclosure,
+} from "@nextui-org/react";
+import { Link } from "react-router-dom";
+import Toastify from "../Components/Toastify";
+import { TableBody, TableHeader } from "@react-stately/table";
 
 const Unit = () => {
-    const dispatch = useDispatch()
-    const unitState = useSelector(state => state.unitState)
-    const ModalCloseRef = useRef();
-    const [ModalState, setModalState] = useState("")
+  const dispatch = useDispatch();
+  const { DeleteRecoverUnit, GetUnit, EditUnit, AddUnit } = useSelector(
+    (state) => state.unitState
+  );
+  const [ModalState, setModalState] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const handleUnit = (values) => {
-        const body = { ...values }
-        if (ModalState === "Edit") {
-            dispatch(EditUnitAction(body))
-        } else {
-            dispatch(CreateUnitAction(body))
-        }
+  useEffect(() => {
+    dispatch(GetUnitAction());
+  }, [dispatch]);
+
+  const {
+    values,
+    errors,
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    resetForm,
+    setValues,
+  } = useFormik({
+    initialValues: UnitInitialState,
+    validationSchema: UnitSchema,
+    onSubmit: () => handleUnit(values),
+  });
+  const handleUnit = (values = values) => {
+    if (ModalState === "Update") {
+      dispatch(EditUnitAction(values));
+    } else if (ModalState === "Create") {
+      dispatch(CreateUnitAction(values));
+    } else if (["Delete", "Deactivated"].includes(ModalState)) {
+      dispatch(DeleteUnitAction(values));
     }
-    const handleEditUnit = (Unit) => {
-        setValues({
-            ...Unit
-        })
-        setModalState("Edit")
+  };
+  useEffect(() => {
+    if (DeleteRecoverUnit || EditUnit || AddUnit) {
+      onClose();
+      resetForm();
     }
-    const handleDeleteUnit = (Unit) => {
-        setValues({
-            ...Unit
-        })
-        setModalState("Delete")
-    }
+  }, [AddUnit, DeleteRecoverUnit, EditUnit, onClose, resetForm]);
 
-
-    useEffect(() => {
-        dispatch(GetUnitAction())
-    }, [dispatch])
-
-
-    const { values, errors, touched, handleChange, handleSubmit, handleBlur, resetForm, setValues } = useFormik({
-        initialValues: UnitInitialState,
-        validationSchema: UnitSchema,
-        onSubmit: () => handleUnit(values),
-    })
-
-    useEffect(() => {
-        if (unitState?.error || unitState?.DeleteRecoverUnit || unitState?.EditUnit || unitState?.AddUnit) {
-            ModalCloseRef.current.click()
-            resetForm()
-        }
-    }, [unitState?.AddUnit, unitState?.DeleteRecoverUnit, unitState?.EditUnit, unitState?.error, resetForm])
-
-    return (
-        <>
-            <div className="page-wrapper">
-                <div className="page-body">
-                    <div className="container-xl">
-                        <div className="card">
-                            <div className="card-body">
-                                <div className="d-flex justify-content-between ">
-                                    <h6 className="card-title">Total { } Units</h6>
-                                    <div className="d-flex ">
-                                        <h6 onClick={() => setModalState("Deactivated")} className="card-title cursor-pointer mx-4 text-danger" data-toggle="modal" data-target="#DeleteUnitModal" >Deleted Units</h6>
-                                        <h6 onClick={() => setModalState("Add")} className="card-title cursor-pointer " data-bs-toggle="modal" data-bse-target="#AddUnitModal" >Add Unit</h6>
-                                    </div>
-                                </div>
-                                <div className="table-responsive">
-                                    <table className="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Unit</th>
-                                                <th>Code</th>
-                                                <th>Created At</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Array.isArray(unitState.GetUnit) && unitState.GetUnit?.length > 0 ?
-                                                unitState.GetUnit?.map((Unit, index) => {
-                                                    return (Unit?.is_deleted === false && <tr key={Unit._id}>
-                                                        <td>{index + 1}</td>
-                                                        <td>{Unit.name}</td>
-                                                        <td>{Unit.unit_code}</td>
-                                                        <td>{moment(Unit.createdAt).format("MMMM DD, YYYY")}</td>
-                                                        <td>
-                                                            <i onClick={() => handleEditUnit(Unit)} className="fa-solid fa-pen me-3 text-warning  mr-2 " style={{ fontSize: "20px" }} data-toggle="modal" data-target="#AddUnitModal" ></i>
-                                                            <i onClick={() => handleDeleteUnit(Unit)} className="fa-solid fa-trash ms-3 text-danger ml-2" style={{ fontSize: "20px" }} data-toggle="modal" data-target="#DeletesUnitModal" ></i>
-                                                        </td>
-                                                    </tr>
-                                                    )
-                                                })
-                                                : null
-                                            }
-                                        </tbody>
-                                    </table>
-                                    {(Array.isArray(unitState?.GetUnit) && unitState?.GetUnit?.every((Unit) => Unit?.is_deleted === true)) &&
-                                        <div className="card my-1 mx-auto text-center">
-                                            <span className="mt-1">    Data Not Found
-                                            </span>
-                                        </div>
-                                    }
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <>
+      <Toastify />
+      <div className="page-wrapper">
+        <div className="page-body">
+          <div className="container-xl">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex justify-content-between ">
+                  <h6 className="card-title">Total {} Categories</h6>
+                  <div className="d-flex gap-3">
+                    <Link
+                      className="text-red-600  text-decoration-none"
+                      onClick={() => {
+                        onOpen(), setModalState("Deactivated");
+                      }}
+                    >
+                      Deleted Units
+                    </Link>
+                    <Link
+                      className="text-decoration-none"
+                      onClick={() => {
+                        setModalState("Create"), onOpen();
+                      }}
+                    >
+                      Create Unit
+                    </Link>
+                  </div>
                 </div>
-            </div>
-
-
-
-
-            <div className="modal fade" id="AddUnitModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog  modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <form onSubmit={handleSubmit} className="cmxform" noValidate="novalidate">
-                                <fieldset>
-                                    <div className="form-group">
-                                        <label htmlFor="name">Unit Name</label>
-                                        <input onChange={handleChange} onBlur={handleBlur} value={values?.name} id="name" className={`form-control ${(touched.name && errors.name) && "is-invalid"}`} name="name" type="text" required placeholder="Enter Unit Name" />
-                                        {(touched.name && errors.name) && <p className="h6 text-danger mt-1"> Unit {errors.name} </p>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="name">Unit Code</label>
-                                        <input onChange={handleChange} onBlur={handleBlur} value={values?.unit_code} id="unit_code" className={`form-control ${(touched.unit_code && errors.unit_code) && "is-invalid"}`} name="unit_code" type="text" required placeholder="Enter Unit Code" />
-                                        {(touched.unit_code && errors.unit_code) && <p className="h6 text-danger mt-1"> Unit {errors.unit_code} </p>}
-                                    </div>
-
-                                    <div className="d-flex justify-content-between">
-                                        <input className="btn btn-danger" type="reset" onClick={resetForm} value="Reset" />
-                                        <button className="btn btn-secondary" data-dismiss="modal" onClick={() => { resetForm() }} ref={ModalCloseRef} > Close</button>
-                                        <input className="btn btn-primary" type="submit" value="Submit" />
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-
-                    </div>
-                </div >
-            </div>
-
-            <div className="modal fade" id="DeleteUnitModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-sm modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <div className="modal-title">Are you sure?</div>
-                            <div>If you proceed, you will lose all {values?.name} data</div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-link link-secondary me-auto" data-dismiss="modal" ref={ModalCloseRef}>Cancel</button>
-                            <button type="button" className="btn btn-danger" onClick={() => { dispatch(DeleteUnitAction({ ...values, is_deleted: true })) }} >Yes, Delete {values?.name}</button>
-                        </div>
-                    </div>
+                <div className="table-responsive">
+                  <Table
+                    removeWrapper
+                    aria-label="Example table with dynamic content"
+                  >
+                    <TableHeader>
+                      <TableColumn>#</TableColumn>
+                      <TableColumn>Unit</TableColumn>
+                      <TableColumn>Created At</TableColumn>
+                      <TableColumn className="text-center">Action</TableColumn>
+                    </TableHeader>
+                    <TableBody emptyContent={"No rows to display."}>
+                      {Array.isArray(GetUnit) && GetUnit?.length > 0
+                        ? GetUnit?.map((Unit, index) => {
+                            return (
+                              Unit?.is_deleted === false && (
+                                <TableRow key={Unit._id}>
+                                  <TableCell>{index + 1}</TableCell>
+                                  <TableCell>{Unit.name}</TableCell>
+                                  <TableCell>
+                                    {moment(Unit.createdAt).format(
+                                      "MMMM DD, YYYY"
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <i
+                                      onClick={() => {
+                                        onOpen(),
+                                          setModalState("Update"),
+                                          setValues(Unit);
+                                      }}
+                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                      style={{ fontSize: "20px" }}
+                                    ></i>
+                                    <i
+                                      onClick={() => {
+                                        onOpen(),
+                                          setModalState("Delete"),
+                                          setValues({
+                                            ...Unit,
+                                            is_deleted: true,
+                                          });
+                                      }}
+                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                      style={{ fontSize: "20px" }}
+                                    ></i>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            );
+                          })
+                        : null}
+                    </TableBody>
+                  </Table>
                 </div>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="modal fade" id="RecoveryUnitModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <div className="d-flex justify-content-between">
-                                <div></div>
-                                <i className="fa-solid fa-xmark text-danger cursor-pointer" data-dismiss="modal" ref={ModalCloseRef}> </i>
-                            </div>
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Unit</th>
-                                            <th>Action</th>
+      <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader className="p-3">{ModalState} Unit</ModalHeader>
+          <form onSubmit={handleSubmit}>
+            {["Create", "Update"].includes(ModalState) && (
+              <>
+                <ModalBody className="p-3">
+                  <Input
+                    type="text"
+                    value={values.name}
+                    variant="faded"
+                    label="Name"
+                    name="name"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    errorMessage={errors.name}
+                  />
+                  <Input
+                    type="text"
+                    value={values.unit_code}
+                    variant="faded"
+                    label="Unit Code"
+                    name="unit_code"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    errorMessage={errors.unit_code}
+                  />
+                </ModalBody>
+              </>
+            )}
+            {["Delete"].includes(ModalState) && (
+              <>
+                <ModalBody className="p-3">
+                  <div>
+                    If you proceed, you will lose all {values?.name} data
+                  </div>
+                </ModalBody>
+              </>
+            )}
+            {["Deactivated"].includes(ModalState) && (
+              <>
+                <ModalBody className="p-3">
+                  <Table removeWrapper aria-label="Example empty table">
+                    <TableHeader>
+                      <TableColumn>Name</TableColumn>
+                      <TableColumn className="text-center">Action</TableColumn>
+                    </TableHeader>
+                    <TableBody emptyContent={"No rows to display."}>
+                      {GetUnit?.filter((unit) => unit.is_deleted).map(
+                        (unit) => {
+                          return (
+                            <TableRow key={unit._id}>
+                              <TableCell>{unit.name}</TableCell>
+                              <TableCell className="text-center">
+                                <Button
+                                  color="success"
+                                  variant="light"
+                                  onClick={async () => {
+                                    handleUnit({
+                                      ...unit,
+                                      is_deleted: false,
+                                    });
+                                  }}
+                                >
+                                  Recover
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        }
+                      )}
+                    </TableBody>
+                  </Table>
+                </ModalBody>
+              </>
+            )}
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {Array.isArray(unitState.GetUnit) && unitState.GetUnit?.length > 0 ?
-                                            unitState.GetUnit?.map((Unit, index) => {
-                                                return (Unit?.is_deleted === true && <tr key={Unit._id}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{Unit.name}</td>
-                                                    <td> <button type="button" className="btn btn-success" onClick={() => { dispatch(DeleteUnitAction({ _id: Unit?._id })) }} > Recover </button>
-                                                    </td>
-                                                </tr>
-                                                )
-                                            })
-                                            : null
-                                        }
-                                    </tbody>
-                                </table>
-                                {(Array.isArray(unitState?.GetUnit) && unitState?.GetUnit?.every((Unit) => Unit?.is_deleted === false)) &&
-                                    <div className="card my-1 mx-auto text-center">
-                                        <span className="mt-1">    Data Not Found
-                                        </span>
-                                    </div>
-                                }
+            {!["Deactivated"].includes(ModalState) && (
+              <ModalFooter className="p-3">
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  color={ModalState === "Delete" ? "danger" : "primary"}
+                  type="submit"
+                  className="rounded"
+                >
+                  {ModalState}
+                </Button>
+              </ModalFooter>
+            )}
+          </form>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-        </>
-    )
-}
-
-export default Unit
+export default Unit;
