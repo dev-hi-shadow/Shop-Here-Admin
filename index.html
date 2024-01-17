@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href="./dist/css/tabler.min.css?1684106062" rel="stylesheet" />
-    <link href="./dist/css/tabler-flags.min.css?1684106062" rel="stylesheet" />
-    <link
-      href="./dist/css/tabler-payments.min.css?1684106062"
-      rel="stylesheet"
-    />
-    <link
-      href="./dist/css/tabler-vendors.min.css?1684106062"
-      rel="stylesheet"
-    />
-    <link href="./dist/css/demo.min.css?1684106062" rel="stylesheet" />
+    <link href="./dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="./dist/css/tabler-flags.min.css" rel="stylesheet" />
+    <link href="./dist/css/tabler-payments.min.css" rel="stylesheet" />
+    <link href="./dist/css/tabler-vendors.min.css" rel="stylesheet" />
+    <link href="./dist/css/demo.min.css" rel="stylesheet" />
 
     <style>
       @import url("https://rsms.me/inter/inter.css");
@@ -21,6 +15,11 @@
       }
       body {
         font-feature-settings: "cv03", "cv04", "cv11";
+      }
+
+      .scrollbar-hide {
+        display: flex;
+        flex-direction: column;
       }
     </style>
     <link
@@ -40,25 +39,19 @@
 
     <!-- Libs JS -->
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+    <script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>
     <script
-      src="./dist/libs/apexcharts/dist/apexcharts.min.js?1684106062"
+      src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js"
       defer
     ></script>
+    <script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>
     <script
-      src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js?1684106062"
-      defer
-    ></script>
-    <script
-      src="./dist/libs/jsvectormap/dist/maps/world.js?1684106062"
-      defer
-    ></script>
-    <script
-      src="./dist/libs/jsvectormap/dist/maps/world-merc.js?1684106062"
+      src="./dist/libs/jsvectormap/dist/maps/world-merc.js"
       defer
     ></script>
     <!-- Tabler Core -->
-    <script src="./dist/js/tabler.min.js?1684106062" defer></script>
-    <script src="./dist/js/demo.min.js?1684106062" defer></script>
-      <script src="https://cdn.jsdelivr.net/npm/react-tag-input-component@2.0/dist/index.min.js"></script>
+    <script src="./dist/js/tabler.min.js" defer></script>
+    <script src="./dist/js/demo.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-tag-input-component@2.0/dist/index.min.js"></script>
   </body>
 </html>
