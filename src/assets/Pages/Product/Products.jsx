@@ -25,15 +25,15 @@ const Products = () => {
     dispatch(EditProductAction({ _id: productId, is_publish: state }));
   };
 
-  const handlePublishVariation = (id, state) => {
-    // dispatch(
-    //   VariationActiveDeactive({
-    //     _id: ViewProduct?._id,
-    //     variation_id: id,
-    //     is_publish: state,
-    //   })
-    // );
-  };
+  // const handlePublishVariation = (id, state) => {
+  //   // dispatch(
+  //   //   VariationActiveDeactive({
+  //   //     _id: ViewProduct?._id,
+  //   //     variation_id: id,
+  //   //     is_publish: state,
+  //   //   })
+  //   // );
+  // };
 
   useEffect(() => {
     dispatch(GetProductAction());
@@ -251,10 +251,7 @@ const Products = () => {
                           <span className="">SKU: </span>
                           <span className="ms-1">{ViewProduct?.SKU}</span>
                         </p>
-                        {/* 
- //TODO
- Offers fetch and Show Only those Offers Which is associate with this product
- */}
+
                         <p className="mb-3">
                           <span className="text-black text-decoration-underline me-2 ">
                             Limited time offer:
@@ -306,25 +303,25 @@ const Products = () => {
                         <div className="table-responsive">
                           <Table className="table table-vcenter card-table">
                             <TableHeader>
-                                 <TableColumn className="text-center">
-                                  Variant
-                                </TableColumn>
-                                <TableColumn className="text-center">
-                                  #
-                                </TableColumn>
-                                <TableColumn className="text-center">
-                                  Manufacture Price
-                                </TableColumn>
-                                <TableColumn className="text-center">
-                                  Retail Price
-                                </TableColumn>
-                                <TableColumn className="text-center">
-                                  Publish
-                                </TableColumn>
-                                <TableColumn className="text-center">
-                                  Actions
-                                </TableColumn>
-                             </TableHeader>
+                              <TableColumn className="text-center">
+                                Variant
+                              </TableColumn>
+                              <TableColumn className="text-center">
+                                #
+                              </TableColumn>
+                              <TableColumn className="text-center">
+                                Manufacture Price
+                              </TableColumn>
+                              <TableColumn className="text-center">
+                                Retail Price
+                              </TableColumn>
+                              <TableColumn className="text-center">
+                                Publish
+                              </TableColumn>
+                              <TableColumn className="text-center">
+                                Actions
+                              </TableColumn>
+                            </TableHeader>
                             <TableBody>
                               {Array.isArray(ViewProduct?.price) &&
                                 ViewProduct?.price.map((variation) => {
@@ -347,12 +344,12 @@ const Products = () => {
                                         {variation?.is_publish && (
                                           <Link
                                             className="text-decoration-none text-red"
-                                            onClick={() =>
-                                              handlePublishVariation(
-                                                variation?._id,
-                                                true
-                                              )
-                                            }
+                                            // onClick={() =>
+                                            //   handlePublishVariation(
+                                            //     variation?._id,
+                                            //     true
+                                            //   )
+                                            // }
                                           >
                                             Unactive
                                           </Link>
@@ -361,12 +358,12 @@ const Products = () => {
                                         {!variation?.is_publish && (
                                           <Link
                                             className="text-green text-decoration-none"
-                                            onClick={() =>
-                                              handlePublishVariation(
-                                                variation?._id,
-                                                false
-                                              )
-                                            }
+                                            // onClick={() =>
+                                            //   handlePublishVariation(
+                                            //     variation?._id,
+                                            //     false
+                                            //   )
+                                            // }
                                           >
                                             &nbsp;Active&nbsp;
                                           </Link>
