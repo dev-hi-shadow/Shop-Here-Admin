@@ -20,6 +20,7 @@ import AddProduct from "./assets/Pages/Product/AddProduct.jsx";
 import Products from "./assets/Pages/Product/Products.jsx";
 import Sidebar from "./assets/Main/Sidebar.jsx";
 import ManagementSection from "./assets/Main/ManagementSection.jsx";
+import Toastify from "./assets/Components/Toastify.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ function App() {
 
   return (
     <>
+      <Toastify />
       {!disable_sidebar.includes(ActivePage) && <Sidebar />}
       {!disable_subbar.includes(ActivePage) && <ManagementSection />}
       <Routes>

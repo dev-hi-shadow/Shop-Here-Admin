@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import Toastify from "../Components/Toastify";
 const Dashboard = () => {
   return (
     <>
+    <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">

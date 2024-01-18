@@ -5,14 +5,16 @@ import { useEffect } from "react";
 import { SignInInitialState } from "../Configurations/InitialStates";
 import { SignInSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
+import Toastify from "../Components/Toastify";
+import { Button, Input } from "@nextui-org/react";
 
 const SignIn = () => {
   const Navigate = useNavigate();
   const dispatch = useDispatch();
   const authentication = useSelector((state) => state.authentication);
- 
+
   const handleSignInSubmit = (values) => {
-    const body = { ...values };
+     const body = { ...values };
     dispatch(LoginAction(body));
   };
   useEffect(() => {
@@ -23,8 +25,6 @@ const SignIn = () => {
           "accessToken",
           authentication?.signin?.token
         );
-      } else {
-        window.localStorage.removeItem("accessToken");
       }
       Navigate("/");
     }
@@ -39,14 +39,15 @@ const SignIn = () => {
 
   return (
     <>
+      <Toastify />
       <main className="main-content my-5 ps">
         <section>
           <div className="page-header min-vh-75">
             <div className="container">
               <div className="row">
-                <div className="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
+                <div className="col-xl-5 col-lg-6 col-md-7 d-flex flex-column mx-auto">
                   <div className="card card-plain mt-8">
-                    <div className="card-header pb-0 text-left bg-transparent py-4">
+                    <div className="card-header text-left bg-transparent py-4 flex justify-between items-center	">
                       <h3 className="font-weight-bolder text-info text-gradient">
                         Welcome back
                       </h3>
@@ -55,64 +56,42 @@ const SignIn = () => {
                       </p>
                     </div>
                     <div className="card-body">
-                      <form role="form" onSubmit={handleSubmit}>
-                        <label>Email Or Phone</label>
-                        <div className="mb-3">
-                          <input
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values?.credential}
-                            name="credential"
-                            type="text"
-                            className={`form-control ${
-                              touched.credential &&
-                              errors.credential &&
-                              "is-invalid"
-                            }`}
-                            placeholder="Email or Phone"
-                            aria-label=""
-                            aria-describedby=""
-                          />
-                          {touched.credential && errors.credential && (
-                            <p className="h6 text-danger mt-1">
-                              {" "}
-                              {errors.credential}{" "}
-                            </p>
-                          )}
-                        </div>
-                        <label>Password</label>
-                        <div className="mb-3">
-                          <input
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values?.password}
-                            name="password"
-                            type="password"
-                            className={`form-control ${
-                              touched.password &&
-                              errors.password &&
-                              "is-invalid"
-                            }`}
-                            placeholder="Password"
-                            aria-label="Password"
-                            aria-describedby="password-addon"
-                          />
-                          {touched.password && errors.password && (
-                            <p className="h6 text-danger mt-1">
-                              {" "}
-                              {errors.password}{" "}
-                            </p>
-                          )}
-                        </div>
+                      <form onSubmit={handleSubmit}>
+                        <Input
+                          className="mb-3"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values?.credential}
+                          variant="bordered"
+                          name="credential"
+                          type="text"
+                          isRequired
+                          placeholder="Email or Phone"
+                          isInvalid={errors.credential && touched.credential}
+                          errorMessage={touched.credential && errors.credential}
+                        />
+                        <Input
+                          className="mb-3"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values?.password}
+                          name="password"
+                          variant="bordered"
+                          type="password"
+                          isRequired
+                          placeholder="Password"
+                          isInvalid={errors.password && touched.password}
+                          errorMessage={touched.password && errors.password}
+                        />
 
-                        <div className="text-center">
-                          <button
-                            type="submit"
-                            className="btn bg-gradient-info w-100 mt-4 mb-0"
-                          >
-                            Sign in
-                          </button>
-                        </div>
+                        <Button
+                          type="submit"
+                          value="submit"
+                          variant="faded"
+                          color="primary"
+                        >
+                          Sign in
+                        </Button>
                       </form>
                     </div>
                     <div className="card-footer text-center pt-0 px-lg-2 px-1">

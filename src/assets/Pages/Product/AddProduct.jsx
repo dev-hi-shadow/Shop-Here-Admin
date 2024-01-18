@@ -3,10 +3,8 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { TagsInput } from "react-tag-input-component";
 import { ProductSchema } from "../../Configurations/YupSchema";
 import { ProductInitialState } from "../../Configurations/InitialStates";
-import ReactSelect from "react-select";
 import { GetCategoryAction } from "../../../Services/Actions/Category";
 import { GetSubCategoryAction } from "../../../Services/Actions/SubCategory";
 import { GetBrandAction } from "../../../Services/Actions/Brand";
@@ -17,7 +15,15 @@ import {
   GetProductAction,
 } from "../../../Services/Actions/Product";
 import { Select, SelectItem } from "@nextui-org/select";
-import { Card, CardBody, Input, Tab, Tabs } from "@nextui-org/react";
+import {
+  Card,
+  CardBody,
+  Input,
+  Listbox,
+  ListboxItem,
+  Tab,
+  Tabs,
+} from "@nextui-org/react";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -29,12 +35,8 @@ const AddProduct = () => {
   const { DeleteRecoverProduct, EditProduct, AddProduct } = useSelector(
     (state) => state.productState
   );
-   const [SubCategories, setSubCategories] = useState([]);
-  const [Attributes, setAttributes] = useState([]);
-  const [SelectedAttribute, setSelectedAttribute] = useState();
   const [ActiveTab, setActiveTab] = useState(0);
-  const [SelectedAttributes, setSelectedAttributes] = useState();
-  const [AttributeValues, setAttributeValues] = useState();
+  const [Attribute, setAttribute] = useState("");
 
   const handleProduct = (values) => {
     dispatch(CreateProductAction(values));
@@ -51,8 +53,6 @@ const AddProduct = () => {
 
   const {
     setValues,
-    setTouched,
-    setErrors,
     values,
     errors,
     touched,
@@ -61,7 +61,6 @@ const AddProduct = () => {
     handleBlur,
     resetForm,
     setFieldValue,
-    setFieldTouched,
   } = useFormik({
     initialValues: { ...ProductInitialState },
     validationSchema: ProductSchema,
@@ -69,118 +68,25 @@ const AddProduct = () => {
       handleProduct(values);
     },
   });
-    console.log(" values", values)
   useEffect(() => {
     if (DeleteRecoverProduct || EditProduct || AddProduct) {
       resetForm();
     }
   }, [AddProduct, DeleteRecoverProduct, EditProduct, resetForm]);
-  useEffect(() => {
-    const ActiveSubCategories = GetSubCategory?.filter((subcategory) => {
-      return subcategory.is_deleted === false;
-    });
-    if (values.category_id) {
-      const OptionOfSubCategories = ActiveSubCategories.filter(
-        (subcategory) => {
-          return subcategory?.category_id?._id === values?.category_id?._id;
-        }
-      );
-      setSubCategories(OptionOfSubCategories);
-    }
 
-    const Attributes = GetAttribute?.filter((attribute) => {
-      return !attribute?.attribute_id && attribute?.is_deleted === false;
-    });
-    setAttributes(Attributes);
-  }, [GetAttribute, GetSubCategory, values.category_id, SelectedAttribute]);
-
-  const handleAttributes = (Attribute) => {
-    setSelectedAttribute(Attribute);
-    const Values = GetAttribute?.filter((value) => {
-      return value.attribute_id && value.attribute_id?._id === Attribute?._id;
-    });
-    setAttributeValues(Values);
+  const handleAttributeSelect = (attribute, selectedItems) => {
+    setValues((prevVal) => ({
+      ...prevVal,
+      attributes: {
+        ...prevVal.attributes,
+        [attribute]: Array.from(selectedItems),
+      },
+    }));
   };
 
   useEffect(() => {
-    const tempAttribute = SelectedAttributes?.map((val) => {
-      const attribute_id = val?.value?.attribute_id?._id;
-      const attribute_name = val?.value?.attribute_id?.name;
-      const tempValues = SelectedAttributes?.filter((attrvalue) => {
-        return attrvalue?.value?.attribute_id?._id === attribute_id;
-      });
-      return {
-        attribute_id,
-        attribute_name,
-        values: tempValues?.map((value) => {
-          return {
-            _id: value?.value?._id,
-            name: value?.value?.name,
-          };
-        }),
-      };
-    });
-
-    const uniqueObject = {};
-    const uniqueData = tempAttribute?.reduce((acc, item) => {
-      const key = item["attribute_id"];
-      if (!uniqueObject[key]) {
-        uniqueObject[key] = true;
-        acc.push(item);
-      }
-      return acc;
-    }, []);
-
-    setFieldValue("attributes", uniqueData);
-  }, [SelectedAttributes, setFieldValue]);
-
-  // const ProductTax = 12;
-
-  useEffect(() => {
-    const generateCombinations = (arr, i, result, current) => {
-      if (i === arr.length) {
-        result.push([...current]);
-        return;
-      }
-      for (const value of arr[i].values) {
-        current.push({ attribute: arr[i], value });
-        generateCombinations(arr, i + 1, result, current);
-        current.pop();
-      }
-    };
-    const combinations = [];
-    if (values?.attributes?.length > 0) {
-      generateCombinations(values?.attributes, 0, combinations, []);
-    }
-    const Combinations = combinations.map((combination) => {
-      return {
-        attribute_ids: combination.map(({ value }) => value._id),
-        variation: combination
-          .map(({ value }) => value.name)
-          .toString()
-          .split(",")
-          .join("-"),
-        manufacture_price: "",
-        retail_price: "",
-        company_cost: "",
-        margin: "",
-        tax: "",
-      };
-    });
-    setFieldValue("price", Combinations);
-  }, [setFieldValue, values?.attributes]);
-
-  const handleRemove = (index) => {
-    const updatePrice = [...values.price];
-    updatePrice.splice(index, 1);
-    setValues({ ...values, price: updatePrice });
-    const updateErrors = [...errors.price];
-    updateErrors.splice(index, 1);
-    setErrors({ ...errors, price: updateErrors });
-    const updateTouched = [...touched.price];
-    updateTouched.splice(index, 1);
-    setTouched({ ...touched, price: updateTouched });
-  };
+    console.log("ATTRIBUTES", values?.attributes);
+  }, [Attribute, values?.attributes]);
 
   return (
     <>
@@ -330,10 +236,8 @@ const AddProduct = () => {
                         isRequired
                         onBlur={handleBlur}
                         isInvalid={errors.name && touched.name}
-                        errorMessage={
-                          errors.name && touched.name ? errors.name : null
-                        }
-                        value={values.names}
+                        errorMessage={touched.name && errors.name}
+                        value={values.name}
                       />
                       <Input
                         className="mb-3"
@@ -422,7 +326,11 @@ const AddProduct = () => {
                           GetBrand.map((brand) => {
                             return (
                               brand.is_deleted === false && (
-                                <SelectItem key={brand._id} value={brand._id}>
+                                <SelectItem
+                                  key={brand._id}
+                                  value={brand._id}
+                                  textValue={brand.name}
+                                >
                                   {brand.name}
                                 </SelectItem>
                               )
@@ -451,6 +359,7 @@ const AddProduct = () => {
                                 <SelectItem
                                   key={category._id}
                                   value={category._id}
+                                  textValue={category.name}
                                 >
                                   {category.name}
                                 </SelectItem>
@@ -484,6 +393,7 @@ const AddProduct = () => {
                               <SelectItem
                                 key={subcategory._id}
                                 value={subcategory._id}
+                                textValue={subcategory.name}
                               >
                                 {subcategory.name}
                               </SelectItem>
@@ -509,7 +419,11 @@ const AddProduct = () => {
                           GetUnit.map((unit) => {
                             return (
                               unit.is_deleted === false && (
-                                <SelectItem key={unit._id} value={unit._id}>
+                                <SelectItem
+                                  key={unit._id}
+                                  value={unit._id}
+                                  textValue={unit.name}
+                                >
                                   {unit.name} [{unit.unit_code}]
                                 </SelectItem>
                               )
@@ -517,7 +431,56 @@ const AddProduct = () => {
                           })}
                       </Select>
 
-                      <ReactSelect
+                      <p className="fs-3">Attributes</p>
+
+                      <div className="mb-2">
+                        <Select
+                          label="Select an attribute category"
+                          className="my-2"
+                          onChange={(e) => setAttribute(e.target.value)}
+                          onBlur={handleBlur}
+                          name="Attribute"
+                          value={Attribute}
+                        >
+                          {Array.isArray(GetAttribute) &&
+                            GetAttribute.filter(
+                              (item) => !item.attribute_id
+                            ).map((attribute) => (
+                              <SelectItem
+                                textValue={attribute.name}
+                                key={attribute._id}
+                                value={attribute.value}
+                              >
+                                {attribute.name}
+                              </SelectItem>
+                            ))}
+                        </Select>
+                        <div className=" border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
+                          <Listbox
+                            aria-label="Multiple selection example"
+                            variant="flat"
+                            selectionMode="multiple"
+                            selectedKeys={values.attributes?.[Attribute]}
+                            onSelectionChange={(event) =>
+                              handleAttributeSelect(Attribute, event)
+                            }
+                          >
+                            {Array.isArray(GetAttribute) &&
+                              GetAttribute.filter(
+                                (item) => item.attribute_id?._id === Attribute
+                              ).map((attribute) => (
+                                <ListboxItem
+                                  textValue={attribute.name}
+                                  key={attribute._id}
+                                  value={attribute._id}
+                                >
+                                  {attribute.name}
+                                </ListboxItem>
+                              ))}
+                          </Listbox>
+                        </div>
+                      </div>
+                      {/* <ReactSelect
                         className="my-3"
                         onChange={(event) => handleAttributes(event.value)}
                         value={
@@ -548,7 +511,7 @@ const AddProduct = () => {
                             value: value,
                           };
                         })}
-                      />
+                      /> */}
                     </CardBody>
                   </Card>
                 </Tab>
@@ -739,7 +702,7 @@ const AddProduct = () => {
                     <th>Values</th>
                   </tr>
                 </thead>
-                <tbody>
+                {/* <tbody>
                   {values?.attributes &&
                     values?.attributes?.map((Attribute) => {
                       return (
@@ -764,7 +727,7 @@ const AddProduct = () => {
                         </>
                       );
                     })}
-                </tbody>
+                </tbody> */}
               </table>
             </div>
           </div>

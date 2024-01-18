@@ -50,7 +50,7 @@ export const ProductInitialState = {
   subcategory_id: "",
   brand_id: "",
   unit_id: "",
-  attributes: "",
+  attributes: [],
   tags: "",
   max_order_quantity: 5,
   min_order_quantity: 1,
@@ -64,12 +64,8 @@ export const ProductInitialState = {
   meta_description: "",
   guarantee: "",
   warranty: "",
-  product_type : "",
-
-
-
-
-};
+  product_type: "",
+ };
 
 export const StockInitialState = {
   product_id: "",
