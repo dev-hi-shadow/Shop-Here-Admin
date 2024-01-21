@@ -22,3 +22,12 @@ export const config = {
   },
   withCredentials: true,
 };
+
+export const CustomFind = (array, id, key) => {
+  return (
+    Array.isArray(array) &&
+    array.find((item) => {
+      return item._id === id;
+    })[key]
+  );
+};

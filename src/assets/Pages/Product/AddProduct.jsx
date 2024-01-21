@@ -16,12 +16,15 @@ import { Select, SelectItem } from "@nextui-org/select";
 import {
   Card,
   CardBody,
+  Chip,
   Input,
   Listbox,
   ListboxItem,
+  ScrollShadow,
   Tab,
   Tabs,
 } from "@nextui-org/react";
+import { CustomFind } from "../../Configurations/Config";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -38,8 +41,7 @@ const AddProduct = () => {
     useState(null);
 
   const handleProduct = (values) => {
-    console.log(values);
-    // dispatch(CreateProductAction(values));
+    //  dispatch(CreateProductAction(values));
   };
 
   useEffect(() => {
@@ -71,18 +73,36 @@ const AddProduct = () => {
     }
   }, [AddProduct, DeleteRecoverProduct, EditProduct, resetForm]);
 
-  const handleAttributeSelect = (attribute, selectedItems) => {
+  const handleAttributeSelect = (
+    ArgsAttribure,
+    ArgsSelectedItems,
+    ArgsType = "add"
+  ) => {
+    let selectedItems = Array.from(ArgsSelectedItems);
+    let attribute = ArgsAttribure;
+    let type = ArgsType;
     const UpdateArray = values.attributes;
     const index = UpdateArray.findIndex((item) =>
       Object.prototype.hasOwnProperty.call(item, attribute)
     );
+
+    if (type === "deleteAttribute") {
+      attribute = Object.keys(UpdateArray[index])[0];
+      let UpdateValue = UpdateArray[index][attribute];
+       const valueindex = UpdateValue.findIndex((item) => {
+        return item === selectedItems.join('').toString();
+      });
+      UpdateValue.splice(valueindex, 1);
+      selectedItems = UpdateValue;
+    }
+
     if (index === -1) {
-      UpdateArray.push({ [attribute]: Array.from(selectedItems) });
+      UpdateArray.push({ [attribute]: selectedItems });
     } else {
-      if (Array.from(selectedItems).length <= 0) {
+      if (selectedItems.length <= 0) {
         UpdateArray.splice(index, 1);
       } else {
-        UpdateArray[index] = { [attribute]: Array.from(selectedItems) };
+        UpdateArray[index] = { [attribute]: selectedItems };
       }
     }
     setFieldValue(`attributes`, UpdateArray);
@@ -616,6 +636,63 @@ const AddProduct = () => {
                                     ))}
                                 </Listbox>
                               </div>
+                            </div>
+                          </div>
+                          <div className="  col-6">
+                            <span className="fs-3">Selected Attibutes</span>
+                            <div className="my-2">
+                              {Array.isArray(values.attributes) &&
+                              values.attributes.length > 0
+                                ? values.attributes.map((attribute) => {
+                                    const attributeKey =
+                                      Object.keys(attribute)[0]; 
+                                    const attributeValues =
+                                      attribute[attributeKey];
+
+                                    return (
+                                      <div
+                                        className="d-flex items-center my-2"
+                                        key={attributeKey}
+                                      >
+                                        <Chip
+                                          variant="flat"
+                                          color="primary"
+                                          size="lg"
+                                          className=" py-2 h-fit"
+                                        >
+                                          {CustomFind(
+                                            GetAttribute,
+                                            attributeKey,
+                                            "name"
+                                          )}
+                                        </Chip>
+                                        <p className="p-0 mx-1 fs-2"> : </p>
+                                        <ScrollShadow orientation="horizontal" className="max-w-[100%] flex">
+                                          {attributeValues.map((item) => (
+                                            <Chip
+                                              className="h-fit p-1 mx-2"
+                                              key={item}
+                                              variant="bordered"
+                                              onClose={() =>
+                                                handleAttributeSelect(
+                                                  attributeKey,
+                                                  item,
+                                                  "deleteAttribute"
+                                                )
+                                              }
+                                            >
+                                              {CustomFind(
+                                                GetAttribute,
+                                                item,
+                                                "name"
+                                              )}
+                                            </Chip>
+                                          ))}
+                                        </ScrollShadow>
+                                      </div>
+                                    );
+                                  })
+                                : "No attributes Selected"}
                             </div>
                           </div>
                         </div>
