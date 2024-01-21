@@ -1,73 +1,83 @@
 export const SignUpInitialState = {
-  name: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-  phone: "",
+  name: null,
+  email: null,
+  password: null,
+  confirmPassword: null,
+  phone: null,
 };
 
 export const SignInInitialState = {
-  credential: "",
-  password: "",
+  credential: null,
+  password: null,
 };
 
 export const BrandInitialState = {
-  name: "",
+  name: null,
   verified: false,
 };
 
 export const CategoryInitialState = {
-  name: "",
+  name: null,
 };
 
 export const RoleInitialState = {
-  name: "",
+  name: null,
 };
 
 export const SubCategoryInitialState = {
-  name: "",
-  category_id: "",
+  name: null,
+  category_id: null,
 };
 
 export const AttributeInitialState = {
-  name: "",
+  name: null,
 };
 
 export const UnitInitialState = {
-  name: "",
-  unit_code: "",
+  name: null,
+  unit_code: null,
 };
 
 export const ProductInitialState = {
-  name: "",
-  SKU: "",
-  returnable: true,
-  cancellable: true,
-  replaceable: true,
-  description: "",
-  extra_description: "",
-  category_id: "",
-  subcategory_id: "",
-  brand_id: "",
-  unit_id: "",
-  attributes: [],
-  tags: "",
-  max_order_quantity: 5,
+  seller_id: null,
+  created_by: null,
+  pickup_locations: [],
+  description: null,
+  type : null,
+  name: null,
+  extra_description: null,
+  product_type: null,
+  made_in: null,
+  assembled_in: null,
+  short_description: null,
+  brand_id: null,
+  unit_id: null,
+  category_id: null,
+  subcategory_id: null,
   min_order_quantity: 1,
-  freshness: "",
-  type: "",
-  mfg_price: "",
-  friendly_url: "",
-  dimensions: "",
-  when_out_of_stock: false,
-  meta_title: "",
-  meta_description: "",
-  guarantee: "",
-  warranty: "",
-  product_type: "",
- };
+  max_order_quantity: 100,
+  attributes:[],
+  images: [],
+  SKU: null,
+  freshness: null,
+  returnable: true,
+  cancellable: {
+    is_cancellable: true,
+    cancellable_till: null,
+  },
+  is_tax_included: false,
+  tax_id: null,
+  is_cod_allowed: true,
+  replaceable: true,
+  friendly_url: null,
+  meta_title: null,
+  meta_description: null,
+  price: null,
+  warranty_period: null,
+  guarantee_period: null,
+};
 
 export const StockInitialState = {
-  product_id: "",
+  product_id: null,
   stocks: [],
 };
