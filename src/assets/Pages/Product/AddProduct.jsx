@@ -17,6 +17,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   Avatar,
+  Button,
   Card,
   CardBody,
   Checkbox,
@@ -49,8 +50,11 @@ import {
   IconSettingsCog,
   IconSend,
   IconHelpHexagon,
+  IconTrash,
 } from "@tabler/icons-react";
 import { GetAddressesAction } from "../../../Services/Actions/Addresses";
+import { toast } from "react-toastify";
+import { IconAlertCircleFilled } from "@tabler/icons-react";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -67,6 +71,7 @@ const AddProduct = () => {
     (state) => state.productState
   );
   const [ActiveTab, setActiveTab] = useState(0);
+  const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
   const [VariableAttributeCategory, setVariableAttributeCategory] =
     useState(null);
 
@@ -96,13 +101,13 @@ const AddProduct = () => {
     handleSubmit,
     handleBlur,
     resetForm,
+    initialValues,
     setFieldValue,
   } = useFormik({
     initialValues: ProductInitialState,
     validationSchema: ProductSchema,
     onSubmit: (values) => handleProduct(values),
   });
-
   useEffect(() => {
     if (DeleteRecoverProduct || EditProduct || AddProduct) {
       resetForm();
@@ -141,7 +146,15 @@ const AddProduct = () => {
         UpdateArray[index] = { [attribute]: selectedItems };
       }
     }
-    setFieldValue(`attributes`, [...UpdateArray]);
+    console.log(UpdateArray);
+    setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
+  };
+
+  const HandleVarients = (event) => {
+    if (Array.from(event).join("") === "all") {
+      return setSelectedVarientionRows("all");
+    }
+    setSelectedVarientionRows(Array.from(event));
   };
 
   useEffect(() => {
@@ -189,7 +202,56 @@ const AddProduct = () => {
     }
   }, [values.attributes, setFieldValue]);
 
- 
+  const DeleteVarients = () => {
+    try {
+      if (SelectedVarientionRows === "all") {
+        setValues({ ...values, attributes: [], variations: [] });
+        return;
+      }
+      if (
+        Array.isArray(SelectedVarientionRows) &&
+        SelectedVarientionRows.length > 0
+      ) {
+        const UpdateVarientionValues = values.variations.filter((item) => {
+          return !SelectedVarientionRows.includes(
+            item.attribute_ids.toString()
+          );
+        });
+        setFieldValue("variations", UpdateVarientionValues);
+
+        const AttributeKeys = values.attributes.map(
+          (item) => Object.keys(item)[0]
+        );
+
+        const record = AttributeKeys.map((Attribute) => {
+          const finded = values.attributes.find((attr) =>
+            Object.prototype.hasOwnProperty.call(attr, Attribute)
+          );
+
+          const FilteredValues = finded[Attribute].filter((preVal) => {
+            return UpdateVarientionValues.some((value) => {
+              return value.attribute_ids.includes(preVal);
+            });
+          });
+
+          return { [Attribute]: FilteredValues };
+        });
+
+        setFieldValue("attributes", record || initialValues.attributes);
+        setSelectedVarientionRows();
+      } else {
+        toast.error("You have not selected any rows", {
+          icon: <IconAlertCircleFilled />,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        icon: <IconAlertCircleFilled />,
+      });
+    }
+  };
+
+  console.info("VALUES.ATTRIBUTES", values.attributes);
   return (
     <>
       <Toastify />
@@ -968,12 +1030,28 @@ const AddProduct = () => {
                             </div>
                           </div>
                         </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-medium">Variation Table</span>
+                          <Button
+                            size="sm"
+                            className="text-danger-600"
+                            startContent={<IconTrash />}
+                            onPress={DeleteVarients}
+                          >
+                            Delete Rows
+                          </Button>
+                        </div>
                         <Table
+                          aria-labelledby="Variation-Table"
                           removeWrapper={true}
                           selectionMode="multiple"
+                          onSelectionChange={HandleVarients}
+                          selectedKeys={SelectedVarientionRows}
                           className="mt-3 h-[350] overflow-y-scroll"
                         >
                           <TableHeader>
+                            <TableColumn>#</TableColumn>
                             <TableColumn>Name</TableColumn>
                             <TableColumn>Manucature Price</TableColumn>
                             <TableColumn>Retail Price</TableColumn>
@@ -984,10 +1062,9 @@ const AddProduct = () => {
                           </TableHeader>
                           <TableBody emptyContent="No Data Found">
                             {Array.isArray(values.variations) &&
-                              values.variations.map((variation) => (
-                                <TableRow
-                                  key={variation.attribute_ids?.join("")}
-                                >
+                              values.variations.map((variation, index) => (
+                                <TableRow key={variation.attribute_ids}>
+                                  <TableCell>{index + 1}</TableCell>
                                   <TableCell>
                                     {variation.attribute_ids
                                       .map((item) =>
@@ -995,12 +1072,102 @@ const AddProduct = () => {
                                       )
                                       .join("-")}
                                   </TableCell>
-                                  <TableCell>{variation.name}</TableCell>
-                                  <TableCell>Active</TableCell>
-                                  <TableCell>Active</TableCell>
-                                  <TableCell>Active</TableCell>
-                                  <TableCell>Active</TableCell>
-                                  <TableCell>Active</TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      values={variation.menufacture_price}
+                                      name={`variation.[${index}].menufacture_price`}
+                                      type="number"
+                                      label=" Price"
+                                      onChange={handleChange}
+                                      onBlue={handleBlur}
+                                      isInvalid={
+                                        touched?.variations?.[index]
+                                          ?.manufacture_price &&
+                                        errors?.variations?.[index]
+                                          ?.manufacture_price
+                                      }
+                                      errorMessage={
+                                        touched?.variations?.[index]
+                                          ?.manufacture_price &&
+                                        errors?.variations?.[index]
+                                          ?.manufacture_price
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      values={variation.retail_price}
+                                      name={`variation.[${index}].retail_price`}
+                                      type="number"
+                                      label=" Price"
+                                      onChange={handleChange}
+                                      onBlue={handleBlur}
+                                      isInvalid={
+                                        touched?.variations?.[index]
+                                          ?.retail_price &&
+                                        errors?.variations?.[index]
+                                          ?.retail_price
+                                      }
+                                      errorMessage={
+                                        touched?.variations?.[index]
+                                          ?.manufacture_price &&
+                                        errors?.variations?.[index]
+                                          ?.retail_price
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      values={variation.special_price}
+                                      name={`variation.[${index}].special_price`}
+                                      type="number"
+                                      label=" Price"
+                                      onChange={handleChange}
+                                      onBlue={handleBlur}
+                                      isInvalid={
+                                        touched?.variations?.[index]
+                                          ?.special_price &&
+                                        errors?.variations?.[index]
+                                          ?.special_price
+                                      }
+                                      errorMessage={
+                                        touched?.variations?.[index]
+                                          ?.manufacture_price &&
+                                        errors?.variations?.[index]
+                                          ?.special_price
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      type="number"
+                                      label="Tax"
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      type="number"
+                                      label="Price"
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      size="sm"
+                                      className="rounded"
+                                      type="number"
+                                      label="Price"
+                                    />
+                                  </TableCell>
                                 </TableRow>
                               ))}
                           </TableBody>
@@ -1042,7 +1209,7 @@ const AddProduct = () => {
                                   GetAddresses.filter(
                                     (item) =>
                                       item.is_pickup_address &&
-                                      item.seller_id === profile._id
+                                      item.seller_id === profile?._id
                                   ).map((address) => (
                                     <ListboxItem
                                       textValue={address.name}
@@ -1215,54 +1382,6 @@ const AddProduct = () => {
                 </Tabs>
               </div>
             </form>
-          </div>
-        </div>
-      </div>
-      <div
-        className="modal modal-blur fade "
-        id="ShowAttributeModal"
-        tabIndex="-1"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          <div className="modal-content">
-            <div className="modal-body">
-              <table className="table table-vcenter card-table table-striped">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Values</th>
-                  </tr>
-                </thead>
-                {/* <tbody>
-                  {values?.attributes &&
-                    values?.attributes?.map((Attribute) => {
-                      return (
-                        <>
-                          <tr>
-                            <td className="py-0">
-                              {Attribute?.attribute_name}
-                            </td>
-                            <td className="text-secondary py-0">
-                              {Attribute?.values?.map((value) => {
-                                return (
-                                  <span
-                                    className=" m-2 ms-0 badge badge-danger rounded "
-                                    key={value?._id}
-                                  >
-                                    {value?.name}
-                                  </span>
-                                );
-                              })}
-                            </td>
-                          </tr>
-                        </>
-                      );
-                    })}
-                </tbody> */}
-              </table>
-            </div>
           </div>
         </div>
       </div>

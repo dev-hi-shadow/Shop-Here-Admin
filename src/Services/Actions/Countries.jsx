@@ -9,7 +9,6 @@ export const GetCountriesAction = () => async (dispatch) => {
       `https://restcountries.com/v3.1/all`,
       config
     );
-     console.log(" data", data)
      dispatch({ type: "COUNTRIES_GET_SUCCESS", payload: data });
   } catch (error) {
     toast.error(`Countries Fetching issue.... `, {

@@ -85,7 +85,6 @@ export const EditAddressesAction = (AddressesData) => async (dispatch) => {
 };
 
 export const DeleteAddressesAction = (AddressesData) => async (dispatch) => {
-  console.log(" AddressesData", AddressesData);
   let toast_id;
 
   try {
