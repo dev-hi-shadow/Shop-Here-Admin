@@ -133,8 +133,7 @@ export const EditAttributeAction = (AttributeData) => async (dispatch) => {
     dispatch({ type: "ATTRIBUTE_EDIT_SUCCESS", payload: data });
     dispatch(GetAttributeAction());
   } catch (error) {
-    console.log(" error", error);
-    toast.update(toast_id, {
+     toast.update(toast_id, {
       type: "error",
       icon: <IconAlertCircleFilled />,
       render: error?.response?.data?.message,

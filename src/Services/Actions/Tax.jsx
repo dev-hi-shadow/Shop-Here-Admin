@@ -7,37 +7,32 @@ import {
   IconLoader3,
 } from "@tabler/icons-react";
 
-export const GetBrandAction = () => async (dispatch) => {
+export const GetTaxAction = () => async (dispatch) => {
   try {
-    const { data } = await axios.get(`${baseUrl}/brand`, config);
-    dispatch({ type: "BRAND_GET_SUCCESS", payload: data });
+    const { data } = await axios.get(`${baseUrl}/tax`, config);
+    dispatch({ type: "TAX_GET_SUCCESS", payload: data });
   } catch (error) {
     dispatch({
-      type: "BRAND_GET_FAILED",
+      type: "TAX_GET_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const CreateBrandAction = (BrandData) => async (dispatch) => {
+export const CreateTaxAction = (TaxData) => async (dispatch) => {
   let toast_id;
   try {
-    toast_id = toast.info(`Brand Creating.... `, { icon: <IconLoader3 /> });
-
-    const { data } = await axios.post(
-      `${baseUrl}/brand/create`,
-      BrandData,
-      config
-    );
+    toast_id = toast.info(`Tax Creating.... `, { icon: <IconLoader3 /> });
+    const { data } = await axios.post(`${baseUrl}/tax/create`, TaxData, config);
     toast_id = toast.update(toast_id, {
       type: "success",
 
       icon: <IconChecks />,
       render: data.message,
     });
-    dispatch({ type: "BRAND_CREATE_SUCCESS", payload: data });
+    dispatch({ type: "TAX_CREATE_SUCCESS", payload: data });
 
-    dispatch(GetBrandAction());
+    dispatch(GetTaxAction());
   } catch (error) {
     toast.update(toast_id, {
       type: error,
@@ -45,19 +40,19 @@ export const CreateBrandAction = (BrandData) => async (dispatch) => {
       render: error?.response?.data?.error,
     });
     dispatch({
-      type: "BRAND_CREATE_FAILED",
+      type: "TAX_CREATE_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const EditBrandAction = (BrandData) => async (dispatch) => {
+export const EditTaxAction = (TaxData) => async (dispatch) => {
   let toast_id;
   try {
-    toast_id = toast.info(`Brand Updating.... `, { icon: <IconLoader3 /> });
+    toast_id = toast.info(`Tax Updating.... `, { icon: <IconLoader3 /> });
     const { data } = await axios.put(
-      `${baseUrl}/brand/update/${BrandData?._id}`,
-      BrandData,
+      `${baseUrl}/tax/update/${TaxData?._id}`,
+      TaxData,
       config
     );
     toast.update(toast_id, {
@@ -65,8 +60,8 @@ export const EditBrandAction = (BrandData) => async (dispatch) => {
       icon: <IconChecks />,
       render: data?.message,
     });
-    dispatch({ type: "BRAND_EDIT_SUCCESS", payload: data });
-    dispatch(GetBrandAction());
+    dispatch({ type: "TAX_EDIT_SUCCESS", payload: data });
+    dispatch(GetTaxAction());
   } catch (error) {
     toast.update(toast_id, {
       type: "error",
@@ -74,25 +69,25 @@ export const EditBrandAction = (BrandData) => async (dispatch) => {
       render: error?.response?.data?.message,
     });
     dispatch({
-      type: "BRAND_EDIT_FAILED",
+      type: "TAX_EDIT_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const DeleteBrandAction = (BrandData) => async (dispatch) => {
-  console.log(" BrandData", BrandData);
+export const DeleteTaxAction = (TaxData) => async (dispatch) => {
+  console.log(" TaxData", TaxData);
   let toast_id;
 
   try {
     toast_id = toast.info(
-      `Brand ${BrandData?.is_deleted ? "Deleting" : "Recovering"}.... `,
+      `Tax ${TaxData?.is_deleted ? "Deleting" : "Recovering"}.... `,
       { icon: <IconLoader3 /> }
     );
 
     const { data } = await axios.put(
-      `${baseUrl}/brand/delete-recover/${BrandData?._id}`,
-      { is_deleted: BrandData?.is_deleted },
+      `${baseUrl}/tax/delete-recover/${TaxData?._id}`,
+      { is_deleted: TaxData?.is_deleted },
       config
     );
     toast.update(toast_id, {
@@ -100,8 +95,8 @@ export const DeleteBrandAction = (BrandData) => async (dispatch) => {
       icon: <IconChecks />,
       render: data?.message,
     });
-    dispatch({ type: "BRAND_DELETE_RECOVER_SUCCESS", payload: data });
-    dispatch(GetBrandAction());
+    dispatch({ type: "TAX_DELETE_RECOVER_SUCCESS", payload: data });
+    dispatch(GetTaxAction());
   } catch (error) {
     toast.update(toast_id, {
       type: "error",
@@ -109,7 +104,7 @@ export const DeleteBrandAction = (BrandData) => async (dispatch) => {
       render: error?.response?.data?.error,
     });
     dispatch({
-      type: "BRAND_DELETE_RECOVER_FAILED",
+      type: "TAX_DELETE_RECOVER_FAILED",
       payload: error?.response?.data?.error,
     });
   }

@@ -1,18 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { SubCategoryInitialState } from "../Configurations/InitialStates";
-import { SubCategorySchema } from "../Configurations/YupSchema";
+import { TaxInitialState } from "../Configurations/InitialStates";
+import { TaxSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
 import {
-  CreateSubCategoryAction,
-  DeleteSubCategoryAction,
-  EditSubCategoryAction,
-  GetSubCategoryAction,
-} from "../../Services/Actions/SubCategory";
+  CreateTaxAction,
+  DeleteTaxAction,
+  EditTaxAction,
+  GetTaxAction,
+} from "../../Services/Actions/Tax";
 import moment from "moment/moment";
 import {
-  Autocomplete,
-  AutocompleteItem,
   Button,
   Input,
   Modal,
@@ -29,64 +27,49 @@ import {
 import { Link } from "react-router-dom";
 import Toastify from "../Components/Toastify";
 import { TableBody, TableHeader } from "@react-stately/table";
-import { GetCategoryAction } from "../../Services/Actions/Category";
 
-const SubCategory = () => {
+const Tax = () => {
   const dispatch = useDispatch();
-  const {
-    DeleteRecoverSubCategory,
-    GetSubCategory,
-    EditSubCategory,
-    AddSubCategory,
-  } = useSelector((state) => state.subcategoryState);
-  const { GetCategory } = useSelector((state) => state.categoryState);
+  const { DeleteRecoverTax, GetTax, EditTax, AddTax } = useSelector(
+    (state) => state.taxState
+  );
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    dispatch(GetSubCategoryAction());
-    dispatch(GetCategoryAction());
+    dispatch(GetTaxAction());
   }, [dispatch]);
 
-  const handleSubCategory = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditSubCategoryAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateSubCategoryAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteSubCategoryAction(values));
-    }
-  };
   const {
     values,
+    touched,
     errors,
     handleChange,
     handleSubmit,
     handleBlur,
     resetForm,
-    setFieldValue,
-    setFieldTouched,
     setValues,
   } = useFormik({
-    initialValues: SubCategoryInitialState,
-    validationSchema: SubCategorySchema,
-    onSubmit: handleSubCategory,
+    initialValues: TaxInitialState,
+    validationSchema: TaxSchema,
+    onSubmit: () => handleTax(values),
   });
-
+  const handleTax = (values = values) => {
+    if (ModalState === "Update") {
+      dispatch(EditTaxAction(values));
+    } else if (ModalState === "Create") {
+      dispatch(CreateTaxAction(values));
+    } else if (["Delete", "Deactivated"].includes(ModalState)) {
+      dispatch(DeleteTaxAction(values));
+    }
+  };
   useEffect(() => {
-    if (DeleteRecoverSubCategory || EditSubCategory || AddSubCategory) {
+    if (DeleteRecoverTax || EditTax || AddTax) {
       onClose();
       resetForm();
     }
-  }, [
-    AddSubCategory,
-    DeleteRecoverSubCategory,
-    EditSubCategory,
-    onClose,
-    resetForm,
-  ]);
+  }, [AddTax, DeleteRecoverTax, EditTax, onClose, resetForm]);
 
- 
   return (
     <>
       <Toastify />
@@ -96,7 +79,7 @@ const SubCategory = () => {
             <div className="card">
               <div className="card-body">
                 <div className="d-flex justify-content-between ">
-                  <h6 className="card-title">Total {} Sub-Categories</h6>
+                  <h6 className="card-title">Total {} Categories</h6>
                   <div className="d-flex gap-3">
                     <Link
                       className="text-red-600  text-decoration-none"
@@ -104,7 +87,7 @@ const SubCategory = () => {
                         onOpen(), setModalState("Deactivated");
                       }}
                     >
-                      Deleted Sub-Categories
+                      Deleted Taxs
                     </Link>
                     <Link
                       className="text-decoration-none"
@@ -112,7 +95,7 @@ const SubCategory = () => {
                         setModalState("Create"), onOpen();
                       }}
                     >
-                      Create Sub-Category
+                      Create Tax
                     </Link>
                   </div>
                 </div>
@@ -123,21 +106,20 @@ const SubCategory = () => {
                   >
                     <TableHeader>
                       <TableColumn>#</TableColumn>
-                      <TableColumn>SubCategory</TableColumn>
+                      <TableColumn>Tax</TableColumn>
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetSubCategory) &&
-                      GetSubCategory?.length > 0
-                        ? GetSubCategory?.map((SubCategory, index) => {
+                      {Array.isArray(GetTax) && GetTax?.length > 0
+                        ? GetTax?.map((Tax, index) => {
                             return (
-                              SubCategory?.is_deleted === false && (
-                                <TableRow key={SubCategory._id}>
+                              Tax?.is_deleted === false && (
+                                <TableRow key={Tax._id}>
                                   <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{SubCategory.name}</TableCell>
+                                  <TableCell>{Tax.name}</TableCell>
                                   <TableCell>
-                                    {moment(SubCategory.createdAt).format(
+                                    {moment(Tax.createdAt).format(
                                       "MMMM DD, YYYY"
                                     )}
                                   </TableCell>
@@ -146,11 +128,7 @@ const SubCategory = () => {
                                       onClick={() => {
                                         onOpen(),
                                           setModalState("Update"),
-                                          setValues({
-                                            ...SubCategory,
-                                            category_id:
-                                              SubCategory.category_id._id,
-                                          });
+                                          setValues(Tax);
                                       }}
                                       className="fa-solid fa-pen me-3 text-warning  mr-2 "
                                       style={{ fontSize: "20px" }}
@@ -160,9 +138,7 @@ const SubCategory = () => {
                                         onOpen(),
                                           setModalState("Delete"),
                                           setValues({
-                                            ...SubCategory,
-                                            category_id:
-                                              SubCategory.category_id._id,
+                                            ...Tax,
                                             is_deleted: true,
                                           });
                                       }}
@@ -186,7 +162,7 @@ const SubCategory = () => {
 
       <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
         <ModalContent>
-          <ModalHeader className="p-3">{ModalState} SubCategory</ModalHeader>
+          <ModalHeader className="p-3">{ModalState} Tax</ModalHeader>
           <form onSubmit={handleSubmit}>
             {["Create", "Update"].includes(ModalState) && (
               <>
@@ -199,25 +175,18 @@ const SubCategory = () => {
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    errorMessage={errors.name}
+                    errorMessage={touched.name && errors.name}
                   />
-                  <Autocomplete
-                    label="Parent Category"
-                    placeholder="Search an category"
-                    name="category_id"
-                    selectedKey={values.category_id}
-                    onBlur={(e) => setFieldTouched("category_id", e)}
-                    onSelectionChange={(e) => setFieldValue("category_id", e)}
-                  >
-                    {Array.isArray(GetCategory) &&
-                      GetCategory.filter(
-                        (category) => category.is_deleted === false
-                      ).map((item) => (
-                        <AutocompleteItem key={item._id} value={item._id}>
-                          {item.name}
-                        </AutocompleteItem>
-                      ))}
-                  </Autocomplete>
+                  <Input
+                    type="text"
+                    value={values.value}
+                    variant="faded"
+                    label="Tax Vaue"
+                    name="value"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    errorMessage={touched.value && errors.value}
+                  />
                 </ModalBody>
               </>
             )}
@@ -239,19 +208,17 @@ const SubCategory = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetSubCategory?.filter(
-                        (subcategory) => subcategory.is_deleted
-                      ).map((subcategory) => {
+                      {GetTax?.filter((tax) => tax.is_deleted).map((tax) => {
                         return (
-                          <TableRow key={subcategory._id}>
-                            <TableCell>{subcategory.name}</TableCell>
+                          <TableRow key={tax._id}>
+                            <TableCell>{tax.name}</TableCell>
                             <TableCell className="text-center">
                               <Button
                                 color="success"
                                 variant="light"
                                 onClick={async () => {
-                                  handleSubCategory({
-                                    ...subcategory,
+                                  handleTax({
+                                    ...tax,
                                     is_deleted: false,
                                   });
                                 }}
@@ -289,4 +256,4 @@ const SubCategory = () => {
   );
 };
 
-export default SubCategory;
+export default Tax;

@@ -5,6 +5,7 @@ import { SignUpSchema } from "../Configurations/YupSchema";
 import { useDispatch, useSelector } from "react-redux";
 import { SignUpAction } from "../../Services/Actions/Authentication";
 import { useEffect } from "react";
+import { Button, Input } from "@nextui-org/react";
 
 const SignUp = () => {
   const Navigate = useNavigate();
@@ -176,118 +177,87 @@ const SignUp = () => {
                   </div>
                   <div className="card-body">
                     <form role="form text-left" onSubmit={handleSubmit}>
-                      <div className="mb-3">
-                        <input
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.name}
-                          name="name"
-                          type="text"
-                          className={`form-control ${
-                            touched.name && errors.name && "is-invalid"
-                          }`}
-                          placeholder="Name"
-                          aria-label="Name"
-                          aria-describedby="email-addon"
-                        />
-                        {touched.name && errors.name && (
-                          <p className="h6 text-danger mt-1"> {errors.name} </p>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <input
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.email}
-                          name="email"
-                          type="email"
-                          className={`form-control ${
-                            touched.email && errors.email && "is-invalid"
-                          }`}
-                          placeholder="Email"
-                          aria-label="Email"
-                          aria-describedby="email-addon"
-                        />
-                        {touched.email && errors.email && (
-                          <p className="h6 text-danger mt-1">
-                            {" "}
-                            {errors.email}{" "}
-                          </p>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <input
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.phone}
-                          name="phone"
-                          type="number"
-                          className={`form-control ${
-                            touched.phone && errors.phone && "is-invalid"
-                          }`}
-                          placeholder="Phone Number"
-                          aria-label="phone"
-                          aria-describedby="phone-addon"
-                        />
-                        {touched.phone && errors.phone && (
-                          <p className="h6 text-danger mt-1">
-                            {" "}
-                            {errors.phone}{" "}
-                          </p>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <input
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.password}
-                          name="password"
-                          type="password"
-                          className={`form-control ${
-                            touched.password && errors.password && "is-invalid"
-                          }`}
-                          placeholder="Password"
-                          aria-label="Password"
-                          aria-describedby="password-addon"
-                        />
-                        {touched.password && errors.password && (
-                          <p className="h6 text-danger mt-1">
-                            {" "}
-                            {errors.password}{" "}
-                          </p>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <input
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.confirmPassword}
-                          name="confirmPassword"
-                          type="password"
-                          className={`form-control ${
-                            touched.confirmPassword &&
-                            errors.confirmPassword &&
-                            "is-invalid"
-                          }`}
-                          placeholder="Confirm Password"
-                          aria-label="Password"
-                          aria-describedby="password-addon"
-                        />
-                        {touched.confirmPassword && errors.confirmPassword && (
-                          <p className="h6 text-danger mt-1">
-                            {" "}
-                            {errors.confirmPassword}{" "}
-                          </p>
-                        )}
-                      </div>
+                      <Input
+                        className="mb-3"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.name}
+                        variant="bordered"
+                        name="name"
+                        type="text"
+                        isRequired
+                        placeholder="Name"
+                        isInvalid={errors.name && touched.name}
+                        errorMessage={touched.name && errors.name}
+                      />
+                      <Input
+                        className="mb-3"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.email}
+                        name="email"
+                        variant="bordered"
+                        type="email"
+                        isRequired
+                        placeholder="email"
+                        isInvalid={errors.email && touched.email}
+                        errorMessage={touched.email && errors.email}
+                      />
+                      <Input
+                        className="mb-3"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.phone}
+                        name="phone"
+                        variant="bordered"
+                        type="number"
+                        isRequired
+                        placeholder="Phone"
+                        isInvalid={errors.phone && touched.phone}
+                        errorMessage={touched.phone && errors.phone}
+                      />
+                      <Input
+                        className="mb-3"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.password}
+                        name="password"
+                        variant="bordered"
+                        type="password"
+                        isRequired
+                        placeholder="Password"
+                        isInvalid={errors.password && touched.password}
+                        errorMessage={touched.password && errors.password}
+                      />
+                      <Input
+                        className="mb-3"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.confirmPassword}
+                        name="confirmPassword"
+                        variant="bordered"
+                        type="password"
+                        isRequired
+                        placeholder="Confirm Password"
+                        isInvalid={
+                          errors.confirmPassword && touched.confirmPassword
+                        }
+                        errorMessage={
+                          touched.confirmPassword && errors.confirmPassword
+                        }
+                      />
+
+                     
 
                       <div className="text-center">
-                        <button
+                      <Button
                           type="submit"
-                          className="btn bg-gradient-dark w-100 my-4 mb-2"
+                          value="submit"
+                          variant="faded"
+                          color="primary"
                         >
-                          Sign up
-                        </button>
+                          Sign in
+                        </Button>
                       </div>
                       <p className="text-sm mt-3 mb-0">
                         Already have an account?{" "}

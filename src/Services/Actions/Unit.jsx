@@ -67,7 +67,6 @@ export const EditUnitAction = (UnitData) => async (dispatch) => {
     dispatch({ type: "UNIT_EDIT_SUCCESS", payload: data });
     dispatch(GetUnitAction());
   } catch (error) {
-    console.log(" error", error);
     toast.update(toast_id, {
       type: "error",
       icon: <IconAlertCircleFilled />,

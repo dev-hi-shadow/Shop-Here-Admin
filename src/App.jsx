@@ -8,7 +8,7 @@ import {
   disable_sidebar,
   disable_subbar,
 } from "./assets/Configurations/Config.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProfileAction } from "./Services/Actions/Authentication.jsx";
 import Category from "./assets/Pages/Category.jsx";
@@ -21,6 +21,7 @@ import Products from "./assets/Pages/Product/Products.jsx";
 import Sidebar from "./assets/Main/Sidebar.jsx";
 import ManagementSection from "./assets/Main/ManagementSection.jsx";
 import Toastify from "./assets/Components/Toastify.jsx";
+import Tax from "./assets/Pages/Tax.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -32,11 +33,11 @@ function App() {
     setActivePage(Location?.pathname);
   }, [Location?.pathname]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(ProfileAction());
   }, [dispatch]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (ActivePage !== "/sign-in" && ActivePage !== "/sign-up") {
       if (authentication.isAuthenticated === false) {
         Navigate("/sign-in");
@@ -58,6 +59,7 @@ function App() {
         <Route path="/sub-category" element={<SubCategory />} />
         <Route path="/attribute" element={<Attribute />} />
         <Route path="/unit" element={<Unit />} />
+        <Route path="/tax" element={<Tax />} />
         <Route path="/role" element={<Role />} />
         <Route path="/product-add" element={<AddProduct />} />d
         <Route path="/product-list" element={<Products />} />d

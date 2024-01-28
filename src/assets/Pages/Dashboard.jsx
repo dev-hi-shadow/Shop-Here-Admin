@@ -1,261 +1,94 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Toastify from "../Components/Toastify";
+import { Card, CardBody } from "@nextui-org/react";
 const Dashboard = () => {
+  const Navigate = useNavigate();
   return (
     <>
-    <Toastify />
+      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
             <div className="row row-deck row-cards">
-              <div className="col-sm-6 col-lg-3">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center">
-                      <div className="subheader">Sales</div>
-                      <div className="ms-auto lh-1">
-                        <div className="dropdown">
-                          <Link
-                            className="dropdown-toggle text-muted"
-                            to="#"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Last 7 days
-                          </Link>
-                          <div className="dropdown-menu dropdown-menu-end">
-                            <Link className="dropdown-item active" to="#">
+              {["sales", "product-list", "users", "feedbacks"].map((item) => (
+                <div key={item} className="col-sm-6 col-lg-3">
+                  <Card className="w-full  card-link-pop">
+                    <CardBody onClick={() => Navigate(`/${item}`)}>
+                      <div className="d-flex align-items-center">
+                        <div className="subheader">{item} </div>
+                        <div className="ms-auto lh-1">
+                          <div className="dropdown">
+                            <Link
+                              className="dropdown-toggle text-muted"
+                              to="#"
+                              data-bs-toggle="dropdown"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                            >
                               Last 7 days
                             </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 30 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 3 months
-                            </Link>
+                            <div className="dropdown-menu dropdown-menu-end">
+                              <Link className="dropdown-item active" to="#">
+                                Last 7 days
+                              </Link>
+                              <Link className="dropdown-item" to="#">
+                                Last 30 days
+                              </Link>
+                              <Link className="dropdown-item" to="#">
+                                Last 3 months
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="h1 mb-3">75%</div>
-                    <div className="d-flex mb-2">
-                      <div>Conversion rate</div>
-                      <div className="ms-auto">
-                        <span className="text-green d-inline-flex align-items-center lh-1">
-                          7%{" "}
-                          {/* Download SVG icon from http://tabler-icons.io/i/trending-up */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon ms-1"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M3 17l6 -6l4 4l8 -8" />
-                            <path d="M14 7l7 0l0 7" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="progress progress-sm">
-                      <div
-                        className="progress-bar bg-primary"
-                        style={{ width: "75%" }}
-                        role="progressbar"
-                        aria-valuenow="75"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-label="75% Complete"
-                      >
-                        <span className="visually-hidden">75% Complete</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center">
-                      <div className="subheader">Revenue</div>
-                      <div className="ms-auto lh-1">
-                        <div className="dropdown">
-                          <Link
-                            className="dropdown-toggle text-muted"
-                            to="#"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Last 7 days
-                          </Link>
-                          <div className="dropdown-menu dropdown-menu-end">
-                            <Link className="dropdown-item active" to="#">
-                              Last 7 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 30 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 3 months
-                            </Link>
-                          </div>
+                      <div className="h1 mb-3">75%</div>
+                      <div className="d-flex mb-2">
+                        <div>{(item.length * 4).toFixed(2)}%</div>
+                        <div className="ms-auto">
+                          <span className="text-green d-inline-flex align-items-center lh-1">
+                            7%{" "}
+                            {/* Download SVG icon from http://tabler-icons.io/i/trending-up */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon ms-1"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M3 17l6 -6l4 4l8 -8" />
+                              <path d="M14 7l7 0l0 7" />
+                            </svg>
+                          </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="d-flex align-items-baseline">
-                      <div className="h1 mb-0 me-2">$4,300</div>
-                      <div className="me-auto">
-                        <span className="text-green d-inline-flex align-items-center lh-1">
-                          8%{" "}
-                          {/* Download SVG icon from http://tabler-icons.io/i/trending-up */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon ms-1"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M3 17l6 -6l4 4l8 -8" />
-                            <path d="M14 7l7 0l0 7" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="chart-revenue-bg" className="chart-sm"></div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center">
-                      <div className="subheader">New clients</div>
-                      <div className="ms-auto lh-1">
-                        <div className="dropdown">
-                          <Link
-                            className="dropdown-toggle text-muted"
-                            to="#"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Last 7 days
-                          </Link>
-                          <div className="dropdown-menu dropdown-menu-end">
-                            <Link className="dropdown-item active" to="#">
-                              Last 7 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 30 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 3 months
-                            </Link>
-                          </div>
+                      <div className="progress progress-sm">
+                        <div
+                          className="progress-bar bg-primary"
+                          style={{ width: `${item.length * 4}%` }}
+                          role="progressbar"
+                          aria-valuenow="75"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-label="75% Complete"
+                        >
+                          <span className="visually-hidden">75% Complete</span>
                         </div>
                       </div>
-                    </div>
-                    <div className="d-flex align-items-baseline">
-                      <div className="h1 mb-3 me-2">6,782</div>
-                      <div className="me-auto">
-                        <span className="text-yellow d-inline-flex align-items-center lh-1">
-                          0%{" "}
-                          {/* Download SVG icon from http://tabler-icons.io/i/minus */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon ms-1"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M5 12l14 0" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    <div id="chart-new-clients" className="chart-sm"></div>
-                  </div>
+                    </CardBody>
+                  </Card>
                 </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center">
-                      <div className="subheader">Active users</div>
-                      <div className="ms-auto lh-1">
-                        <div className="dropdown">
-                          <Link
-                            className="dropdown-toggle text-muted"
-                            to="#"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Last 7 days
-                          </Link>
-                          <div className="dropdown-menu dropdown-menu-end">
-                            <Link className="dropdown-item active" to="#">
-                              Last 7 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 30 days
-                            </Link>
-                            <Link className="dropdown-item" to="#">
-                              Last 3 months
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-baseline">
-                      <div className="h1 mb-3 me-2">2,986</div>
-                      <div className="me-auto">
-                        <span className="text-green d-inline-flex align-items-center lh-1">
-                          4%{" "}
-                          {/* Download SVG icon from http://tabler-icons.io/i/trending-up */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon ms-1"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M3 17l6 -6l4 4l8 -8" />
-                            <path d="M14 7l7 0l0 7" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    <div id="chart-active-users" className="chart-sm"></div>
-                  </div>
-                </div>
-              </div>
+              ))}
+
               <div className="col-12">
                 <div className="row row-cards">
                   <div className="col-sm-6 col-lg-3">

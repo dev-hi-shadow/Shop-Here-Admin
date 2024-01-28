@@ -37,13 +37,17 @@ export const UnitInitialState = {
   name: null,
   unit_code: null,
 };
+export const TaxInitialState = {
+  name: null,
+  value: null,
+};
 
 export const ProductInitialState = {
   seller_id: null,
   created_by: null,
   pickup_locations: [],
   description: null,
-  type : null,
+  type: null,
   name: null,
   extra_description: null,
   product_type: null,
@@ -53,10 +57,11 @@ export const ProductInitialState = {
   brand_id: null,
   unit_id: null,
   category_id: null,
+  faqs : [],
   subcategory_id: null,
   min_order_quantity: 1,
   max_order_quantity: 100,
-  attributes:[],
+  attributes: [],
   images: [],
   SKU: null,
   freshness: null,
@@ -65,14 +70,16 @@ export const ProductInitialState = {
     is_cancellable: true,
     cancellable_till: null,
   },
-  is_tax_included: false,
-  tax_id: null,
+  tax_details: {
+    is_tax_included: false,
+    tax_id: null,
+  },
   is_cod_allowed: true,
   replaceable: true,
   friendly_url: null,
   meta_title: null,
   meta_description: null,
-  price: null,
+  variations: null,
   warranty_period: null,
   guarantee_period: null,
 };

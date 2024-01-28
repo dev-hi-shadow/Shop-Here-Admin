@@ -7,26 +7,30 @@ import {
   IconLoader3,
 } from "@tabler/icons-react";
 
-export const GetBrandAction = () => async (dispatch) => {
+export const GetAddressesAction = () => async (dispatch) => {
   try {
-    const { data } = await axios.get(`${baseUrl}/brand`, config);
-    dispatch({ type: "BRAND_GET_SUCCESS", payload: data });
+    const { data } = await axios.get(`${baseUrl}/addresses`, config);
+     dispatch({ type: "ADDRESSES_GET_SUCCESS", payload: data });
   } catch (error) {
-    dispatch({
-      type: "BRAND_GET_FAILED",
+    toast.error(
+        
+        `Addresses Fetching Error `, { icon: <IconAlertCircleFilled /> }
+    )
+     dispatch({
+      type: "ADDRESSES_GET_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const CreateBrandAction = (BrandData) => async (dispatch) => {
+export const CreateAddressesAction = (AddressesData) => async (dispatch) => {
   let toast_id;
   try {
-    toast_id = toast.info(`Brand Creating.... `, { icon: <IconLoader3 /> });
+    toast_id = toast.info(`Addresses Creating.... `, { icon: <IconLoader3 /> });
 
     const { data } = await axios.post(
-      `${baseUrl}/brand/create`,
-      BrandData,
+      `${baseUrl}/addresses/create`,
+      AddressesData,
       config
     );
     toast_id = toast.update(toast_id, {
@@ -35,9 +39,9 @@ export const CreateBrandAction = (BrandData) => async (dispatch) => {
       icon: <IconChecks />,
       render: data.message,
     });
-    dispatch({ type: "BRAND_CREATE_SUCCESS", payload: data });
+    dispatch({ type: "ADDRESSES_CREATE_SUCCESS", payload: data });
 
-    dispatch(GetBrandAction());
+    dispatch(GetAddressesAction());
   } catch (error) {
     toast.update(toast_id, {
       type: error,
@@ -45,19 +49,19 @@ export const CreateBrandAction = (BrandData) => async (dispatch) => {
       render: error?.response?.data?.error,
     });
     dispatch({
-      type: "BRAND_CREATE_FAILED",
+      type: "ADDRESSES_CREATE_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const EditBrandAction = (BrandData) => async (dispatch) => {
+export const EditAddressesAction = (AddressesData) => async (dispatch) => {
   let toast_id;
   try {
-    toast_id = toast.info(`Brand Updating.... `, { icon: <IconLoader3 /> });
+    toast_id = toast.info(`Addresses Updating.... `, { icon: <IconLoader3 /> });
     const { data } = await axios.put(
-      `${baseUrl}/brand/update/${BrandData?._id}`,
-      BrandData,
+      `${baseUrl}/addresses/update/${AddressesData?._id}`,
+      AddressesData,
       config
     );
     toast.update(toast_id, {
@@ -65,34 +69,34 @@ export const EditBrandAction = (BrandData) => async (dispatch) => {
       icon: <IconChecks />,
       render: data?.message,
     });
-    dispatch({ type: "BRAND_EDIT_SUCCESS", payload: data });
-    dispatch(GetBrandAction());
+    dispatch({ type: "ADDRESSES_EDIT_SUCCESS", payload: data });
+    dispatch(GetAddressesAction());
   } catch (error) {
-    toast.update(toast_id, {
+     toast.update(toast_id, {
       type: "error",
       icon: <IconAlertCircleFilled />,
       render: error?.response?.data?.message,
     });
     dispatch({
-      type: "BRAND_EDIT_FAILED",
+      type: "ADDRESSES_EDIT_FAILED",
       payload: error?.response?.data?.error,
     });
   }
 };
 
-export const DeleteBrandAction = (BrandData) => async (dispatch) => {
-  console.log(" BrandData", BrandData);
+export const DeleteAddressesAction = (AddressesData) => async (dispatch) => {
+  console.log(" AddressesData", AddressesData);
   let toast_id;
 
   try {
     toast_id = toast.info(
-      `Brand ${BrandData?.is_deleted ? "Deleting" : "Recovering"}.... `,
+      `Addresses ${AddressesData?.is_deleted ? "Deleting" : "Recovering"}.... `,
       { icon: <IconLoader3 /> }
     );
 
     const { data } = await axios.put(
-      `${baseUrl}/brand/delete-recover/${BrandData?._id}`,
-      { is_deleted: BrandData?.is_deleted },
+      `${baseUrl}/addresses/delete-recover/${AddressesData?._id}`,
+      { is_deleted: AddressesData?.is_deleted },
       config
     );
     toast.update(toast_id, {
@@ -100,8 +104,8 @@ export const DeleteBrandAction = (BrandData) => async (dispatch) => {
       icon: <IconChecks />,
       render: data?.message,
     });
-    dispatch({ type: "BRAND_DELETE_RECOVER_SUCCESS", payload: data });
-    dispatch(GetBrandAction());
+    dispatch({ type: "ADDRESSES_DELETE_RECOVER_SUCCESS", payload: data });
+    dispatch(GetAddressesAction());
   } catch (error) {
     toast.update(toast_id, {
       type: "error",
@@ -109,7 +113,7 @@ export const DeleteBrandAction = (BrandData) => async (dispatch) => {
       render: error?.response?.data?.error,
     });
     dispatch({
-      type: "BRAND_DELETE_RECOVER_FAILED",
+      type: "ADDRESSES_DELETE_RECOVER_FAILED",
       payload: error?.response?.data?.error,
     });
   }

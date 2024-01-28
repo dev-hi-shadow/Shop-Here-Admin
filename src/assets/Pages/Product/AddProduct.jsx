@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useFormik } from "formik";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -14,17 +14,43 @@ import { GetAttributeAction } from "../../../Services/Actions/Attribute";
 import { GetProductAction } from "../../../Services/Actions/Product";
 import { Select, SelectItem } from "@nextui-org/select";
 import {
+  Autocomplete,
+  AutocompleteItem,
+  Avatar,
   Card,
   CardBody,
+  Checkbox,
   Chip,
+  Divider,
   Input,
+  Link,
   Listbox,
   ListboxItem,
   ScrollShadow,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
   Tabs,
 } from "@nextui-org/react";
-import { CustomFind } from "../../Configurations/Config";
+import { CustomFind, ORDER_STATUSES } from "../../Configurations/Config";
+import { GetTaxAction } from "../../../Services/Actions/Tax";
+import Toastify from "../../Components/Toastify";
+import { GetCountriesAction } from "../../../Services/Actions/Countries";
+import {
+  IconAdjustmentsHorizontal,
+  IconFileInfo,
+  IconServerCog,
+  IconTruck,
+  IconCurrencyDollar,
+  IconSettingsCog,
+  IconSend,
+  IconHelpHexagon,
+} from "@tabler/icons-react";
+import { GetAddressesAction } from "../../../Services/Actions/Addresses";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -33,6 +59,10 @@ const AddProduct = () => {
   const { GetSubCategory } = useSelector((state) => state.subcategoryState);
   const { GetAttribute } = useSelector((state) => state.attributeState);
   const { GetUnit } = useSelector((state) => state.unitState);
+  const { GetTax } = useSelector((state) => state.taxState);
+  const { GetCountries } = useSelector((state) => state.countryState);
+  const { profile } = useSelector((state) => state.authentication);
+  const { GetAddresses } = useSelector((state) => state.addressesState);
   const { DeleteRecoverProduct, EditProduct, AddProduct } = useSelector(
     (state) => state.productState
   );
@@ -40,22 +70,27 @@ const AddProduct = () => {
   const [VariableAttributeCategory, setVariableAttributeCategory] =
     useState(null);
 
-  const handleProduct = (values) => {
+  const handleProduct = () => {
+    console.log("PAYLOAD", values);
     //  dispatch(CreateProductAction(values));
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(GetBrandAction());
+    dispatch(GetAddressesAction());
+    dispatch(GetCountriesAction());
     dispatch(GetCategoryAction());
     dispatch(GetSubCategoryAction());
     dispatch(GetUnitAction());
     dispatch(GetAttributeAction());
     dispatch(GetProductAction());
+    dispatch(GetTaxAction());
   }, [dispatch]);
 
   const {
     values,
     errors,
+    setValues,
     touched,
     handleChange,
     handleSubmit,
@@ -63,10 +98,11 @@ const AddProduct = () => {
     resetForm,
     setFieldValue,
   } = useFormik({
-    initialValues: { ...ProductInitialState },
+    initialValues: ProductInitialState,
     validationSchema: ProductSchema,
     onSubmit: (values) => handleProduct(values),
   });
+
   useEffect(() => {
     if (DeleteRecoverProduct || EditProduct || AddProduct) {
       resetForm();
@@ -89,8 +125,8 @@ const AddProduct = () => {
     if (type === "deleteAttribute") {
       attribute = Object.keys(UpdateArray[index])[0];
       let UpdateValue = UpdateArray[index][attribute];
-       const valueindex = UpdateValue.findIndex((item) => {
-        return item === selectedItems.join('').toString();
+      const valueindex = UpdateValue.findIndex((item) => {
+        return item === selectedItems.join("").toString();
       });
       UpdateValue.splice(valueindex, 1);
       selectedItems = UpdateValue;
@@ -105,44 +141,58 @@ const AddProduct = () => {
         UpdateArray[index] = { [attribute]: selectedItems };
       }
     }
-    setFieldValue(`attributes`, UpdateArray);
+    setFieldValue(`attributes`, [...UpdateArray]);
   };
 
   useEffect(() => {
-    const generateCombinations = (arr, i, result, current) => {
-      if (i === arr.length) {
-        result.push([...current]);
+    function generateValueCombinations(
+      attributes,
+      index = 0,
+      currentCombination = [],
+      allCombinations = []
+    ) {
+      if (index === attributes.length) {
+        // Create the combination object with additional fields
+        const combinationObject = {
+          attribute_ids: currentCombination.map((item) => item.value_id),
+          manufacture_price: null,
+          retail_price: null,
+          special_price: null,
+        };
+        allCombinations.push(combinationObject);
         return;
       }
-      const attributeId = Object.keys(arr[i])[0];
-      const attributeValues = arr[i][attributeId];
 
-      for (const valueId of attributeValues) {
-        current.push({ attribute_id: attributeId, value_id: valueId });
-        generateCombinations(arr, i + 1, result, current);
-        current.pop();
-      }
-    };
+      const attributeId = Object.keys(attributes[index])[0];
+      const attributeValues = attributes[index][attributeId];
 
-    const combinations = [];
-    if (values?.attributes?.length > 0) {
-      generateCombinations(values?.attributes, 0, combinations, []);
+      attributeValues.forEach((valueId) => {
+        currentCombination.push({
+          attribute_id: attributeId,
+          value_id: valueId,
+        });
+        generateValueCombinations(
+          attributes,
+          index + 1,
+          currentCombination,
+          allCombinations
+        );
+        currentCombination.pop();
+      });
+
+      return index === 0 ? allCombinations : undefined;
     }
 
-    const Combinations = combinations.map((combination) => {
-      return {
-        attribute_ids: combination.map(({ attribute_id }) => attribute_id),
-        manufacture_price: null,
-        retail_price: null,
-        special_price: null,
-      };
-    });
+    if (values.attributes && values.attributes.length >= 0) {
+      const newCombinations = generateValueCombinations(values.attributes);
+      setFieldValue("variations", newCombinations);
+    }
+  }, [values.attributes, setFieldValue]);
 
-    setFieldValue("variation", Combinations);
-  }, [setFieldValue, values?.attributes]);
-
+ 
   return (
     <>
+      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
@@ -151,8 +201,13 @@ const AddProduct = () => {
                 <Tabs selectedKey={ActiveTab} onSelectionChange={setActiveTab}>
                   <Tab
                     key="Information"
-                    title="Information"
-                    className="w-full max-h-full mx-2 py-1 "
+                    title={
+                      <div className="flex items-center space-x-1">
+                        <IconFileInfo />
+                        <span>Information</span>
+                      </div>
+                    }
+                    className="w-full max-h-full mx-1 p-2"
                   >
                     <Card className="h-full">
                       <CardBody>
@@ -386,8 +441,13 @@ const AddProduct = () => {
                   </Tab>
                   <Tab
                     key="Association"
-                    title="Association "
-                    className="w-full max-h-full mx-2 py-1"
+                    title={
+                      <div className="flex items-center space-x-1">
+                        <IconSettingsCog />
+                        <span>Association</span>
+                      </div>
+                    }
+                    className="w-full max-h-full mx-1 p-2"
                   >
                     <Card className="h-full">
                       <CardBody>
@@ -520,51 +580,260 @@ const AddProduct = () => {
                               );
                             })}
                         </Select>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <Checkbox
+                              className="max-h-fit  h-fit"
+                              name="tax_details.is_tax_included"
+                              isSelected={values.tax_details.is_tax_included}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            >
+                              Is Tax Included
+                            </Checkbox>
+                          </div>
+                          <div>
+                            <Checkbox
+                              className="max-h-fit  h-fit"
+                              name="cancellable.is_cancellable"
+                              isSelected={values.cancellable.is_cancellable}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            >
+                              Is Cancellable
+                            </Checkbox>
+                          </div>
 
-                        <p className="fs-3">Attributes</p>
+                          <div></div>
+                        </div>
 
-                        {/* <ReactSelect
-                        className="my-3"
-                        onChange={(event) => handleAttributes(event.value)}
-                        value={
-                          SelectedAttribute
-                            ? {
-                                value: SelectedAttribute?._id,
-                                label: SelectedAttribute?.name,
-                              }
-                            : null
-                        }
-                        options={Attributes?.map((attribute) => {
-                          return {
-                            label: attribute?.name,
-                            value: attribute,
-                          };
-                        })}
-                      />
-                      <ReactSelect
-                        className="mb-3"
-                        isMulti
-                        value={SelectedAttributes}
-                        onChange={(selectedOptions) => {
-                          setSelectedAttributes(selectedOptions);
-                        }}
-                        options={AttributeValues?.map((value) => {
-                          return {
-                            label: value?.name,
-                            value: value,
-                          };
-                        })}
-                      /> */}
+                        <div className="grid grid-cols-3 gap-3 my-2">
+                          <Select
+                            isRequired={!values.tax_details.is_tax_included}
+                            isDisabled={values.tax_details.is_tax_included}
+                            className="mb-3"
+                            label="Tax"
+                            color={
+                              touched.tax_details?.tax_id &&
+                              errors.tax_details?.tax_id &&
+                              "danger"
+                            }
+                            name="tax_details?.tax_id"
+                            isInvalid={
+                              touched.tax_details?.tax_id &&
+                              errors.tax_details?.tax_id
+                            }
+                            onBlur={handleBlur}
+                            errorMessage={
+                              touched.tax_details?.tax_id &&
+                              errors.tax_details?.tax_id
+                            }
+                            onChange={handleChange}
+                            selectedKeys={
+                              values.tax_details?.tax_id && [
+                                values.tax_details?.tax_id,
+                              ]
+                            }
+                          >
+                            {Array.isArray(GetTax) &&
+                              GetTax.map((tax) => {
+                                return (
+                                  tax.is_deleted === false && (
+                                    <SelectItem
+                                      key={tax._id}
+                                      value={tax._id}
+                                      textValue={tax.name}
+                                    >
+                                      {tax.name} [{tax.value}]
+                                    </SelectItem>
+                                  )
+                                );
+                              })}
+                          </Select>
+                          <Select
+                            isRequired={values.cancellable.is_cancellable}
+                            isDisabled={
+                              values.cancellable.is_cancellable === false
+                            }
+                            className="mb-3"
+                            label="Till Cancellable Status "
+                            name="cancellable.cancellable_till"
+                            isInvalid={
+                              touched.cancellable?.cancellable_till &&
+                              errors.cancellable?.cancellable_till
+                            }
+                            onBlur={handleBlur}
+                            errorMessage={
+                              touched.cancellable?.cancellable_till &&
+                              errors.cancellable?.cancellable_till
+                            }
+                            onChange={handleChange}
+                            selectedKeys={
+                              values.cancellable?.cancellable_till && [
+                                values.cancellable?.cancellable_till,
+                              ]
+                            }
+                          >
+                            {Object.entries(ORDER_STATUSES).map(
+                              ([key, value]) => (
+                                <SelectItem
+                                  key={key}
+                                  value={value.name}
+                                  textValue={value.name}
+                                >
+                                  {value.name}
+                                </SelectItem>
+                              )
+                            )}
+                          </Select>
+
+                          <div></div>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-1">
+                          <Input
+                            type="number"
+                            label="Warranty [Months]"
+                            name="warranty_period"
+                            onChange={handleChange}
+                            isRequired
+                            onBlur={handleBlur}
+                            isInvalid={
+                              errors.warranty_period && touched.warranty_period
+                            }
+                            errorMessage={
+                              touched.warranty_period && errors.warranty_period
+                            }
+                            value={values.warranty_period}
+                          />
+                          <Input
+                            type="number"
+                            label="Guarantee [Months] "
+                            name="guarantee_period"
+                            onChange={handleChange}
+                            isRequired
+                            onBlur={handleBlur}
+                            isInvalid={
+                              errors.guarantee_period &&
+                              touched.guarantee_period
+                            }
+                            errorMessage={
+                              touched.guarantee_period &&
+                              errors.guarantee_period
+                            }
+                            value={values.guarantee_period}
+                          />
+                          <Input
+                            type="number"
+                            label="Min Order Quantity "
+                            name="min_order_quantity"
+                            onChange={handleChange}
+                            isRequired
+                            onBlur={handleBlur}
+                            isInvalid={
+                              errors.min_order_quantity &&
+                              touched.min_order_quantity
+                            }
+                            errorMessage={
+                              touched.min_order_quantity &&
+                              errors.min_order_quantity
+                            }
+                            value={values.min_order_quantity}
+                          />
+                          <Input
+                            type="number"
+                            label="Max Order Quantity"
+                            name="max_order_quantity"
+                            onChange={handleChange}
+                            isRequired
+                            onBlur={handleBlur}
+                            isInvalid={
+                              errors.max_order_quantity &&
+                              touched.max_order_quantity
+                            }
+                            errorMessage={
+                              touched.max_order_quantity &&
+                              errors.max_order_quantity
+                            }
+                            value={values.max_order_quantity}
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 gap-1">
+                          <Autocomplete
+                            isLoading={!Array.isArray(GetCountries)}
+                            label="Made In"
+                            className="max-w-xs my-3"
+                            name="made_in"
+                            onSelectionChange={(e) =>
+                              setFieldValue("made_in", e)
+                            }
+                            onBlur={handleBlur}
+                            selectedKey={values.made_in}
+                          >
+                            {Array.isArray(GetCountries) &&
+                              GetCountries.map((country) => (
+                                <AutocompleteItem
+                                  key={country.name.common}
+                                  value={country.name.common}
+                                  startContent={
+                                    <Avatar
+                                      alt={country.flags.alt}
+                                      src={country.flags.png}
+                                    />
+                                  }
+                                >
+                                  {country.name.common}
+                                </AutocompleteItem>
+                              ))}
+                          </Autocomplete>
+                          <Autocomplete
+                            name="assembled_in"
+                            onSelectionChange={(e) =>
+                              setFieldValue("assembled_in", e)
+                            }
+                            onBlur={handleBlur}
+                            isLoading={!Array.isArray(GetCountries)}
+                            label="Assembled In"
+                            className="max-w-xs my-3"
+                            selectedKey={values.assembled_in}
+                          >
+                            {Array.isArray(GetCountries) &&
+                              GetCountries.map((country) => (
+                                <AutocompleteItem
+                                  key={country.name.common}
+                                  value={country.name.common}
+                                  startContent={
+                                    <Avatar
+                                      alt={country.flags.alt}
+                                      src={country.flags.png}
+                                    />
+                                  }
+                                >
+                                  {country.name.common}
+                                </AutocompleteItem>
+                              ))}
+                          </Autocomplete>
+                        </div>
                       </CardBody>
                     </Card>
                   </Tab>
                   <Tab
-                    className="w-full max-h-full mx-2 py-1"
+                    className="w-full max-h-full mx-1 p-2"
                     key="Price"
                     title={
-                      values?.product_type === "Standard"
-                        ? "Price"
-                        : "Varientions"
+                      <div className="flex items-center space-x-1">
+                        {values?.product_type === "Standard" ? (
+                          <>
+                            <IconCurrencyDollar />
+                            <span>Price</span>
+                          </>
+                        ) : (
+                          <>
+                            <IconAdjustmentsHorizontal />
+                            <span>Variations</span>
+                          </>
+                        )}
+                      </div>
                     }
                   >
                     <Card className="h-full">
@@ -645,7 +914,7 @@ const AddProduct = () => {
                               values.attributes.length > 0
                                 ? values.attributes.map((attribute) => {
                                     const attributeKey =
-                                      Object.keys(attribute)[0]; 
+                                      Object.keys(attribute)[0];
                                     const attributeValues =
                                       attribute[attributeKey];
 
@@ -667,7 +936,10 @@ const AddProduct = () => {
                                           )}
                                         </Chip>
                                         <p className="p-0 mx-1 fs-2"> : </p>
-                                        <ScrollShadow orientation="horizontal" className="max-w-[100%] flex">
+                                        <ScrollShadow
+                                          orientation="horizontal"
+                                          className="max-w-[100%] flex"
+                                        >
                                           {attributeValues.map((item) => (
                                             <Chip
                                               className="h-fit p-1 mx-2"
@@ -696,24 +968,166 @@ const AddProduct = () => {
                             </div>
                           </div>
                         </div>
-                        {/* {values.price?.length > 0 && (
-                          <Table
-                            aria-label="Example table with client side sorting"
-                            classNames={{
-                              table: "min-h-[400px]",
+                        <Table
+                          removeWrapper={true}
+                          selectionMode="multiple"
+                          className="mt-3 h-[350] overflow-y-scroll"
+                        >
+                          <TableHeader>
+                            <TableColumn>Name</TableColumn>
+                            <TableColumn>Manucature Price</TableColumn>
+                            <TableColumn>Retail Price</TableColumn>
+                            <TableColumn>Special Price</TableColumn>
+                            <TableColumn>Tax</TableColumn>
+                            <TableColumn>Margin</TableColumn>
+                            <TableColumn>Action</TableColumn>
+                          </TableHeader>
+                          <TableBody emptyContent="No Data Found">
+                            {Array.isArray(values.variations) &&
+                              values.variations.map((variation) => (
+                                <TableRow
+                                  key={variation.attribute_ids?.join("")}
+                                >
+                                  <TableCell>
+                                    {variation.attribute_ids
+                                      .map((item) =>
+                                        CustomFind(GetAttribute, item, "name")
+                                      )
+                                      .join("-")}
+                                  </TableCell>
+                                  <TableCell>{variation.name}</TableCell>
+                                  <TableCell>Active</TableCell>
+                                  <TableCell>Active</TableCell>
+                                  <TableCell>Active</TableCell>
+                                  <TableCell>Active</TableCell>
+                                  <TableCell>Active</TableCell>
+                                </TableRow>
+                              ))}
+                          </TableBody>
+                        </Table>
+                      </CardBody>
+                    </Card>
+                  </Tab>
+                  <Tab
+                    key="Shipping"
+                    title={
+                      <div className="flex flex-column items-center space-x-1">
+                        <div className="flex items-center space-x-1">
+                          <IconTruck />
+                          <span>Shipping</span>
+                        </div>
+                        &
+                        <div className="mx-0 flex items-center space-x-1">
+                          <IconHelpHexagon />
+                          <span>FAQ</span>
+                        </div>
+                      </div>
+                    }
+                    className="w-full max-h-full mx-1 p-2"
+                  >
+                    <Card className="h-full">
+                      <CardBody>
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                          <div>
+                            <span className="ms-1  mb-2 text-medium">
+                              Select Pickup Locations
+                            </span>
+                            <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
+                              <Listbox
+                                aria-label="Multiple selection example"
+                                variant="flat"
+                                selectionMode="multiple"
+                              >
+                                {Array.isArray(GetAddresses) &&
+                                  GetAddresses.filter(
+                                    (item) =>
+                                      item.is_pickup_address &&
+                                      item.seller_id === profile._id
+                                  ).map((address) => (
+                                    <ListboxItem
+                                      textValue={address.name}
+                                      key={address._id}
+                                      value={address._id}
+                                    >
+                                      {address.name}
+                                    </ListboxItem>
+                                  ))}
+                              </Listbox>
+                            </div>
+                          </div>
+                          <>
+                            <span className="ms-1  mb-2 text-medium">
+                              Selected Locations
+                            </span>
+                          </>
+                        </div>
+                        <Divider className="bg-black mb-2 " />
+                        <div className="flex justify-between items-center ">
+                          <span className="text-medium">FAQ Section</span>
+                          <Link
+                            color="primary"
+                            className="text-decoration-none border-none"
+                            variant="bordered"
+                            onClick={() => {
+                              const add = {
+                                question: null,
+                                answer: null,
+                              };
+                              setValues({
+                                ...values,
+                                faqs: [...values.faqs, [add]],
+                              });
                             }}
                           >
-                       
-                         
-                          </Table>
-                        )} */}
+                            {values.faqs.length < 1
+                              ? "Create Frequently Asked Questions"
+                              : "Add More Faq(s)"}
+                          </Link>
+                        </div>
+                        <Divider className="bg-black mt-2" />
+
+                        <div className="h-full max-h-full min-h-full">
+                          {Array.isArray(values.faqs) &&
+                            values.faqs.map((faq, index) => (
+                              <div key={index} className="my-2">
+                                <span className="text-medium">
+                                  {" "}
+                                  Question - {index + 1}
+                                </span>
+                                <Input
+                                  type="text"
+                                  className="my-2"
+                                  name={`faqs.${index}.question`}
+                                  label="FAQ Question"
+                                  value={faq.question}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                />
+                                <ReactQuill
+                                  theme="snow"
+                                  placeholder="FAQ Answer"
+                                  onChange={(value) =>
+                                    setFieldValue(`faqs.${index}.answer`, value)
+                                  }
+                                  name="description"
+                                  value={faq.answer}
+                                />
+                                <Divider className="bg-black my-2" />
+                              </div>
+                            ))}
+                        </div>
                       </CardBody>
                     </Card>
                   </Tab>
                   <Tab
                     key="SEO"
-                    title="SEO"
-                    className="w-full max-h-full mx-2 py-1"
+                    title={
+                      <div className="flex items-center space-x-1">
+                        <IconServerCog />
+                        <span>SEO</span>
+                      </div>
+                    }
+                    className="w-full max-h-full mx-1 p-2"
                   >
                     <Card className="h-full">
                       <CardBody>
@@ -769,8 +1183,13 @@ const AddProduct = () => {
                   </Tab>
                   <Tab
                     key="-"
-                    title="Submit"
-                    className="w-full max-h-full mx-2 py-1"
+                    title={
+                      <div className="flex items-center space-x-1">
+                        <IconSend />
+                        <span>Submit</span>
+                      </div>
+                    }
+                    className="w-full max-h-full mx-1 p-2"
                   >
                     <Card className="hello">
                       <CardBody className=" hello body h-full">

@@ -42,6 +42,10 @@ export const UnitSchema = yup.object({
   name: yup.string().trim().required(" can not be an empty!"),
   unit_code: yup.string().trim().required(" can not be an empty!"),
 });
+export const TaxSchema = yup.object({
+  name: yup.string().trim().required("tax can not be an empty!"),
+  value: yup.number().required(" percentage can not be an empty!"),
+});
 
 export const StockSchema = yup.object({
   product_id: yup.string().trim().required(" can not be an empty!"),
@@ -76,17 +80,38 @@ export const ProductSchema = yup.object({
   SKU: yup.string().required("SKU can not be an empty!"),
   freshness: yup.string().required("Freshness can not be an empty!"),
   returnable: yup.boolean().oneOf([true, false], "Internal error"),
-  is_tax_included: yup.boolean().oneOf([true, false], "Internal error"),
-  tax_id: yup.string().required("Tax can not be an empty!"),
+  tax_details: yup.object().shape({
+    is_tax_included: yup.boolean().oneOf([true, false], "Internal error"),
+    tax_id: yup.string().when("is_tax_included", {
+      is: false,
+      then: yup.string().required("tax cannot be an empty!"),
+      otherwise: yup.string().notRequired(),
+    }),
+  }),
+  cancellable: yup.object().shape({
+    is_cancellable: yup.boolean().oneOf([true, false], "Internal error"),
+    cancellable_till: yup.string().when("is_cancellable", {
+      is: true,
+      then: yup
+        .string()
+        .required("cancellable till status cannot be an empty!"),
+    }),
+  }),
   is_cod_allowed: yup.boolean().oneOf([true, false], "Internal error"),
   replaceable: yup.boolean().oneOf([true, false], "Internal error"),
-  // friendly_url: yup.string().required(" can not be an empty!"),
-  // meta_title: yup.string().required(" can not be an empty!"),
-  // meta_description: yup.string().required(" can not be an empty!"),
-  warranty_period: yup.number().nullable(),
-  guarantee_period: yup.number().nullable(),
-  when_out_of_stock: yup.boolean().nullable(),
-  price: yup
+  friendly_url: yup.string().nullable(),
+  meta_title: yup.string().nullable(),
+  meta_description: yup.string(),
+  warranty_period: yup
+    .number()
+    .nullable()
+    .positive([0, "Warranty can not be negative"]),
+
+  guarantee_period: yup
+    .number()
+    .nullable()
+    .positive([0, "Warranty can not be negative"]),
+  variations: yup
     .array()
     .of(
       yup.object().shape({

@@ -103,8 +103,7 @@ const Attribute = () => {
                       </h6>
                     </div>
                   </div>
-                  {console.log(" GetAttribute", GetAttribute)}
-                  <Table removeWrapper>
+                   <Table removeWrapper>
                     <TableHeader>
                       <TableColumn>#</TableColumn>
                       <TableColumn>Attribute</TableColumn>
@@ -223,7 +222,6 @@ const Attribute = () => {
           </div>
         </div>
       </div>
-      {console.log(errors, values)}
 
       <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
         <ModalContent>

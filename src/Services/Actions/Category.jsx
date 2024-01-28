@@ -31,7 +31,7 @@ export const CreateCategoryAction = (CategoryData) => async (dispatch) => {
     );
     toast_id = toast.update(toast_id, {
       type: "success",
-       icon: <IconChecks />,
+      icon: <IconChecks />,
       render: data.message,
     });
     dispatch({ type: "CATEGORY_CREATE_SUCCESS", payload: data });
@@ -67,7 +67,6 @@ export const EditCategoryAction = (CategoryData) => async (dispatch) => {
     dispatch({ type: "CATEGORY_EDIT_SUCCESS", payload: data });
     dispatch(GetCategoryAction());
   } catch (error) {
-    console.log(" error", error);
     toast.update(toast_id, {
       type: "error",
       icon: <IconAlertCircleFilled />,

@@ -73,7 +73,6 @@ export const EditSubCategoryAction = (SubCategoryData) => async (dispatch) => {
     dispatch({ type: "SUBCATEGORY_EDIT_SUCCESS", payload: data });
     dispatch(GetSubCategoryAction());
   } catch (error) {
-    console.log(" error", error);
     toast.update(toast_id, {
       type: "error",
       icon: <IconAlertCircleFilled />,
