@@ -67,7 +67,7 @@ export const LogoutAction = () => async (dispatch) => {
   let toast_id;
   try {
     dispatch({ type: "LOGOUT_REQUEST" });
-    const { data } = await axios.put(`${baseUrl}/user/logout`, null, config);
+    const { data } = await axios.delete(`${baseUrl}/user/logout`, null, config);
     toast_id = toast.update(toast_id, {
       type: "success",
       icon: <IconChecks />,

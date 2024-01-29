@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { SubBar } from "../Configurations/ManagementSection";
+import Toastify from "../Components/Toastify";
 
 const ManagementSection = () => {
   const [Module, setModule] = useState();
@@ -18,6 +19,7 @@ const ManagementSection = () => {
 
   return (
     <>
+      <Toastify />
       <div className="page-wrapper">
         <div className="page-header d-print-none mt-3">
           <div className="container-xl">

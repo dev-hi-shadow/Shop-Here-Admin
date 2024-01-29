@@ -124,7 +124,7 @@ const AddProduct = () => {
     let type = ArgsType;
     const UpdateArray = values.attributes;
     const index = UpdateArray.findIndex((item) =>
-      Object.prototype.hasOwnProperty.call(item, attribute)
+      Object.prototype?.hasOwnProperty?.call(item, attribute)
     );
 
     if (type === "deleteAttribute") {
@@ -150,12 +150,17 @@ const AddProduct = () => {
     setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
   };
 
-  const HandleVarients = (event) => {
-    if (Array.from(event).join("") === "all") {
-      return setSelectedVarientionRows("all");
+  const HandleVarients = (attribute_ids, event) => {
+    if (event.target.checked) {
+      setSelectedVarientionRows([...SelectedVarientionRows, attribute_ids]);
+    } else {
+      const updateValues = [...SelectedVarientionRows];
+      const index = SelectedVarientionRows.indexOf(attribute_ids);
+      updateValues.splice(index, 1);
+      setSelectedVarientionRows([...updateValues]);
     }
-    setSelectedVarientionRows(Array.from(event));
   };
+  console.log(" SelectedVarientionRows", SelectedVarientionRows);
 
   useEffect(() => {
     function generateValueCombinations(
@@ -217,6 +222,7 @@ const AddProduct = () => {
             item.attribute_ids.toString()
           );
         });
+        console.log(" UpdateVarientionValues", UpdateVarientionValues);
         setFieldValue("variations", UpdateVarientionValues);
 
         const AttributeKeys = values.attributes.map(
@@ -225,7 +231,7 @@ const AddProduct = () => {
 
         const record = AttributeKeys.map((Attribute) => {
           const finded = values.attributes.find((attr) =>
-            Object.prototype.hasOwnProperty.call(attr, Attribute)
+            Object.prototype?.hasOwnProperty?.call(attr, Attribute)
           );
 
           const FilteredValues = finded[Attribute].filter((preVal) => {
@@ -234,11 +240,11 @@ const AddProduct = () => {
             });
           });
 
-          return { [Attribute]: FilteredValues };
-        });
+             return { [Attribute]: FilteredValues };
+         }).filter((item) => typeof item === "object");
 
         setFieldValue("attributes", record || initialValues.attributes);
-        setSelectedVarientionRows();
+        setSelectedVarientionRows([]);
       } else {
         toast.error("You have not selected any rows", {
           icon: <IconAlertCircleFilled />,
@@ -251,7 +257,6 @@ const AddProduct = () => {
     }
   };
 
-  console.info("VALUES.ATTRIBUTES", values.attributes);
   return (
     <>
       <Toastify />
@@ -937,12 +942,12 @@ const AddProduct = () => {
                                   variant="flat"
                                   selectionMode="multiple"
                                   selectedKeys={
-                                    values.attributes.find((attribute) =>
-                                      Object.prototype.hasOwnProperty.call(
+                                    values.attributes?.find((attribute) =>
+                                      Object.prototype.hasOwnProperty?.call(
                                         attribute,
                                         VariableAttributeCategory
                                       )
-                                    )?.[VariableAttributeCategory] || []
+                                    )?.[VariableAttributeCategory]
                                   }
                                   onSelectionChange={(event) =>
                                     handleAttributeSelect(
@@ -1045,9 +1050,9 @@ const AddProduct = () => {
                         <Table
                           aria-labelledby="Variation-Table"
                           removeWrapper={true}
-                          selectionMode="multiple"
-                          onSelectionChange={HandleVarients}
-                          selectedKeys={SelectedVarientionRows}
+                          // selectionMode="multiple"
+                          // onSelectionChange={HandleVarients}
+                          // selectedKeys={SelectedVarientionRows}
                           className="mt-3 h-[350] overflow-y-scroll"
                         >
                           <TableHeader>
@@ -1064,7 +1069,16 @@ const AddProduct = () => {
                             {Array.isArray(values.variations) &&
                               values.variations.map((variation, index) => (
                                 <TableRow key={variation.attribute_ids}>
-                                  <TableCell>{index + 1}</TableCell>
+                                  <TableCell>
+                                    <Checkbox
+                                      onChange={(event) =>
+                                        HandleVarients(
+                                          variation.attribute_ids.toString(),
+                                          event
+                                        )
+                                      }
+                                    />
+                                  </TableCell>
                                   <TableCell>
                                     {variation.attribute_ids
                                       .map((item) =>
