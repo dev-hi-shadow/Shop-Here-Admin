@@ -10,6 +10,7 @@ import { ProductReducer } from "./Reducers/Product";
 import { TaxReducer } from "./Reducers/Tax";
 import { CountriesReducer } from "./Reducers/Countries";
 import { AddressesReducer } from "./Reducers/Addresses";
+import { UsersReducer } from "./Reducers/Users";
 
 export const Store = configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export const Store = configureStore({
     taxState: TaxReducer,
     countryState: CountriesReducer,
     addressesState: AddressesReducer,
+    userState: UsersReducer,
   },
 });

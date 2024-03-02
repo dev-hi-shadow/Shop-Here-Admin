@@ -125,3 +125,13 @@ export const ORDER_STATUSES = Object.freeze({
     mode: "GENERAL",
   },
 });
+
+export const USER_ROLES = Object.freeze({
+  SELLER: "seller",
+  CUSTOMERS: "customer",
+  ADMIN: "admin",
+  seller: "SELLER",
+  customer: "CUSTOMERS",
+  admin: "ADMIN",
+ 
+});

@@ -30,7 +30,7 @@ const ManagementSection = () => {
               <div className="col m-0">
                 {/* Page pre-title */}
                 <div className="page-pretitle">Overview</div>
-                <div className="d-flex align-items-center">
+                <div className="flex items-end">
                   <h2 className="page-title me-3">
                     {Capitalize(Module) === ""
                       ? "Dashboard"

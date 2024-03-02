@@ -10,7 +10,7 @@ export const SignUpAction = (SignUpData) => async (dispatch) => {
   try {
     toast_id = toast.info(`Category Creating.... `, { icon: <IconLoader3 /> });
     const { data } = await axios.post(
-      `${baseUrl}/user/register`,
+      `${baseUrl}/user/signup`,
       SignUpData,
       config
     );
@@ -35,7 +35,7 @@ export const LoginAction = (LoginData) => async (dispatch) => {
   try {
     dispatch({ type: "SIGNIN_REQUEST" });
     const { data } = await axios.post(
-      `${baseUrl}/user/login`,
+      `${baseUrl}/user/signin`,
       LoginData,
       config
     );
@@ -57,7 +57,7 @@ export const LoginAction = (LoginData) => async (dispatch) => {
 export const ProfileAction = () => async (dispatch) => {
   try {
     dispatch({ type: "PROFILE_REQUEST" });
-    const { data } = await axios.get(`${baseUrl}/user/profile`, config);
+    const { data } = await axios.get(`${baseUrl}/users/profile`, config);
     dispatch({ type: "PROFILE_SUCCESS", payload: data });
   } catch (error) {
     dispatch({ type: "PROFILE_FAILED", payload: error?.response?.data?.error });
@@ -67,7 +67,11 @@ export const LogoutAction = () => async (dispatch) => {
   let toast_id;
   try {
     dispatch({ type: "LOGOUT_REQUEST" });
-    const { data } = await axios.delete(`${baseUrl}/user/logout`, null, config);
+    const { data } = await axios.delete(
+      `${baseUrl}/users/logout`,
+      null,
+      config
+    );
     toast_id = toast.update(toast_id, {
       type: "success",
       icon: <IconChecks />,
