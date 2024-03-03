@@ -10,7 +10,7 @@ export const SignUpAction = (SignUpData) => async (dispatch) => {
   try {
     toast_id = toast.info(`Category Creating.... `, { icon: <IconLoader3 /> });
     const { data } = await axios.post(
-      `${baseUrl}/user/signup`,
+      `${baseUrl}/auth/signup`,
       SignUpData,
       config
     );
@@ -35,7 +35,7 @@ export const LoginAction = (LoginData) => async (dispatch) => {
   try {
     dispatch({ type: "SIGNIN_REQUEST" });
     const { data } = await axios.post(
-      `${baseUrl}/user/signin`,
+      `${baseUrl}/auth/signin`,
       LoginData,
       config
     );
@@ -68,7 +68,7 @@ export const LogoutAction = () => async (dispatch) => {
   try {
     dispatch({ type: "LOGOUT_REQUEST" });
     const { data } = await axios.delete(
-      `${baseUrl}/users/logout`,
+      `${baseUrl}/userss/logout`,
       null,
       config
     );

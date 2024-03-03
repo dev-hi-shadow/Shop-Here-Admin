@@ -18,7 +18,7 @@ export const config = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     "Content-Type": "Application/JSON",
-    Authorization: localStorage.getItem("accessToken"),
+    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   },
   withCredentials: true,
 };
@@ -133,5 +133,4 @@ export const USER_ROLES = Object.freeze({
   seller: "SELLER",
   customer: "CUSTOMERS",
   admin: "ADMIN",
- 
 });
