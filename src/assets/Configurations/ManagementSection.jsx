@@ -9,11 +9,9 @@ import Unit from "../Pages/Unit.jsx";
 import Role from "../Pages/Role.jsx";
 import AddProduct from "../Pages/Product/AddProduct.jsx";
 import Products from "../Pages/Product/Products.jsx";
-
 import Tax from "../Pages/Tax.jsx";
 import Users from "../Pages/Users.jsx";
 import Dashboard from "../Pages/Dashboard";
-
 export const PageRoutes = [
   { path: "/", element: <Dashboard /> },
   { path: "/sign-up", element: <SignUp /> },
@@ -32,7 +30,6 @@ export const PageRoutes = [
   { path: "/product-add", element: <AddProduct /> },
   { path: "/product-list", element: <Products /> },
 ];
-
 export const SubBar = {
   association: [
     "brand",
@@ -47,13 +44,12 @@ export const SubBar = {
   product: ["product-list", "product-add"],
   users: ["user", "seller", "customer", "admin"],
 };
-
 export const SideBarConfig = [
   {
     icon: "hbwqfgcf",
     colors:
       "outline:#084186,primary:#206bc4,secondary:#206bc4,tertiary:#206bc4",
-    Title: null,
+    Title: "Dashboard",
     redirects: "/",
     onClickFunction: null,
   },
@@ -98,6 +94,14 @@ export const SideBarConfig = [
     onClickFunction: null,
   },
 
+  {
+    icon: "wwpzpqta",
+    state: "hover",
+    colors: "primary:#206bc4,secondary:#ffffff",
+    Title: "Notifications",
+    redirects: "/notifications",
+    onClickFunction: null,
+  },
   {
     icon: "twopqjaj",
     colors:

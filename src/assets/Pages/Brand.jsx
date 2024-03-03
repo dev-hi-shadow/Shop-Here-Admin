@@ -25,7 +25,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
-import Toastify from "../Components/Toastify";
 import { TableBody, TableHeader } from "@react-stately/table";
 
 const Brand = () => {
@@ -71,7 +70,6 @@ const Brand = () => {
 
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">

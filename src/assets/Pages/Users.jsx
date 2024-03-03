@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import Toastify from "../Components/Toastify";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { GetUsersAction } from "../../Services/Actions/Users";
 import {
@@ -11,8 +10,8 @@ import {
   Link,
 } from "@nextui-org/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
-import { USER_ROLES } from "../Configurations/Config";
+import { IconPencil } from "@tabler/icons-react";
+import { USER_ROLES } from "../Helpers";
 
 const Users = () => {
   const { GetUsers } = useSelector((state) => state.userState);
@@ -28,7 +27,7 @@ const Users = () => {
     const users =
       Array.isArray(GetUsers) &&
       GetUsers.filter((item) => {
-        console.log(" item.role_id.name ", item.role_id.name )
+        console.log(" item.role_id.name ", item.role_id.name);
         return item.role_id.name === ActiveFilter;
       });
     setUsers(users);
@@ -40,7 +39,6 @@ const Users = () => {
 
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
@@ -142,7 +140,8 @@ const Users = () => {
                             </CardHeader>
                             <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
                               <p className="text-tiny uppercase font-bold">
-{user.role_id.name}                              </p>
+                                {user.role_id.name}{" "}
+                              </p>
                               <small className="text-default-500">
                                 {user.email}
                               </small>

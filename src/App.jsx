@@ -9,8 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ProfileAction } from "./Services/Actions/Authentication.jsx";
 import Sidebar from "./assets/Main/Sidebar.jsx";
 import ManagementSection from "./assets/Main/ManagementSection.jsx";
-import Toastify from "./assets/Components/Toastify.jsx";
 import { PageRoutes } from "./assets/Configurations/ManagementSection.jsx";
+import PageNotFound from "./assets/Pages/PageNotFound.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -36,13 +36,18 @@ function App() {
 
   return (
     <>
-      <Toastify />
       {!disable_sidebar.includes(ActivePage) && <Sidebar />}
       {!disable_subbar.includes(ActivePage) && <ManagementSection />}
       <Routes>
-        {PageRoutes?.map((item) => (
-          <Route key={item.path} path={item.path} element={item.element} />
-        ))}
+        {PageRoutes?.map((item) => {
+          return (
+            <Route
+              key={item.path || "/404"}
+              path={item.path || "404"}
+              element={item.element || <PageNotFound />}
+            />
+          );
+        })}
       </Routes>
       <Footer />
     </>

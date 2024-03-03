@@ -5,16 +5,17 @@ import { useEffect } from "react";
 import { SignInInitialState } from "../Configurations/InitialStates";
 import { SignInSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import Toastify from "../Components/Toastify";
 import { Button, Input } from "@nextui-org/react";
+import { useAlert } from "../hooks/Toastify";
 
 const SignIn = () => {
+  const { showAlert } = useAlert();
   const Navigate = useNavigate();
   const dispatch = useDispatch();
   const authentication = useSelector((state) => state.authentication);
 
   const handleSignInSubmit = (values) => {
-     const body = { ...values };
+    const body = { ...values };
     dispatch(LoginAction(body));
   };
   useEffect(() => {
@@ -27,8 +28,9 @@ const SignIn = () => {
         );
       }
       Navigate("/");
+      showAlert("Signin Successfull");
     }
-  }, [Navigate, authentication]);
+  }, [Navigate, authentication, showAlert]);
 
   const { values, errors, touched, handleChange, handleSubmit, handleBlur } =
     useFormik({
@@ -39,7 +41,6 @@ const SignIn = () => {
 
   return (
     <>
-      <Toastify />
       <main className="main-content my-5 ps">
         <section>
           <div className="page-header min-vh-75">

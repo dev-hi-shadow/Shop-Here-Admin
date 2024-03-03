@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import Toastify from "../Components/Toastify";
 import { Card, CardBody } from "@nextui-org/react";
+// import { useAlert } from "../hooks/Toastify";
+// import { useEffect } from "react";
 const Dashboard = () => {
   const Navigate = useNavigate();
+  // const { showAlert } = useAlert();
+
+
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">

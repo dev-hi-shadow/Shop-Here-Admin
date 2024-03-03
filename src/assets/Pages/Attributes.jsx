@@ -30,7 +30,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Input } from "@nextui-org/input";
-import Toastify from "../Components/Toastify";
 
 const Attribute = () => {
   const dispatch = useDispatch();
@@ -75,8 +74,7 @@ const Attribute = () => {
 
   return (
     <>
-      <Toastify />
-      <div className="page-wrapper">
+       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
             <div className=" grid-margin stretch-card ">

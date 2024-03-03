@@ -25,7 +25,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
-import Toastify from "../Components/Toastify";
 import { TableBody, TableHeader } from "@react-stately/table";
 
 const Category = () => {
@@ -70,7 +69,6 @@ const Category = () => {
 
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
@@ -204,7 +202,7 @@ const Category = () => {
                             <TableCell>{category.name}</TableCell>
                             <TableCell className="text-center">
                               <Button
-                                 color="success"
+                                color="success"
                                 variant="light"
                                 onClick={async () => {
                                   handleCategory({

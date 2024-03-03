@@ -14,8 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import Toastify from "../../Components/Toastify";
-
+ 
 const Products = () => {
   const productState = useSelector((state) => state.productState);
   const dispatch = useDispatch();
@@ -49,7 +48,6 @@ const Products = () => {
 
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">

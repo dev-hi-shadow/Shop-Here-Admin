@@ -37,10 +37,8 @@ import {
   TableRow,
   Tabs,
 } from "@nextui-org/react";
-import { CustomFind, ORDER_STATUSES } from "../../Configurations/Config";
 import { GetTaxAction } from "../../../Services/Actions/Tax";
-import Toastify from "../../Components/Toastify";
-import { GetCountriesAction } from "../../../Services/Actions/Countries";
+ import { GetCountriesAction } from "../../../Services/Actions/Countries";
 import {
   IconAdjustmentsHorizontal,
   IconFileInfo,
@@ -55,6 +53,7 @@ import {
 import { GetAddressesAction } from "../../../Services/Actions/Addresses";
 import { toast } from "react-toastify";
 import { IconAlertCircleFilled } from "@tabler/icons-react";
+import { CustomFind, ORDER_STATUSES } from "../../Helpers";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -76,7 +75,6 @@ const AddProduct = () => {
     useState(null);
 
   const handleProduct = () => {
-    console.log("PAYLOAD", values);
     //  dispatch(CreateProductAction(values));
   };
 
@@ -146,7 +144,6 @@ const AddProduct = () => {
         UpdateArray[index] = { [attribute]: selectedItems };
       }
     }
-    console.log(UpdateArray);
     setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
   };
 
@@ -160,8 +157,6 @@ const AddProduct = () => {
       setSelectedVarientionRows([...updateValues]);
     }
   };
-  console.log(" SelectedVarientionRows", SelectedVarientionRows);
-
   useEffect(() => {
     function generateValueCombinations(
       attributes,
@@ -222,7 +217,6 @@ const AddProduct = () => {
             item.attribute_ids.toString()
           );
         });
-        console.log(" UpdateVarientionValues", UpdateVarientionValues);
         setFieldValue("variations", UpdateVarientionValues);
 
         const AttributeKeys = values.attributes.map(
@@ -240,8 +234,8 @@ const AddProduct = () => {
             });
           });
 
-             return { [Attribute]: FilteredValues };
-         }).filter((item) => typeof item === "object");
+          return { [Attribute]: FilteredValues };
+        }).filter((item) => typeof item === "object");
 
         setFieldValue("attributes", record || initialValues.attributes);
         setSelectedVarientionRows([]);
@@ -259,7 +253,6 @@ const AddProduct = () => {
 
   return (
     <>
-      <Toastify />
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
