@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
-import { SubBar } from "../Configurations/ManagementSection";
- 
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { SideBarConfig, SubBar } from "../Configurations/ManagementSection";
+import { useDispatch } from "react-redux";
+
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  User,
+} from "@nextui-org/react";
+import LordIcons from "../Components/LordIcons";
+
 const ManagementSection = () => {
+  const Navigate = useNavigate();
+  const dispatch = useDispatch();
   const [Module, setModule] = useState();
   const Location = useLocation();
   useEffect(() => {
@@ -18,7 +30,7 @@ const ManagementSection = () => {
 
   return (
     <>
-       <div className="page-wrapper">
+      <div className="page-wrapper">
         <div className="page-header d-print-none mt-3">
           <div className="container-xl">
             <div
@@ -51,11 +63,60 @@ const ManagementSection = () => {
                 </div>
               </div>
               {/* Page title actions */}
-              <div className="col-auto ms-auto d-print-none m-0">
-                <Link className="nav-link ">
+              <div className="flex items-center  col-auto ms-auto d-print-none m-0">
+                <Link className=" xs:hidden nav-link ">
                   Download Report
                   <i className="fas fa-arrow-down ms-2"></i>
                 </Link>
+                <Dropdown placement="bottom-start">
+                  <DropdownTrigger className="  ">
+                    <User
+                      as="button"
+                      avatarProps={{
+                        isBordered: true,
+                        src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+                      }}
+                      className="transition-transform"
+                      description="@tonyreichert"
+                      name="Tony Reichert"
+                    />
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    aria-label="User Actions"
+                    variant="flat"
+                    className="h-60 overflow-y-scroll scrollbar-hide"
+                  >
+                    {SideBarConfig.map((item) => {
+                      return (
+                        <DropdownItem
+                          closeOnSelect
+                          key={item.redirects}
+                          className="h-10"
+
+                          color={item.Title === "Logout" ? "danger" : "primary"}
+                          onClick={
+                            item?.onClickFunction
+                              ? () => dispatch(item.onClickFunction())
+                              : () => Navigate(item.redirects)
+                          }
+                          variant="flat"
+                        >
+                          <div className="flex items-center justify-center">
+                            <LordIcons
+                              icon={item.icon}
+                              width="30"
+                              state={item.state}
+                              colors={item.colors}
+                            />
+                            <p className="fw-bold m-0 text-small">
+                              {item.Title}
+                            </p>
+                          </div>
+                        </DropdownItem>
+                      );
+                    })}
+                  </DropdownMenu>
+                </Dropdown>
               </div>
             </div>
           </div>

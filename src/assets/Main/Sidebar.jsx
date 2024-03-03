@@ -6,7 +6,7 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   return (
     <>
-      <aside className="navbar navbar-vertical navbar-expand-lg">
+      <aside className="navbar navbar-vertical navbar-expand-lg  ">
         <div className="container-fluid">
           <div className="navbar-collapse" id="sidebar-menu">
             <ul className="navbar-nav pt-lg-3">
