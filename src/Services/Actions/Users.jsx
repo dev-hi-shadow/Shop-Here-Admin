@@ -1,11 +1,5 @@
 import axios from "axios";
 import { baseUrl, config } from "../../assets/Configurations/Config";
-import { toast } from "react-toastify";
-import {
-  IconAlertCircleFilled,
-  IconChecks,
-  IconLoader3,
-} from "@tabler/icons-react";
 
 export const GetUsersAction = () => async (dispatch) => {
   try {

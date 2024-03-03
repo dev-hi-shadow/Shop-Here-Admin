@@ -1,11 +1,5 @@
 import axios from "axios";
 import { baseUrl, config } from "../../assets/Configurations/Config";
-import { toast } from "react-toastify";
-import {
-  IconAlertCircleFilled,
-  IconChecks,
-  IconLoader3,
-} from "@tabler/icons-react";
 
 export const GetSubCategoryAction = () => async (dispatch) => {
   try {
@@ -60,7 +54,6 @@ export const DeleteSubCategoryAction =
     console.log(" SubCategoryData", SubCategoryData);
 
     try {
-
       const { data } = await axios.put(
         `${baseUrl}/sub-category/delete-recover/${SubCategoryData?._id}`,
         { is_deleted: SubCategoryData?.is_deleted },

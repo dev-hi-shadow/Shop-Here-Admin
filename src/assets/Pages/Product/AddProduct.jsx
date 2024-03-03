@@ -38,7 +38,7 @@ import {
   Tabs,
 } from "@nextui-org/react";
 import { GetTaxAction } from "../../../Services/Actions/Tax";
- import { GetCountriesAction } from "../../../Services/Actions/Countries";
+import { GetCountriesAction } from "../../../Services/Actions/Countries";
 import {
   IconAdjustmentsHorizontal,
   IconFileInfo,
@@ -51,8 +51,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { GetAddressesAction } from "../../../Services/Actions/Addresses";
-import { toast } from "react-toastify";
-import { IconAlertCircleFilled } from "@tabler/icons-react";
+
 import { CustomFind, ORDER_STATUSES } from "../../Helpers";
 
 const AddProduct = () => {
@@ -240,14 +239,10 @@ const AddProduct = () => {
         setFieldValue("attributes", record || initialValues.attributes);
         setSelectedVarientionRows([]);
       } else {
-        toast.error("You have not selected any rows", {
-          icon: <IconAlertCircleFilled />,
-        });
+        // TODO  Toast error message no any rows selected
       }
     } catch (error) {
-      toast.error(error.message, {
-        icon: <IconAlertCircleFilled />,
-      });
+      // TODO  Toast error message error.message
     }
   };
 

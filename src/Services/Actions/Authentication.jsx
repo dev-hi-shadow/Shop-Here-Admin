@@ -1,9 +1,5 @@
 import axios from "axios";
 import { baseUrl, config } from "../../assets/Configurations/Config";
-import { toast } from "react-toastify";
-import { IconLoader3 } from "@tabler/icons-react";
-import { IconChecks } from "@tabler/icons-react";
-import { IconAlertCircleFilled } from "@tabler/icons-react";
 
 export const SignUpAction = (SignUpData) => async (dispatch) => {
   try {

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { baseUrl, config } from "../../assets/Configurations/Config";
-import { toast } from "react-toastify";
 
 export const GetAddressesAction = () => async (dispatch) => {
   try {
