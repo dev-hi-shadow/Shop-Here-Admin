@@ -12,10 +12,13 @@ import Products from "../Pages/Product/Products.jsx";
 import Tax from "../Pages/Tax.jsx";
 import Users from "../Pages/Users.jsx";
 import Dashboard from "../Pages/Dashboard";
+import Notifications from "../Pages/Notifications/Alerts.jsx";
+import GlobalAlerts from "../Pages/Notifications/GlobalAlerts.jsx";
+import Alerts from "../Pages/Notifications/Alerts.jsx";
 export const PageRoutes = [
-  { path: "/", element: <Dashboard /> },
+  { path: "/", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
-  { path: "/sign-in", element: <SignIn /> },
+  { path: "/dashboard", element: <Dashboard /> },
   { path: "/brand", element: <Brand /> },
   { path: "/category", element: <Category /> },
   { path: "/sub-category", element: <SubCategory /> },
@@ -29,6 +32,9 @@ export const PageRoutes = [
   { path: "/role", element: <Role /> },
   { path: "/product-add", element: <AddProduct /> },
   { path: "/product-list", element: <Products /> },
+  { path: "/notifications", element: <Notifications /> },
+  { path: "/alerts", element: <Alerts /> },
+  { path: "/global-alerts", element: <GlobalAlerts /> },
 ];
 export const SubBar = {
   association: [
@@ -43,6 +49,7 @@ export const SubBar = {
   profile: ["profile", "address"],
   product: ["product-list", "product-add"],
   users: ["user", "seller", "customer", "admin"],
+  notification: ["notifications", "alerts", "global-alerts"],
 };
 export const SideBarConfig = [
   {
@@ -50,7 +57,7 @@ export const SideBarConfig = [
     colors:
       "outline:#084186,primary:#206bc4,secondary:#206bc4,tertiary:#206bc4",
     Title: "Dashboard",
-    redirects: "/",
+    redirects: "/dashboard",
     onClickFunction: null,
   },
   {

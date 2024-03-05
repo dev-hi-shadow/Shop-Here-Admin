@@ -1,8 +1,5 @@
 import axios from "axios";
 import { config } from "../../assets/Configurations/Config";
-
-import { IconAlertCircleFilled } from "@tabler/icons-react";
-
 export const GetCountriesAction = () => async (dispatch) => {
   try {
     const { data } = await axios.get(

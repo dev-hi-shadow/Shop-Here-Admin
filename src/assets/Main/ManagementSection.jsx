@@ -92,7 +92,6 @@ const ManagementSection = () => {
                           closeOnSelect
                           key={item.redirects}
                           className="h-10"
-
                           color={item.Title === "Logout" ? "danger" : "primary"}
                           onClick={
                             item?.onClickFunction

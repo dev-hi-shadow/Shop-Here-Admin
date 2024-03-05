@@ -1,90 +1,90 @@
 export const SignUpInitialState = {
-  name: null,
-  email: null,
-  password: null,
-  confirmPassword: null,
-  phone: null,
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  phone: "",
 };
 
 export const SignInInitialState = {
-  credential: null,
-  password: null,
+  credential: "",
+  password: "",
 };
 
 export const BrandInitialState = {
-  name: null,
+  name: "",
   verified: false,
 };
 
 export const CategoryInitialState = {
-  name: null,
+  name: "",
 };
 
 export const RoleInitialState = {
-  name: null,
+  name: "",
 };
 
 export const SubCategoryInitialState = {
-  name: null,
-  category_id: null,
+  name: "",
+  category_id: "",
 };
 
 export const AttributeInitialState = {
-  name: null,
+  name: "",
 };
 
 export const UnitInitialState = {
-  name: null,
-  unit_code: null,
+  name: "",
+  unit_code: "",
 };
 export const TaxInitialState = {
-  name: null,
-  value: null,
+  name: "",
+  value: "",
 };
 
 export const ProductInitialState = {
-  seller_id: null,
-  created_by: null,
+  seller_id: "",
+  created_by: "",
   pickup_locations: [],
-  description: null,
-  type: null,
-  name: null,
-  extra_description: null,
-  product_type: null,
-  made_in: null,
-  assembled_in: null,
-  short_description: null,
-  brand_id: null,
-  unit_id: null,
-  category_id: null,
+  description: "",
+  type: "",
+  name: "",
+  extra_description: "",
+  product_type: "",
+  made_in: "",
+  assembled_in: "",
+  short_description: "",
+  brand_id: "",
+  unit_id: "",
+  category_id: "",
   faqs : [],
-  subcategory_id: null,
+  subcategory_id: "",
   min_order_quantity: 1,
   max_order_quantity: 100,
   attributes: [],
   images: [],
-  SKU: null,
-  freshness: null,
+  SKU: "",
+  freshness: "",
   returnable: true,
   cancellable: {
     is_cancellable: true,
-    cancellable_till: null,
+    cancellable_till: "",
   },
   tax_details: {
     is_tax_included: false,
-    tax_id: null,
+    tax_id: "",
   },
   is_cod_allowed: true,
   replaceable: true,
-  friendly_url: null,
-  meta_title: null,
-  meta_description: null,
-  variations: null,
-  warranty_period: null,
-  guarantee_period: null,
+  friendly_url: "",
+  meta_title: "",
+  meta_description: "",
+  variations: "",
+  warranty_period: "",
+  guarantee_period: "",
 };
 
 export const StockInitialState = {
-  product_id: null,
+  product_id: "",
   stocks: [],
 };

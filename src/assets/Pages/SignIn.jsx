@@ -1,36 +1,45 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { LoginAction } from "../../Services/Actions/Authentication";
-import { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+// import { LoginAction } from "../../Services/Actions/Authentication";
 import { SignInInitialState } from "../Configurations/InitialStates";
 import { SignInSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
 import { Button, Input } from "@nextui-org/react";
 import { useAlert } from "../hooks/Toastify";
+import { useLoginMutation, useProfileQuery } from "../../Services/API/auth";
+import { useEffect, useState } from "react";
 
 const SignIn = () => {
   const { showAlert } = useAlert();
   const Navigate = useNavigate();
-  const dispatch = useDispatch();
-  const authentication = useSelector((state) => state.authentication);
-
-  const handleSignInSubmit = (values) => {
-    const body = { ...values };
-    dispatch(LoginAction(body));
-  };
+  const Location = useLocation();
+  const [ActivePage, setActivePage] = useState();
   useEffect(() => {
-    if (authentication.isAuthenticated || authentication.profile) {
-      const accessToken = authentication?.signin?.token;
-      if (accessToken) {
-        window.localStorage.setItem(
-          "accessToken",
-          authentication?.signin?.token
-        );
+    setActivePage(Location?.pathname);
+  }, [Location?.pathname]);
+
+  const { data, isError, isLoading } = useProfileQuery();
+  useEffect(() => {
+    if (ActivePage === "/" && ActivePage !== "/sign-up") {
+      if (!isLoading && !isError && data?.success) {
+        Navigate("/dashboard");
       }
-      Navigate("/");
-      showAlert("Signin Successfull");
     }
-  }, [Navigate, authentication, showAlert]);
+  }, [ActivePage, Navigate, data, isError, isLoading]);
+
+  const [login] = useLoginMutation();
+  const handleSignInSubmit = async (formData) => {
+    try {
+      const data = await login(formData).unwrap();
+      window.localStorage.setItem("accessToken", data.token);
+      showAlert("Signin Successful");
+      Navigate("/");
+    } catch (err) {
+      showAlert(
+        `Signin Failed: ${err.data ? err.data.error : "An error occurred"}`
+      );
+    }
+  };
 
   const { values, errors, touched, handleChange, handleSubmit, handleBlur } =
     useFormik({

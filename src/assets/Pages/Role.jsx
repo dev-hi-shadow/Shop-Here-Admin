@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux"
-import ManagementSection from "../Main/ManagementSection"
 import { useEffect, useRef, useState } from "react"
 import { RoleInitialState } from "../Configurations/InitialStates"
 import { RoleSchema } from "../Configurations/YupSchema"
@@ -56,9 +55,9 @@ const Role = () => {
 
     return (
         <>
-            <div className="page-content">
-                <ManagementSection />
-                <div className=" grid-margin stretch-card ">
+      <div className="page-wrapper">
+        <div className="page-body">
+          <div className="container-xl">
                     <div className="card">
                         <div className="card-body">
                             <div className="d-flex justify-content-between ">
@@ -108,6 +107,7 @@ const Role = () => {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
             <div className="modal fade" id="RoleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 {(ModalState === "Edit" || ModalState === "Add") &&
