@@ -1,5 +1,9 @@
 /* eslint-disable react/prop-types */
-import { IconAlertCircleFilled, IconChecks, IconLoader3 } from "@tabler/icons-react";
+import {
+  IconAlertCircleFilled,
+  IconChecks,
+  IconLoader3,
+} from "@tabler/icons-react";
 import { createContext, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,12 +19,36 @@ export const useAlert = () => {
 };
 
 export const ToastProvider = ({ children }) => {
-  const showAlert = (message, type, ...rest) => {
-    toast(message, {
-      type: type || "success",
-      icon : (type==="info") ? <IconLoader3 />  : type==="error" ? <IconAlertCircleFilled />  :  <IconChecks />,
-      ...rest,
-    });
+  const showAlert = (toast_id, message, type, ...rest) => {
+     if (toast_id) {
+      toast.update(toast_id, {
+        render: message,
+        type: type === "info" ? "info" : type === true ? "success" : "error",
+        icon:
+          type === "info" ? (
+            <IconLoader3 />
+          ) : type === true ? (
+            <IconChecks />
+          ) : (
+            <IconAlertCircleFilled />
+          ),
+        ...rest,
+      });
+    } else {
+      const id = toast(message, {
+        type: type === "info" ? "info" : type === true ? "success" : "error",
+        icon:
+          type === "info" ? (
+            <IconLoader3 />
+          ) : type === true ? (
+            <IconChecks />
+          ) : (
+            <IconAlertCircleFilled />
+          ),
+        ...rest,
+      });
+      return id;
+    }
   };
 
   return (

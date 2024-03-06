@@ -51,8 +51,6 @@ export const EditSubCategoryAction = (SubCategoryData) => async (dispatch) => {
 
 export const DeleteSubCategoryAction =
   (SubCategoryData) => async (dispatch) => {
-    console.log(" SubCategoryData", SubCategoryData);
-
     try {
       const { data } = await axios.put(
         `${baseUrl}/sub-category/delete-recover/${SubCategoryData?._id}`,

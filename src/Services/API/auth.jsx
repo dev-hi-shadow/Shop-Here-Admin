@@ -28,4 +28,3 @@ export const auth = createApi({
   }),
 });
 export const { useLoginMutation, useSignupMutation, useProfileQuery } = auth;
-

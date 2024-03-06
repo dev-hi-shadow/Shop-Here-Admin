@@ -7,13 +7,12 @@ export const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
-    headers.set("Access-Control-Allow-Origin", "*");
-    headers.set(
-      "Access-Control-Allow-Methods",
-      "GET,PUT,POST,DELETE,PATCH,OPTIONS"
-    );
-    headers.set("Content-Type", "Application/JSON");
+    // headers.set("Access-Control-Allow-Origin", "*");
+    // headers.set(
+    //   "Access-Control-Allow-Methods",
+    //   "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+    // );
+    // headers.set("Content-Type", "Application/JSON");
     return headers;
   },
-  credentials: "include",
-});
+ });

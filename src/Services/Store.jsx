@@ -29,17 +29,21 @@
 //   },
 // });
 
-import { auth } from "./API/auth";
-import { authSlice } from "./Slices/auth";
+import { auth } from "./API/Auth";
+import { category } from "./API/Category";
+import authSlice from "./Slices/Auth";
+import categorySlice from "./Slices/Category";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 const rootReducer = combineReducers({
   [auth.reducerPath]: auth.reducer,
-  authSlice: authSlice,
+  [category.reducerPath]: category.reducer,
+  authSlice,
+  categorySlice,
 });
 
 export const Store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(auth.middleware),
+    getDefaultMiddleware().concat(category.middleware, auth.middleware),
 });

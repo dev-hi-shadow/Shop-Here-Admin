@@ -49,8 +49,6 @@ export const EditUnitAction = (UnitData) => async (dispatch) => {
 };
 
 export const DeleteUnitAction = (UnitData) => async (dispatch) => {
-  console.log(" UnitData", UnitData);
-
   try {
     const { data } = await axios.put(
       `${baseUrl}/unit/delete-recover/${UnitData?._id}`,

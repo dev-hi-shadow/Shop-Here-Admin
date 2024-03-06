@@ -48,9 +48,7 @@ export const EditCategoryAction = (CategoryData) => async (dispatch) => {
   }
 };
 
-export const DeleteCategoryAction = (CategoryData) => async (dispatch) => {
-  console.log(" CategoryData", CategoryData);
-
+export const DeleteCategoryAction = (CategoryData) => async (dispatch) => { 
   try {
     const { data } = await axios.put(
       `${baseUrl}/category/delete-recover/${CategoryData?._id}`,

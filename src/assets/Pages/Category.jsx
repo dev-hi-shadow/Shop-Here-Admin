@@ -1,14 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { CategoryInitialState } from "../Configurations/InitialStates";
 import { CategorySchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateCategoryAction,
-  DeleteCategoryAction,
-  EditCategoryAction,
-  GetCategoryAction,
-} from "../../Services/Actions/Category";
+
 import moment from "moment/moment";
 import {
   Button,
@@ -26,48 +20,61 @@ import {
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
-
+import { useAlert } from "../hooks/Toastify";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetCategoriesQuery,
+  useUpdateCategoryMutation,
+} from "../../Services/API/Category";
+ 
 const Category = () => {
-  const dispatch = useDispatch();
-  const { DeleteRecoverCategory, GetCategory, EditCategory, AddCategory } =
-    useSelector((state) => state.categoryState);
+  const [Categories, setCategories] = useState(null);
+  const [CreateCategory] = useCreateCategoryMutation();
+  const [UpdateCategory] = useUpdateCategoryMutation();
+  const [DeleteCategory] = useDeleteCategoryMutation();
+  const { showAlert } = useAlert();
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    dispatch(GetCategoryAction());
-  }, [dispatch]);
 
   const {
     values,
     errors,
     handleChange,
     handleSubmit,
+    setValues,
     handleBlur,
     resetForm,
-    setValues,
   } = useFormik({
     initialValues: CategoryInitialState,
     validationSchema: CategorySchema,
     onSubmit: () => handleCategory(values),
   });
-  const handleCategory = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditCategoryAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateCategoryAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteCategoryAction(values));
-    }
-  };
-  useEffect(() => {
-    if (DeleteRecoverCategory || EditCategory || AddCategory) {
+  const handleCategory = async (values) => {
+    const toast_id = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateCategory({ id: values.id, data: values }).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateCategory(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteCategory(values).unwrap();
+      }
+      showAlert(toast_id, data.message, data.success || data?.status);
       onClose();
       resetForm();
+    } catch (error) {
+       showAlert(toast_id, "Something got wrong", false);
     }
-  }, [AddCategory, DeleteRecoverCategory, EditCategory, onClose, resetForm]);
-
-  return (
+  };
+  const { data, isSuccess, isError } = useGetCategoriesQuery();
+  useEffect(() => {
+    if (isSuccess && !isError) {
+      setCategories(data?.data);
+    }
+  }, [data, isError, isSuccess]);
+   return (
     <>
       <div className="page-wrapper">
         <div className="page-body">
@@ -107,43 +114,38 @@ const Category = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetCategory) && GetCategory?.length > 0
-                        ? GetCategory?.map((Category, index) => {
+                      {Array.isArray(Categories) && Categories?.length > 0
+                        ? Categories?.map((Category, index) => {
                             return (
-                              Category?.is_deleted === false && (
-                                <TableRow key={Category._id}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{Category.name}</TableCell>
-                                  <TableCell>
-                                    {moment(Category.createdAt).format(
-                                      "MMMM DD, YYYY"
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Update"),
-                                          setValues(Category);
-                                      }}
-                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Delete"),
-                                          setValues({
-                                            ...Category,
-                                            is_deleted: true,
-                                          });
-                                      }}
-                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                  </TableCell>
-                                </TableRow>
-                              )
+                              <TableRow key={Category._id}>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{Category.name}</TableCell>
+                                <TableCell>
+                                  {moment(Category.created_at).format(
+                                    "MMMM DD, YYYY"
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <i
+                                    onClick={() => {
+                                      onOpen(),
+                                        setModalState("Update"),
+                                        setValues(Category);
+                                    }}
+                                    className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                    style={{ fontSize: "20px" }}
+                                  ></i>
+                                  <i
+                                    onClick={() => {
+                                      onOpen(),
+                                        setModalState("Delete"),
+                                        setValues(Category);
+                                    }}
+                                    className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                    style={{ fontSize: "20px" }}
+                                  ></i>
+                                </TableCell>
+                              </TableRow>
                             );
                           })
                         : null}
@@ -194,7 +196,7 @@ const Category = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetCategory?.filter(
+                      {/* {Categories?.filter(
                         (category) => category.is_deleted
                       ).map((category) => {
                         return (
@@ -216,7 +218,7 @@ const Category = () => {
                             </TableCell>
                           </TableRow>
                         );
-                      })}
+                      })} */}
                     </TableBody>
                   </Table>
                 </ModalBody>

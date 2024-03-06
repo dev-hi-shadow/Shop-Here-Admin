@@ -44,8 +44,6 @@ export const EditTaxAction = (TaxData) => async (dispatch) => {
 };
 
 export const DeleteTaxAction = (TaxData) => async (dispatch) => {
-  console.log(" TaxData", TaxData);
-
   try {
     const { data } = await axios.put(
       `${baseUrl}/tax/delete-recover/${TaxData?._id}`,

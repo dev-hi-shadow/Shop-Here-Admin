@@ -18,16 +18,13 @@ const Users = () => {
   const dispatch = useDispatch();
   const Navigate = useNavigate();
   const [Users, setUsers] = useState(null);
-  console.log(" Users", Users);
 
   const Location = useLocation();
   useEffect(() => {
     const ActiveFilter = USER_ROLES[Location.pathname.split("/")[1]];
-    console.log(" ActiveFilter", ActiveFilter, GetUsers);
     const users =
       Array.isArray(GetUsers) &&
       GetUsers.filter((item) => {
-        console.log(" item.role_id.name ", item.role_id.name);
         return item.role_id.name === ActiveFilter;
       });
     setUsers(users);

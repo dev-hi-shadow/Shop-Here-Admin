@@ -49,8 +49,6 @@ export const EditBrandAction = (BrandData) => async (dispatch) => {
 };
 
 export const DeleteBrandAction = (BrandData) => async (dispatch) => {
-  console.log(" BrandData", BrandData);
-
   try {
     const { data } = await axios.put(
       `${baseUrl}/brand/delete-recover/${BrandData?._id}`,

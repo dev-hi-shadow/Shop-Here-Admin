@@ -12,8 +12,9 @@ module.exports = {
   settings: { react: { version: "18.2" } },
   plugins: ["react-refresh"],
   rules: {
+    "react-app/no-fast-refresh": "off",
     "react-refresh/only-export-components": [
-      "warn",
+      "off",
       { allowConstantExport: true },
     ],
   },
