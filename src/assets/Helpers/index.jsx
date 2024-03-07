@@ -6,6 +6,12 @@ export const CustomFind = (array, id, key) => {
     })[key]
   );
 };
+export const SYS_USER_ROLES = {
+  ADMIN: "admin",
+  SUPER_ADMIN: "admin",
+  SELLER: "seller",
+  CUSTOMER: "customer",
+};
 export const ORDER_STATUSES = Object.freeze({
   AWAITING_FULFILLMENT: {
     name: "Awaiting Fulfillment",
@@ -107,5 +113,3 @@ export const USER_ROLES = Object.freeze({
   customer: "CUSTOMERS",
   admin: "ADMIN",
 });
-
-

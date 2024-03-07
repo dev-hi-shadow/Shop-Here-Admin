@@ -27,7 +27,7 @@ import {
   useGetCategoriesQuery,
   useUpdateCategoryMutation,
 } from "../../Services/API/Category";
- 
+
 const Category = () => {
   const [Categories, setCategories] = useState(null);
   const [CreateCategory] = useCreateCategoryMutation();
@@ -55,7 +55,7 @@ const Category = () => {
     try {
       let data;
       if (ModalState === "Update") {
-        data = await UpdateCategory({ id: values.id, data: values }).unwrap();
+        data = await UpdateCategory(values).unwrap();
       } else if (ModalState === "Create") {
         data = await CreateCategory(values).unwrap();
       } else if (["Delete", "Deactivated"].includes(ModalState)) {
@@ -65,7 +65,7 @@ const Category = () => {
       onClose();
       resetForm();
     } catch (error) {
-       showAlert(toast_id, "Something got wrong", false);
+      showAlert(toast_id, "Something got wrong", false);
     }
   };
   const { data, isSuccess, isError } = useGetCategoriesQuery();
@@ -74,7 +74,7 @@ const Category = () => {
       setCategories(data?.data);
     }
   }, [data, isError, isSuccess]);
-   return (
+  return (
     <>
       <div className="page-wrapper">
         <div className="page-body">

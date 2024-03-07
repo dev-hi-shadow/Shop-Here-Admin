@@ -99,6 +99,7 @@ const ManagementSection = () => {
                               : () => Navigate(item.redirects)
                           }
                           variant="flat"
+                          textValue={item.Title}
                         >
                           <div className="flex items-center justify-center">
                             <LordIcons

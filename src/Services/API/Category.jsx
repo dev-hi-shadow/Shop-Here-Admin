@@ -12,24 +12,23 @@ export const category = createApi({
       }),
     }),
     CreateCategory: builder.mutation({
-      query: ({ data }) => ({
+      query: (data) => ({
         url: "/categories/create",
         method: "POST",
         body: data,
       }),
     }),
     UpdateCategory: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/categories/update/${id}`,
+      query: (data) => ({
+        url: `/categories/update/${data.id}`,
         method: "PUT",
         body: { ...data, id: undefined },
       }),
     }),
     DeleteCategory: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/categories/delete/${id}`,
+      query: (data) => ({
+        url: `/categories/delete/${data.id}`,
         method: "DELETE",
-        body: data,
       }),
     }),
   }),

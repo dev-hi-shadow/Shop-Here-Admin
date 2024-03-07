@@ -22,7 +22,7 @@ import {
 } from "@nextui-org/react";
 import { TableBody, TableHeader } from "@react-stately/table";
 const Alerts = () => {
-  const GetNotifications = [];
+  const GetNotifications = []; 
 
   return (
     <>
