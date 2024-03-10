@@ -6,6 +6,11 @@ export const CustomFind = (array, id, key) => {
     })[key]
   );
 };
+
+export const Capitalize = (string) => {
+  if (!string) return string;
+  return string[0].toUpperCase() + string.slice(1).toLowerCase();
+};
 export const SYS_USER_ROLES = {
   ADMIN: "admin",
   SUPER_ADMIN: "admin",

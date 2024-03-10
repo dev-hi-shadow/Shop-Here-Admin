@@ -1,14 +1,23 @@
 import * as yup from "yup";
 
 export const SignUpSchema = yup.object({
-  name: yup.string().trim().required(" can not be an empty!"),
-  phone: yup.number().required(" can not be an empty!"),
-  email: yup.string().trim().email().required(" can not be an empty!"),
-  password: yup.string().trim().required(" can not be an empty!").min(8),
-  confirmPassword: yup
+  address: yup.string().required().label("Address"),
+  city: yup.string().required().label("City"),
+  state: yup.string().required().label("State"),
+  country: yup.string().required().label("Country"),
+  postal_code: yup.string().required().label("Postal code"),
+  is_primary: yup.boolean().required().label("Is primary address"),
+  first_name: yup.string().required().label("First name"),
+  last_name: yup.string().required().label("Last name"),
+  phone: yup.number().required().label("Phone"),
+  date_of_birth: yup.date().required().label("Date of birth"),
+  username: yup.string().required().label("Username"),
+  email: yup.string().email().required().label("Email"),
+  password: yup.string().required().label("Password"),
+  confirm_password: yup
     .string()
-    .trim()
-    .required(" can not be an empty!")
+    .required()
+    .label("Confirm password")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
 });
 

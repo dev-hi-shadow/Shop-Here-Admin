@@ -1,9 +1,18 @@
 export const SignUpInitialState = {
-  name: "",
+  address: "",
+  city: "",
+  state: "",
+  country: "",
+  postal_code: "",
+  is_primary: "",
+  first_name: "",
+  last_name: "",
+  phone: "",
+  date_of_birth: "",
+  username: "",
   email: "",
   password: "",
-  confirmPassword: "",
-  phone: "",
+  confirm_password: "",
 };
 
 export const SignInInitialState = {
@@ -57,7 +66,7 @@ export const ProductInitialState = {
   brand_id: "",
   unit_id: "",
   category_id: "",
-  faqs : [],
+  faqs: [],
   subcategory_id: "",
   min_order_quantity: 1,
   max_order_quantity: 100,

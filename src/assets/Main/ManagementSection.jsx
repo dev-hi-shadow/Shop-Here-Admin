@@ -11,6 +11,7 @@ import {
   User,
 } from "@nextui-org/react";
 import LordIcons from "../Components/LordIcons";
+import { Capitalize } from "../Helpers";
 
 const ManagementSection = () => {
   const Navigate = useNavigate();
@@ -20,9 +21,7 @@ const ManagementSection = () => {
   useEffect(() => {
     setModule(Location.pathname.split("/")[1]);
   }, [Location]);
-  const Capitalize = (str) => {
-    return str && str.charAt(0).toUpperCase() + str.slice(1);
-  };
+
   const Keys = Object.keys(SubBar);
   const Key = Keys?.find((key) => {
     return SubBar[key].find((key) => key === Module);

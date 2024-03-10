@@ -1,33 +1,23 @@
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
 import { SignUpInitialState } from "../Configurations/InitialStates";
 import { SignUpSchema } from "../Configurations/YupSchema";
-import { useDispatch, useSelector } from "react-redux";
-import { SignUpAction } from "../../Services/Actions/Authentication";
-import { useEffect } from "react";
-import { Button, Input } from "@nextui-org/react";
+import NextInput from "../Components/NextInput";
+import { Countries } from "../Helpers/Countries";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import moment from "moment";
+import CustomDatePicker from "../Components/DatePicker";
+import { IconEye } from "@tabler/icons-react";
+import { IconEyeClosed } from "@tabler/icons-react";
+import { useState } from "react";
+import NextAutoComplete from "../Components/NextAutoComplete";
 
 const SignUp = () => {
-  const Navigate = useNavigate();
-  const dispatch = useDispatch();
-  const authentication = useSelector((state) => state.authentication);
-
+  const [typePassword, setTypePassword] = useState(true);
   const handleSignUpSubmit = (values) => {
     const body = { ...values };
-    delete body.confirmPassword;
-    dispatch(SignUpAction(body));
+    console.log("🚀  body:", body);
   };
-
-  useEffect(() => {
-    if (authentication?.signup?.token) {
-      window.localStorage.setItem("accessToken", authentication?.signup?.token);
-    }
-    if (authentication?.isAuthenticated || authentication?.profile) {
-      Navigate("/");
-    }
-  }, [Navigate, authentication]);
-
-  const { values, errors, touched, handleChange, handleSubmit, handleBlur } =
+  const { values, errors, touched, handleChange, setFieldValue, handleBlur } =
     useFormik({
       initialValues: SignUpInitialState,
       validationSchema: SignUpSchema,
@@ -36,261 +26,437 @@ const SignUp = () => {
 
   return (
     <>
-      <main className="main-content my-3 ps">
-        <section className="min-vh-100 mb-8">
-          <div className="page-header align-items-start min-vh-50  pb-11 m-3 border-radius-lg">
-            <span className="mask bg-gradient-dark opacity-6"></span>
-            <div className="container">
-              <div className="row justify-content-center">
-                <div className="col-lg-5 text-center mx-auto">
-                  <h1 className="text-white mb-2 mt-5">Welcome!</h1>
-                  <p className="text-lead text-white">
-                    Use these awesome forms to login or create new account in
-                    your project for free.
-                  </p>
-                </div>
-              </div>
+      <div className="lg:m-10">
+        <form className="relative border border-gray-100 space-y-3  rounded-md bg-white p-6 shadow-xl lg:p-10">
+          <h1 className="mb-6 text-xl font-semibold lg:text-2xl">Register</h1>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <NextInput
+                className=""
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.first_name}
+                variant="bordered"
+                name="first_name"
+                type="text"
+                isRequired
+                touched={touched}
+                errors={errors}
+              />
+            </div>
+            <div>
+              <NextInput
+                className=""
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.last_name}
+                variant="bordered"
+                name="last_name"
+                type="text"
+                isRequired={true}
+                touched={touched}
+                errors={errors}
+              />
             </div>
           </div>
-          <div className="container">
-            <div className="row mt-lg-n10 mt-md-n11 mt-n10">
-              <div className="col-xl-4 col-lg-5 col-md-7 mx-auto">
-                <div className="card z-index-0">
-                  <div className="card-header text-center pt-4">
-                    <h5>Register with</h5>
-                  </div>
-                  <div className="row px-xl-5 px-sm-4 px-3 mt-2">
-                    <div className="col-4 ms-auto px-1">
-                      <Link className="btn btn-outline-light w-100" to="/">
-                        <svg
-                          width="24px"
-                          height="32px"
-                          viewBox="0 0 64 64"
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g
-                            id="Artboard"
-                            stroke="none"
-                            strokeWidth="1"
-                            fill="none"
-                            fillRule="evenodd"
-                          >
-                            <g
-                              id="facebook-3"
-                              transform="translate(3.000000, 3.000000)"
-                              fillRule="nonzero"
-                            >
-                              <circle
-                                fill="#3C5A9A"
-                                cx="29.5091719"
-                                cy="29.4927506"
-                                r="29.4882047"
-                              ></circle>
-                              <path
-                                d="M39.0974944,9.05587273 L32.5651312,9.05587273 C28.6886088,9.05587273 24.3768224,10.6862851 24.3768224,16.3054653 C24.395747,18.2634019 24.3768224,20.1385313 24.3768224,22.2488655 L19.8922122,22.2488655 L19.8922122,29.3852113 L24.5156022,29.3852113 L24.5156022,49.9295284 L33.0113092,49.9295284 L33.0113092,29.2496356 L38.6187742,29.2496356 L39.1261316,22.2288395 L32.8649196,22.2288395 C32.8649196,22.2288395 32.8789377,19.1056932 32.8649196,18.1987181 C32.8649196,15.9781412 35.1755132,16.1053059 35.3144932,16.1053059 C36.4140178,16.1053059 38.5518876,16.1085101 39.1006986,16.1053059 L39.1006986,9.05587273 L39.0974944,9.05587273 L39.0974944,9.05587273 Z"
-                                id="Path"
-                                fill="#FFFFFF"
-                              ></path>
-                            </g>
-                          </g>
-                        </svg>
-                      </Link>
-                    </div>
-                    <div className="col-4 px-1">
-                      <Link className="btn btn-outline-light w-100" to="/">
-                        <svg
-                          width="24px"
-                          height="32px"
-                          viewBox="0 0 64 64"
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g
-                            id="Artboard"
-                            stroke="none"
-                            strokeWidth="1"
-                            fill="none"
-                            fillRule="evenodd"
-                          >
-                            <g
-                              id="apple-black"
-                              transform="translate(7.000000, 0.564551)"
-                              fill="#000000"
-                              fillRule="nonzero"
-                            >
-                              <path
-                                d="M40.9233048,32.8428307 C41.0078713,42.0741676 48.9124247,45.146088 49,45.1851909 C48.9331634,45.4017274 47.7369821,49.5628653 44.835501,53.8610269 C42.3271952,57.5771105 39.7241148,61.2793611 35.6233362,61.356042 C31.5939073,61.431307 30.2982233,58.9340578 25.6914424,58.9340578 C21.0860585,58.9340578 19.6464932,61.27947 15.8321878,61.4314159 C11.8738936,61.5833617 8.85958554,57.4131833 6.33064852,53.7107148 C1.16284874,46.1373849 -2.78641926,32.3103122 2.51645059,22.9768066 C5.15080028,18.3417501 9.85858819,15.4066355 14.9684701,15.3313705 C18.8554146,15.2562145 22.5241194,17.9820905 24.9003639,17.9820905 C27.275104,17.9820905 31.733383,14.7039812 36.4203248,15.1854154 C38.3824403,15.2681959 43.8902255,15.9888223 47.4267616,21.2362369 C47.1417927,21.4153043 40.8549638,25.1251794 40.9233048,32.8428307 M33.3504628,10.1750144 C35.4519466,7.59650964 36.8663676,4.00699306 36.4804992,0.435448578 C33.4513624,0.558856931 29.7884601,2.48154382 27.6157341,5.05863265 C25.6685547,7.34076135 23.9632549,10.9934525 24.4233742,14.4943068 C27.7996959,14.7590956 31.2488715,12.7551531 33.3504628,10.1750144"
-                                id="Shape"
-                              ></path>
-                            </g>
-                          </g>
-                        </svg>
-                      </Link>
-                    </div>
-                    <div className="col-4 me-auto px-1">
-                      <Link className="btn btn-outline-light w-100" to="/">
-                        <svg
-                          width="24px"
-                          height="32px"
-                          viewBox="0 0 64 64"
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g
-                            id="Artboard"
-                            stroke="none"
-                            strokeWidth="1"
-                            fill="none"
-                            fillRule="evenodd"
-                          >
-                            <g
-                              id="google-icon"
-                              transform="translate(3.000000, 2.000000)"
-                              fillRule="nonzero"
-                            >
-                              <path
-                                d="M57.8123233,30.1515267 C57.8123233,27.7263183 57.6155321,25.9565533 57.1896408,24.1212666 L29.4960833,24.1212666 L29.4960833,35.0674653 L45.7515771,35.0674653 C45.4239683,37.7877475 43.6542033,41.8844383 39.7213169,44.6372555 L39.6661883,45.0037254 L48.4223791,51.7870338 L49.0290201,51.8475849 C54.6004021,46.7020943 57.8123233,39.1313952 57.8123233,30.1515267"
-                                id="Path"
-                                fill="#4285F4"
-                              ></path>
-                              <path
-                                d="M29.4960833,58.9921667 C37.4599129,58.9921667 44.1456164,56.3701671 49.0290201,51.8475849 L39.7213169,44.6372555 C37.2305867,46.3742596 33.887622,47.5868638 29.4960833,47.5868638 C21.6960582,47.5868638 15.0758763,42.4415991 12.7159637,35.3297782 L12.3700541,35.3591501 L3.26524241,42.4054492 L3.14617358,42.736447 C7.9965904,52.3717589 17.959737,58.9921667 29.4960833,58.9921667"
-                                id="Path"
-                                fill="#34A853"
-                              ></path>
-                              <path
-                                d="M12.7159637,35.3297782 C12.0932812,33.4944915 11.7329116,31.5279353 11.7329116,29.4960833 C11.7329116,27.4640054 12.0932812,25.4976752 12.6832029,23.6623884 L12.6667095,23.2715173 L3.44779955,16.1120237 L3.14617358,16.2554937 C1.14708246,20.2539019 0,24.7439491 0,29.4960833 C0,34.2482175 1.14708246,38.7380388 3.14617358,42.736447 L12.7159637,35.3297782"
-                                id="Path"
-                                fill="#FBBC05"
-                              ></path>
-                              <path
-                                d="M29.4960833,11.4050769 C35.0347044,11.4050769 38.7707997,13.7975244 40.9011602,15.7968415 L49.2255853,7.66898166 C44.1130815,2.91684746 37.4599129,0 29.4960833,0 C17.959737,0 7.9965904,6.62018183 3.14617358,16.2554937 L12.6832029,23.6623884 C15.0758763,16.5505675 21.6960582,11.4050769 29.4960833,11.4050769"
-                                id="Path"
-                                fill="#EB4335"
-                              ></path>
-                            </g>
-                          </g>
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <form role="form text-left" onSubmit={handleSubmit}>
-                      <Input
-                        className="mb-3"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values?.name}
-                        variant="bordered"
-                        name="name"
-                        type="text"
-                        isRequired
-                        placeholder="Name"
-                        isInvalid={errors.name && touched.name}
-                        errorMessage={touched.name && errors.name}
-                      />
-                      <Input
-                        className="mb-3"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values?.email}
-                        name="email"
-                        variant="bordered"
-                        type="email"
-                        isRequired
-                        placeholder="email"
-                        isInvalid={errors.email && touched.email}
-                        errorMessage={touched.email && errors.email}
-                      />
-                      <Input
-                        className="mb-3"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values?.phone}
-                        name="phone"
-                        variant="bordered"
-                        type="number"
-                        isRequired
-                        placeholder="Phone"
-                        isInvalid={errors.phone && touched.phone}
-                        errorMessage={touched.phone && errors.phone}
-                      />
-                      <Input
-                        className="mb-3"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values?.password}
-                        name="password"
-                        variant="bordered"
-                        type="password"
-                        isRequired
-                        placeholder="Password"
-                        isInvalid={errors.password && touched.password}
-                        errorMessage={touched.password && errors.password}
-                      />
-                      <Input
-                        className="mb-3"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values?.confirmPassword}
-                        name="confirmPassword"
-                        variant="bordered"
-                        type="password"
-                        isRequired
-                        placeholder="Confirm Password"
-                        isInvalid={
-                          errors.confirmPassword && touched.confirmPassword
-                        }
-                        errorMessage={
-                          touched.confirmPassword && errors.confirmPassword
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <NextInput
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.email}
+                variant="bordered"
+                name="email"
+                touched={touched}
+                errors={errors}
+              />
+            </div>
+
+            <NextInput
+              className="flex items-center"
+              classNames={{
+                inputWrapper: ["ps-1"],
+              }}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.phone}
+              variant="bordered"
+              name="phone"
+              type="number"
+              startContent={
+                <>
+                  <NextAutoComplete
+                    ariaLabel="select idd"
+                    ariaLabelledby="select idd "
+                    className="py-0 my-0"
+                    variant={"underlined"}
+                    classNames={{
+                      inputWrapper: ["border-0"],
+                    }}
+                    onSelectionChange={(e) => setFieldValue("phone_start", e)}
+                    onBlur={handleBlur}
+                    selectedKey={values.phone_start}
+                    touched={touched}
+                    errors={errors}
+                    startContentIsImage={true}
+                    startContentSrc={
+                      Countries.find(
+                        (item) =>
+                          item.name === (values.phone_start || values.country)
+                      )?.flag
+                    }
+                    startContentAlt="idd country image"
+                    childArray={Countries}
+                    childAriaLabel="country-idd"
+                    childAriaLabelledby="country-idd"
+                    childTextValueField="name"
+                    childValue="name"
+                    childStartContentIsImage={true}
+                    childStartContent="name"
+                    childValueShow="name"
+                  ></NextAutoComplete>
+                  {/* <Autocomplete
+                    aria-label="select idd country"
+                    aria-labelledby="select idd country"
+                    className="py-0 my-0"
+                    variant={"underlined"}
+                    classNames={{
+                      inputWrapper: ["border-0"],
+                    }}
+                    onSelectionChange={(e) => setFieldValue("phone_start", e)}
+                    onBlur={handleBlur}
+                    selectedKey={values.phone_start}
+                    touched={touched}
+                    errors={errors}
+                    startContent={
+                      <img
+                        className="rounded-full w-3 h-3"
+                        alt={name}
+                        src={
+                          Countries.find(
+                            (item) =>
+                              item.name ===
+                              (values.phone_start || values.country)
+                          )?.flag
                         }
                       />
+                    }
+                  >
+                    {Countries.map(({ name, flag }, index) => (
+                      <AutocompleteItem
+                        key={name}
+                        aria-label={`country-idd-${index}`}
+                        aria-labelledby={`country-idd-${index}`}
+                        textValue={name}
+                        value={name}
+                        startContent={
+                          <img
+                            aria-label="image-country-idd"
+                            aria-labelledby="image-country-idd"
+                            className="rounded-full w-3 h-3"
+                            alt={name}
+                            src={flag}
+                          />
+                        }
+                      >
+                        {name}
+                      </AutocompleteItem>
+                    ))}
+                  </Autocomplete> */}
+                  {
+                    Countries.find(
+                      (item) =>
+                        item.name === (values.phone_start || values.country)
+                    )?.idd
+                  }
+                </>
+              }
+            />
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <NextInput
+              className="col-span-2"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.address}
+              variant="bordered"
+              name="address"
+              placeholder="Address / Street / Landmark"
+              touched={touched}
+              errors={errors}
+            />
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.city}
+              variant="bordered"
+              name="city"
+              touched={touched}
+              errors={errors}
+            />
+          </div>
+          <div className="grid gap-3 grid-cols-4">
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.username}
+              variant="bordered"
+              name="username"
+              touched={touched}
+              errors={errors}
+            />
 
-                     
+            <Autocomplete
+              aria-label={`select country-name`}
+              aria-labelledby={`select-country-idd`}
+              className="py-0 my-0"
+              classNames={{
+                inputWrapper: ["border-0"],
+              }}
+              onSelectionChange={(e) => setFieldValue("country", e)}
+              onBlur={handleBlur}
+              defaultSelectedKey={values.phone_start}
+              selectedKey={values.country || values.phone_start}
+              touched={touched}
+              errors={errors}
+              startContent={
+                <img
+                  aria-label="image-country-name"
+                  aria-labelledby="image-country-name"
+                  key={values.country}
+                  className="rounded-full w-3 h-3"
+                  alt={name}
+                  src={
+                    Countries.find(
+                      (item) =>
+                        item.name === (values.country || values.phone_start)
+                    )?.flag
+                  }
+                />
+              }
+            >
+              {Countries.map(({ name, flag }, index) => (
+                <AutocompleteItem
+                  key={name}
+                  aria-label={`country-idd-${index}`}
+                  aria-labelledby={`country-idd-${index}`}
+                  textValue={name}
+                  value={name}
+                  startContent={
+                    <img
+                      className="rounded-full w-3 h-3"
+                      alt={name}
+                      src={flag}
+                    />
+                  }
+                >
+                  {name}
+                </AutocompleteItem>
+              ))}
+            </Autocomplete>
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.password}
+              variant="bordered"
+              name="password"
+              endContent={
+                <button
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={() => setTypePassword(!typePassword)}
+                >
+                  {typePassword ? (
+                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
+                  ) : (
+                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
+                  )}
+                </button>
+              }
+              type={typePassword ? "password" : "text"}
+              touched={touched}
+              errors={errors}
+            />
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.confirm_password}
+              endContent={
+                <button
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={() => setTypePassword(!typePassword)}
+                >
+                  {typePassword ? (
+                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
+                  ) : (
+                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
+                  )}
+                </button>
+              }
+              type={typePassword ? "password" : "text"}
+              variant="bordered"
+              name="confirm_password"
+              touched={touched}
+              errors={errors}
+            />
+          </div>
+          <div className="grid gap-3 grid-cols-4">
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.username}
+              variant="bordered"
+              name="username"
+              touched={touched}
+              errors={errors}
+            />
+            <CustomDatePicker
+              onChange={(event) => {
+                setFieldValue(
+                  "date_of_birth",
+                  event ? moment(event).format("DD-MM-YYYY") : null
+                );
+              }}
+              onBlur={handleBlur}
+              value={
+                values.date_of_birth
+                  ? moment(values.date_of_birth, "DD-MM-YYYY")
+                  : null
+              }
+              variant="bordered"
+              name="date_of_birth"
+              touched={touched}
+              errors={errors}
+            />
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.password}
+              variant="bordered"
+              name="password"
+              endContent={
+                <button
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={() => setTypePassword(!typePassword)}
+                >
+                  {typePassword ? (
+                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
+                  ) : (
+                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
+                  )}
+                </button>
+              }
+              type={typePassword ? "password" : "text"}
+              touched={touched}
+              errors={errors}
+            />
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.confirm_password}
+              endContent={
+                <button
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={() => setTypePassword(!typePassword)}
+                >
+                  {typePassword ? (
+                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
+                  ) : (
+                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
+                  )}
+                </button>
+              }
+              type={typePassword ? "password" : "text"}
+              variant="bordered"
+              name="confirm_password"
+              touched={touched}
+              errors={errors}
+            />
+          </div>
 
-                      <div className="text-center">
-                      <Button
-                          type="submit"
-                          value="submit"
-                          variant="faded"
-                          color="primary"
-                        >
-                          Sign in
-                        </Button>
-                      </div>
-                      <p className="text-sm mt-3 mb-0">
-                        Already have an account?{" "}
-                        <Link
-                          to="/sign-in"
-                          className="text-dark font-weight-bolder"
-                        >
-                          Sign in
-                        </Link>
-                      </p>
-                    </form>
-                  </div>
-                </div>
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div>
+              <label className=""> Gender </label>
+              <div className="relative w-56 mt-2 bg-gray-100 rounded-lg">
+                <input
+                  className="peer hidden"
+                  type="checkbox"
+                  name="select-1"
+                  id="select-1"
+                />
+                <label
+                  htmlFor="select-1"
+                  className="flex w-full cursor-pointer rounded-lg select-none border p-2 px-3 text-sm text-gray-700 ring-blue-400 peer-checked:ring"
+                >
+                  Select Option{" "}
+                </label>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="pointer-events-none absolute right-5 top-3 h-4 text-gray-600 transition peer-checked:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+                <ul className="max-h-0 select-none flex-col overflow-hidden rounded-b-lg shadow-md transition-all duration-300 peer-checked:max-h-56 peer-checked:py-3">
+                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
+                    Male
+                  </li>
+                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
+                    Female
+                  </li>
+                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
+                    Other
+                  </li>
+                </ul>
               </div>
             </div>
+            <div>
+              <label className="">
+                {" "}
+                Phone: <span className="text-sm text-gray-400">
+                  (optional)
+                </span>{" "}
+              </label>
+              <input
+                type="text"
+                placeholder="+543 5445 0543"
+                className="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"
+              />
+            </div>
           </div>
-        </section>
 
-        <div className="ps__rail-x" style={{ left: "0px", bottom: "0px" }}>
-          <div
-            className="ps__thumb-x"
-            tabIndex="0"
-            style={{ left: "0px", width: "0px" }}
-          ></div>
-        </div>
-        <div className="ps__rail-y" style={{ top: "0px", right: "0px" }}>
-          <div
-            className="ps__thumb-y"
-            tabIndex="0"
-            style={{ top: "0px", height: "0px" }}
-          ></div>
-        </div>
-      </main>
+          <div className="checkbox">
+            <input type="checkbox" id="chekcbox1" checked="" />
+            <label htmlFor="checkbox1">
+              I agree to the{" "}
+              <a href="#" target="_blank" className="text-blue-600">
+                {" "}
+                Terms and Conditions{" "}
+              </a>{" "}
+            </label>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              className="mt-5 w-full rounded-md bg-blue-600 p-2 text-center font-semibold text-white"
+            >
+              Get Started
+            </button>
+          </div>
+        </form>
+      </div>
     </>
   );
 };

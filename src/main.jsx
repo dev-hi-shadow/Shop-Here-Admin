@@ -6,14 +6,15 @@ import { Store } from "./Services/Store.jsx";
 import { NextUIProvider } from "@nextui-org/system";
 import "./index.css";
 import { ToastProvider } from "./assets/hooks/Toastify.jsx";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Router>
     <NextUIProvider>
-      <ToastProvider>
-        <Provider store={Store}>
-          <App />
-        </Provider>
-      </ToastProvider>
-    </NextUIProvider>
+         <ToastProvider>
+          <Provider store={Store}>
+            <App />
+          </Provider>
+        </ToastProvider>
+     </NextUIProvider>
   </Router>
 );
