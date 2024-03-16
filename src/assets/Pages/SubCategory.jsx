@@ -17,7 +17,10 @@ import {
   TableRow,
   useDisclosure,
   Spinner,
+  Autocomplete,
+  AutocompleteItem,
 } from "@nextui-org/react";
+
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
 import {
@@ -28,7 +31,6 @@ import {
 } from "../../Services/API/SubCategory";
 import { useAlert } from "../hooks/Toastify";
 import { useGetCategoriesQuery } from "../../Services/API/Category";
-import NextAutoComplete from "../Components/NextAutoComplete";
 
 const SubCategory = () => {
   const [ModalState, setModalState] = useState("");
@@ -41,7 +43,7 @@ const SubCategory = () => {
   const { data: GetCategory } = useGetCategoriesQuery();
 
   const handleSubCategory = async (values = values) => {
-    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+     const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
     try {
       let data;
       if (ModalState === "Update") {
@@ -61,20 +63,21 @@ const SubCategory = () => {
     }
   };
   const {
+    setFieldValue,
     values,
-    errors,
     handleChange,
+    errors,
     handleSubmit,
     handleBlur,
     resetForm,
-    setFieldValue,
-     setValues,
+    setValues,
   } = useFormik({
     initialValues: SubCategoryInitialState,
     validationSchema: SubCategorySchema,
     onSubmit: handleSubCategory,
   });
 
+  console.log(values);
   return (
     <>
       <div className="page-wrapper">
@@ -147,6 +150,7 @@ const SubCategory = () => {
                                       setValues({
                                         ...SubCategory,
                                         category_id: SubCategory.category.id,
+                                        category: undefined,
                                       });
                                   }}
                                   className="fa-solid fa-pen me-3 text-warning  mr-2 "
@@ -194,23 +198,25 @@ const SubCategory = () => {
                     onBlur={handleBlur}
                     errorMessage={errors.name}
                   />
-                   <NextAutoComplete
-                    ariaLabel={`select category`}
-                    ariaLabelledby={`select-category`}
-                    className="py-0 my-0"
+                  <Autocomplete
+                    label="Favorite Animal"
+                    variant=""
+                    placeholder="Search an animal"
+                    className=""
+                    selectedKey={values.category_id?.toString()}
                     onSelectionChange={(e) => setFieldValue("category_id", e)}
                     onBlur={handleBlur}
-                    defaultSelectedKey={values.category_id}
-                    selectedKey={values.category_id}
-                    errors={errors}
-                    childArray={GetCategory?.data}
-                    childAriaLabel="country-add"
-                    childAriaLabelledby="country-add"
-                    childKey="id"
-                    childTextValueField="name"
-                    childValue="name"
-                    childValueShow="name"
-                  />
+                  >
+                    {Array.isArray(GetCategory.data) &&
+                      GetCategory.data.map((item) => (
+                        <AutocompleteItem
+                          key={item.id}
+                          value={item.id?.toString()}
+                        >
+                          {item.name}
+                        </AutocompleteItem>
+                      ))}
+                  </Autocomplete>
                 </ModalBody>
               </>
             )}

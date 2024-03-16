@@ -9,9 +9,12 @@ export const attributeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(attribute.endpoints.GetAttributes.matchFulfilled, (state, action) => {
-        state.attributes = action.payload;
-      })
+      .addMatcher(
+        attribute.endpoints.GetAttributes.matchFulfilled,
+        (state, action) => {
+          state.attributes = action.payload;
+        }
+      )
       .addMatcher(
         attribute.endpoints.CreateAttribute.matchFulfilled,
         (state, action) => {

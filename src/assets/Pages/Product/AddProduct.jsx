@@ -180,7 +180,7 @@ const AddProduct = () => {
 
       attributeValues.forEach((valueId) => {
         currentCombination.push({
-          attributeid: attributeId,
+          attribute_id: attributeId,
           valueid: valueId,
         });
         generateValueCombinations(
@@ -903,7 +903,7 @@ const AddProduct = () => {
                               >
                                 {Array.isArray(GetAttribute) &&
                                   GetAttribute.filter(
-                                    (filterItem) => !filterItem.attributeid
+                                    (filterItem) => !filterItem.attrbute.id
                                   ).map((attribute) => (
                                     <SelectItem
                                       textValue={attribute.name}
@@ -937,7 +937,7 @@ const AddProduct = () => {
                                   {Array.isArray(GetAttribute) &&
                                     GetAttribute.filter(
                                       (item) =>
-                                        item.attributeid?.id ===
+                                        item.attrbute.id?.id ===
                                         VariableAttributeCategory
                                     ).map((attribute) => (
                                       <ListboxItem

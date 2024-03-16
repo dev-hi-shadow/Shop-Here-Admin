@@ -28,6 +28,7 @@ import {
   useUpdateUnitMutation,
 } from "../../Services/API/Unit";
 import { useAlert } from "../hooks/Toastify";
+import NextInput from "../Components/NextUI/NextInput";
 
 const Unit = () => {
   const { data, isSuccess, isLoading } = useGetUnitsQuery();
@@ -47,6 +48,7 @@ const Unit = () => {
     handleBlur,
     resetForm,
     setValues,
+    touched,
   } = useFormik({
     initialValues: UnitInitialState,
     validationSchema: UnitSchema,
@@ -72,6 +74,12 @@ const Unit = () => {
         : showAlert(toastid, "Something went wrong", false);
     }
   };
+  // useEffect(() => {
+  //   if (DeleteRecoverUnit || EditUnit || AddUnit) {
+  //     onClose();
+  //     resetForm();
+  //   }
+  // }, [AddUnit, DeleteRecoverUnit, EditUnit, onClose, resetForm]);
 
   return (
     <>
@@ -125,7 +133,8 @@ const Unit = () => {
                         )
                       }
                     >
-                      {Array.isArray(data.data) &&
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
                         data.data?.map((Unit, index) => {
                           return (
                             <TableRow key={Unit.id}>
@@ -186,6 +195,16 @@ const Unit = () => {
                     onBlur={handleBlur}
                     errorMessage={errors.name}
                   />
+                  <NextInput
+                    name="short_form"
+                    value={values.short_form}
+                    label="Short Form"
+                    isRequired={true}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    touched={touched}
+                    errors={errors}
+                  />
                 </ModalBody>
               </>
             )}
@@ -207,8 +226,7 @@ const Unit = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {isSuccess &&
-                        Array.isArray(data.data) &&
+                      {Array.isArray(data.data) &&
                         data.data.map((unit) => {
                           return (
                             <TableRow key={unit.id}>

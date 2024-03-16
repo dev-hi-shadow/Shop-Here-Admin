@@ -1,14 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AttributeInitialState } from "../Configurations/InitialStates";
 import { AttributeSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateAttributeAction,
-  DeleteAttributeAction,
-  EditAttributeAction,
-  GetAttributeAction,
-} from "../../Services/Actions/Attribute";
+
 import moment from "moment/moment";
 import {
   Button,
@@ -27,20 +21,26 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  Spinner,
   useDisclosure,
 } from "@nextui-org/react";
 import { Input } from "@nextui-org/input";
-
+import {
+  useCreateAttributeMutation,
+  useDeleteAttributeMutation,
+  useGetAttributesQuery,
+  useUpdateAttributeMutation,
+} from "../../Services/API/Attribute";
+import { useAlert } from "../hooks/Toastify";
 const Attribute = () => {
-  const dispatch = useDispatch();
-  const { DeleteRecoverAttribute, GetAttribute, EditAttribute, AddAttribute } =
-    useSelector((state) => state.attributeState);
-  const [ModalState, setModalState] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isLoading, data } = useGetAttributesQuery();
+  const [CreateAttribute] = useCreateAttributeMutation();
+  const [UpdateAttribute] = useUpdateAttributeMutation();
+  const [DeleteAttribute] = useDeleteAttributeMutation();
+  const { showAlert } = useAlert();
 
-  useEffect(() => {
-    dispatch(GetAttributeAction());
-  }, [dispatch]);
+  const [ModalState, setModalState] = useState("");
+  let { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
     values,
@@ -56,21 +56,33 @@ const Attribute = () => {
     validationSchema: AttributeSchema,
     onSubmit: () => handleAttribute(values),
   });
-  const handleAttribute = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditAttributeAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateAttributeAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteAttributeAction(values));
-    }
-  };
-  useEffect(() => {
-    if (DeleteRecoverAttribute || EditAttribute || AddAttribute) {
+  const handleAttribute = async (values = values) => {
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateAttribute(values).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateAttribute(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteAttribute(values).unwrap();
+      }
+      showAlert(toastid, data.message, data.success || data?.status);
       onClose();
       resetForm();
+    } catch (error) {
+      Array.isArray(error.data.errors)
+        ? error.data.errors.map((error) => showAlert(toastid, error, false))
+        : showAlert(toastid, "Something went wrong", false);
     }
-  }, [AddAttribute, DeleteRecoverAttribute, EditAttribute, onClose, resetForm]);
+  };
+
+  // useEffect(() => {
+  //   if (DeleteRecoverAttribute || EditAttribute || AddAttribute) {
+  //     onClose();
+  //     resetForm();
+  //   }
+  // }, [AddAttribute, DeleteRecoverAttribute, EditAttribute, onClose, resetForm]);
 
   return (
     <>
@@ -112,16 +124,29 @@ const Attribute = () => {
                         Add Values
                       </TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetAttribute) &&
-                        GetAttribute?.filter((item) => !item?.attributeid).map(
-                          (Attribute, index) => {
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {Array.isArray(data?.data) &&
+                        data?.data
+                          ?.filter((item) => !item.attribute)
+                          .map((Attribute, index) => {
                             return (
-                              <TableRow key={Attribute.id}>
+                              <TableRow key={Attribute?.id}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{Attribute.name}</TableCell>
+                                <TableCell>{Attribute?.name}</TableCell>
                                 <TableCell>
-                                  {moment(Attribute.createdAt).format(
+                                  {moment(Attribute.created_at).format(
                                     "MMMM DD, YYYY"
                                   )}
                                 </TableCell>
@@ -156,39 +181,41 @@ const Attribute = () => {
                                         className="rounded-3"
                                       >
                                         Total{" "}
-                                        {Array.isArray(GetAttribute) &&
-                                          GetAttribute?.filter(
+                                        {Array.isArray(data.data) &&
+                                          data.data?.filter(
                                             (value) =>
-                                              value?.attributeid?.id ==
+                                              value?.attribute_id ==
                                               Attribute?.id
                                           ).length}{" "}
                                         Values
                                       </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu variant="flat" color="danger">
-                                      {Array.isArray(GetAttribute) &&
-                                        GetAttribute?.filter(
-                                          (value) =>
-                                             value?.attributeid?.id ==
+                                      {Array.isArray(data.data) &&
+                                        data.data
+                                          ?.filter(
+                                            (value) =>
+                                              value?.attribute_id ==
                                               Attribute?.id
-                                        )?.map((value) => (
-                                          <DropdownItem
-                                            key={value.id}
-                                            onClick={() => {
-                                              setValues({
-                                                ...value,
-                                                is_deleted: true,
-                                              }),
-                                                setModalState("Delete"),
-                                                onOpen();
-                                            }}
-                                          >
-                                            <div className=" p-0 m-0 flex justify-between items-center">
-                                              <span> {value.name} </span>
-                                              <i className="fa-solid fa-trash text-danger"></i>
-                                            </div>
-                                          </DropdownItem>
-                                        ))}
+                                          )
+                                          ?.map((value) => (
+                                            <DropdownItem
+                                              key={value.id}
+                                              onClick={() => {
+                                                setValues({
+                                                  ...value,
+                                                  is_deleted: true,
+                                                }),
+                                                  setModalState("Delete"),
+                                                  onOpen();
+                                              }}
+                                            >
+                                              <div className=" p-0 m-0 flex justify-between items-center">
+                                                <span> {value.name} </span>
+                                                <i className="fa-solid fa-trash text-danger"></i>
+                                              </div>
+                                            </DropdownItem>
+                                          ))}
                                     </DropdownMenu>
                                   </Dropdown>
                                   <div className="d-flex"></div>
@@ -200,7 +227,7 @@ const Attribute = () => {
                                     onClick={() => {
                                       setModalState("Create"),
                                         setValues({
-                                          attributeid: Attribute?.id,
+                                          attribute_id: Attribute?.id,
                                         });
                                       onOpen();
                                     }}
@@ -210,8 +237,7 @@ const Attribute = () => {
                                 </TableCell>
                               </TableRow>
                             );
-                          }
-                        )}
+                          })}
                     </TableBody>
                   </Table>
                 </div>
@@ -221,7 +247,14 @@ const Attribute = () => {
         </div>
       </div>
 
-      <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size={"lg"}
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          resetForm();
+        }}
+      >
         <ModalContent>
           <ModalHeader className="p-3">{ModalState} Attribute</ModalHeader>
           <form onSubmit={handleSubmit}>
@@ -259,31 +292,32 @@ const Attribute = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetAttribute?.filter(
-                        (attribute) => attribute.is_deleted
-                      ).map((attribute) => {
-                        return (
-                          <TableRow key={attribute.id}>
-                            <TableCell>
-                              {attribute.name} [{attribute?.attributeid?.name}]
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                color="success"
-                                variant="light"
-                                onClick={async () => {
-                                  handleAttribute({
-                                    ...attribute,
-                                    is_deleted: false,
-                                  });
-                                }}
-                              >
-                                Recover
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                      {data.data
+                        ?.filter((attribute) => attribute.is_deleted)
+                        .map((attribute) => {
+                          return (
+                            <TableRow key={attribute.id}>
+                              <TableCell>
+                                {attribute.name} [{attribute?.attrbute.id?.name}
+                                ]
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  color="success"
+                                  variant="light"
+                                  onClick={async () => {
+                                    handleAttribute({
+                                      ...attribute,
+                                      is_deleted: false,
+                                    });
+                                  }}
+                                >
+                                  Recover
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </ModalBody>
@@ -292,7 +326,13 @@ const Attribute = () => {
 
             {!["Deactivated"].includes(ModalState) && (
               <ModalFooter className="p-3">
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose(), resetForm();
+                  }}
+                >
                   Close
                 </Button>
                 <Button

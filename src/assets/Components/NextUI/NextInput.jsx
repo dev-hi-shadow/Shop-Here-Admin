@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Input } from "@nextui-org/react";
-import { Capitalize } from "../Helpers";
+import { Capitalize } from "../../Helpers";
 
 const NextInput = ({
   className = "",

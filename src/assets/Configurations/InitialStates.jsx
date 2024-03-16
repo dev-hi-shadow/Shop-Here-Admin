@@ -45,7 +45,7 @@ export const AttributeInitialState = {
 
 export const UnitInitialState = {
   name: "",
-  unit_code: "",
+  short_form: "",
 };
 export const TaxInitialState = {
   name: "",

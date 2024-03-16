@@ -49,7 +49,7 @@ export const AttributeSchema = yup.object({
 
 export const UnitSchema = yup.object({
   name: yup.string().trim().required(" can not be an empty!"),
-  unit_code: yup.string().trim().required(" can not be an empty!"),
+  short_form: yup.string().trim().required(" can not be an empty!"),
 });
 export const TaxSchema = yup.object({
   name: yup.string().trim().required("tax can not be an empty!"),

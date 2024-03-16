@@ -1,14 +1,14 @@
 import { useFormik } from "formik";
 import { SignUpInitialState } from "../Configurations/InitialStates";
 import { SignUpSchema } from "../Configurations/YupSchema";
-import NextInput from "../Components/NextInput";
+import NextInput from "../Components/NextUI/NextInput";
 import { Countries } from "../Helpers/Countries";
 import moment from "moment";
 import CustomDatePicker from "../Components/DatePicker";
 import { IconEye } from "@tabler/icons-react";
 import { IconEyeClosed } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import NextAutoComplete from "../Components/NextAutoComplete";
+import NextAutoComplete from "../Components/NextUI/NextAutoComplete";
 import {
   Dropdown,
   DropdownTrigger,
@@ -16,8 +16,8 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-import NextButton from "../Components/NextButton";
-import NextCheckBox from "../Components/NextCheckBox";
+import NextButton from "../Components/NextUI/NextButton";
+import NextCheckBox from "../Components/NextUI/NextCheckBox";
 
 const SignUp = () => {
   const [typePassword, setTypePassword] = useState(true);

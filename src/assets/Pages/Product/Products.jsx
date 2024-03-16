@@ -236,7 +236,7 @@ const Products = () => {
                                 <>
                                   <div className="d-flex mb-1" key={index}>
                                     <p className="badge me-3 bg-red m-0">
-                                      {attribute?.attributeid?.name}
+                                      {attribute?.attrbute.id?.name}
                                     </p>
                                     :
                                     {Array.isArray(attribute?.values) &&

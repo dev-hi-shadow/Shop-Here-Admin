@@ -1,14 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TaxInitialState } from "../Configurations/InitialStates";
 import { TaxSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateTaxAction,
-  DeleteTaxAction,
-  EditTaxAction,
-  GetTaxAction,
-} from "../../Services/Actions/Tax";
+
 import moment from "moment/moment";
 import {
   Button,
@@ -23,25 +17,30 @@ import {
   TableColumn,
   TableRow,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
+import {
+  useCreateTaxMutation,
+  useDeleteTaxMutation,
+  useGetTaxesQuery,
+  useUpdateTaxMutation,
+} from "../../Services/API/Tax";
+import { useAlert } from "../hooks/Toastify";
 
 const Tax = () => {
-  const dispatch = useDispatch();
-  const { DeleteRecoverTax, GetTax, EditTax, AddTax } = useSelector(
-    (state) => state.taxState
-  );
+  const { data, isSuccess, isLoading } = useGetTaxesQuery();
+  const [CreateTax] = useCreateTaxMutation();
+  const [UpdateTax] = useUpdateTaxMutation();
+  const [DeleteTax] = useDeleteTaxMutation();
+
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    dispatch(GetTaxAction());
-  }, [dispatch]);
+  const { showAlert } = useAlert();
 
   const {
     values,
-    touched,
     errors,
     handleChange,
     handleSubmit,
@@ -53,21 +52,32 @@ const Tax = () => {
     validationSchema: TaxSchema,
     onSubmit: () => handleTax(values),
   });
-  const handleTax = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditTaxAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateTaxAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteTaxAction(values));
-    }
-  };
-  useEffect(() => {
-    if (DeleteRecoverTax || EditTax || AddTax) {
+  const handleTax = async (values = values) => {
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateTax(values).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateTax(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteTax(values).unwrap();
+      }
+      showAlert(toastid, data.message, data.success || data?.status);
       onClose();
       resetForm();
+    } catch (error) {
+      Array.isArray(error.data.errors)
+        ? error.data.errors.map((error) => showAlert(toastid, error, false))
+        : showAlert(toastid, "Something went wrong", false);
     }
-  }, [AddTax, DeleteRecoverTax, EditTax, onClose, resetForm]);
+  };
+  // useEffect(() => {
+  //   if (DeleteRecoverTax || EditTax || AddTax) {
+  //     onClose();
+  //     resetForm();
+  //   }
+  // }, [AddTax, DeleteRecoverTax, EditTax, onClose, resetForm]);
 
   return (
     <>
@@ -85,7 +95,7 @@ const Tax = () => {
                         onOpen(), setModalState("Deactivated");
                       }}
                     >
-                      Deleted Taxs
+                      Deleted Categories
                     </Link>
                     <Link
                       className="text-decoration-none"
@@ -108,47 +118,55 @@ const Tax = () => {
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetTax) && GetTax?.length > 0
-                        ? GetTax?.map((Tax, index) => {
-                            return (
-                              Tax && (
-                                <TableRow key={Tax.id}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{Tax.name}</TableCell>
-                                  <TableCell>
-                                    {moment(Tax.createdAt).format(
-                                      "MMMM DD, YYYY"
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Update"),
-                                          setValues(Tax);
-                                      }}
-                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Delete"),
-                                          setValues({
-                                            ...Tax,
-                                            is_deleted: true,
-                                          });
-                                      }}
-                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            );
-                          })
-                        : null}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
+                        data.data?.map((Tax, index) => {
+                          return (
+                            <TableRow key={Tax.id}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{Tax.name}</TableCell>
+                              <TableCell>
+                                {moment(Tax.createdAt).format("MMMM DD, YYYY")}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Update"),
+                                      setValues(Tax);
+                                  }}
+                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Delete"),
+                                      setValues({
+                                        ...Tax,
+                                        is_deleted: true,
+                                      });
+                                  }}
+                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
@@ -158,7 +176,13 @@ const Tax = () => {
         </div>
       </div>
 
-      <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size={"lg"}
+        isOpen={isOpen}
+        onClose={() => {
+          resetForm(), onClose();
+        }}
+      >
         <ModalContent>
           <ModalHeader className="p-3">{ModalState} Tax</ModalHeader>
           <form onSubmit={handleSubmit}>
@@ -173,17 +197,7 @@ const Tax = () => {
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    errorMessage={touched.name && errors.name}
-                  />
-                  <Input
-                    type="text"
-                    value={values.value}
-                    variant="faded"
-                    label="Tax Vaue"
-                    name="value"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    errorMessage={touched.value && errors.value}
+                    errorMessage={errors.name}
                   />
                 </ModalBody>
               </>
@@ -206,27 +220,29 @@ const Tax = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetTax?.filter((tax) => tax.is_deleted).map((tax) => {
-                        return (
-                          <TableRow key={tax.id}>
-                            <TableCell>{tax.name}</TableCell>
-                            <TableCell className="text-center">
-                              <Button
-                                color="success"
-                                variant="light"
-                                onClick={async () => {
-                                  handleTax({
-                                    ...tax,
-                                    is_deleted: false,
-                                  });
-                                }}
-                              >
-                                Recover
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                      {data.data
+                        ?.filter((tax) => tax.is_deleted)
+                        .map((tax) => {
+                          return (
+                            <TableRow key={tax.id}>
+                              <TableCell>{tax.name}</TableCell>
+                              <TableCell className="text-center">
+                                <Button
+                                  color="success"
+                                  variant="light"
+                                  onClick={async () => {
+                                    handleTax({
+                                      ...tax,
+                                      is_deleted: false,
+                                    });
+                                  }}
+                                >
+                                  Recover
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </ModalBody>
@@ -235,7 +251,13 @@ const Tax = () => {
 
             {!["Deactivated"].includes(ModalState) && (
               <ModalFooter className="p-3">
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    resetForm(), onClose();
+                  }}
+                >
                   Close
                 </Button>
                 <Button

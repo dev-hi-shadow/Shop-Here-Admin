@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import { Capitalize } from "../Helpers";
+import { Capitalize } from "../../Helpers";
 const NextAutoComplete = ({
   name = "",
   placeholder = "",

@@ -37,7 +37,7 @@ const initialState = {
     max_order_quantity: 5,
     attributes: [
       {
-        attributeid: {
+        attrbute.id: {
           id: "65134c21223e101a7022929a",
           name: "RAM",
           is_deleted: false,
@@ -48,7 +48,7 @@ const initialState = {
           {
             id: "651353d2be4f7813cd7640ab",
             name: "2GB",
-            attributeid: "65134c21223e101a7022929a",
+            attrbute.id: "65134c21223e101a7022929a",
             is_deleted: false,
             createdAt: "2023-09-26T21:57:38.715Z",
             updatedAt: "2023-09-26T21:57:38.715Z",
@@ -56,7 +56,7 @@ const initialState = {
           {
             id: "651353e4be4f7813cd7640b6",
             name: "4GB",
-            attributeid: "65134c21223e101a7022929a",
+            attrbute.id: "65134c21223e101a7022929a",
             is_deleted: false,
             createdAt: "2023-09-26T21:57:56.104Z",
             updatedAt: "2023-09-26T21:57:56.104Z",
@@ -65,7 +65,7 @@ const initialState = {
         id: "652108d2886591d06a970878",
       },
       {
-        attributeid: {
+        attrbute.id: {
           id: "6513518dbd9fed97663d00e1",
           name: "ROM",
           is_deleted: false,
@@ -76,7 +76,7 @@ const initialState = {
           {
             id: "651351efbd9fed97663d00ed",
             name: "64GB",
-            attributeid: "6513518dbd9fed97663d00e1",
+            attrbute.id: "6513518dbd9fed97663d00e1",
             is_deleted: false,
             createdAt: "2023-09-26T21:49:35.874Z",
             updatedAt: "2023-09-26T21:49:35.874Z",
@@ -84,7 +84,7 @@ const initialState = {
           {
             id: "6513526fbd9fed97663d0110",
             name: "128GB",
-            attributeid: "6513518dbd9fed97663d00e1",
+            attrbute.id: "6513518dbd9fed97663d00e1",
             is_deleted: false,
             createdAt: "2023-09-26T21:51:43.331Z",
             updatedAt: "2023-09-26T21:54:25.756Z",
