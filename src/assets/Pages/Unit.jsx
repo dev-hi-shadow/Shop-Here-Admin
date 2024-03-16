@@ -1,14 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UnitInitialState } from "../Configurations/InitialStates";
 import { UnitSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateUnitAction,
-  DeleteUnitAction,
-  EditUnitAction,
-  GetUnitAction,
-} from "../../Services/Actions/Unit";
+
 import moment from "moment/moment";
 import {
   Button,
@@ -23,21 +17,27 @@ import {
   TableColumn,
   TableRow,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
+import {
+  useCreateUnitMutation,
+  useDeleteUnitMutation,
+  useGetUnitsQuery,
+  useUpdateUnitMutation,
+} from "../../Services/API/Unit";
+import { useAlert } from "../hooks/Toastify";
 
 const Unit = () => {
-  const dispatch = useDispatch();
-  const { DeleteRecoverUnit, GetUnit, EditUnit, AddUnit } = useSelector(
-    (state) => state.unitState
-  );
+  const { data, isSuccess, isLoading } = useGetUnitsQuery();
+  const [CreateUnit] = useCreateUnitMutation();
+  const [UpdateUnit] = useUpdateUnitMutation();
+  const [DeleteUnit] = useDeleteUnitMutation();
+
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    dispatch(GetUnitAction());
-  }, [dispatch]);
+  const { showAlert } = useAlert();
 
   const {
     values,
@@ -52,21 +52,26 @@ const Unit = () => {
     validationSchema: UnitSchema,
     onSubmit: () => handleUnit(values),
   });
-  const handleUnit = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditUnitAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateUnitAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteUnitAction(values));
-    }
-  };
-  useEffect(() => {
-    if (DeleteRecoverUnit || EditUnit || AddUnit) {
+  const handleUnit = async (values = values) => {
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateUnit(values).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateUnit(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteUnit(values).unwrap();
+      }
+      showAlert(toastid, data.message, data.success || data?.status);
       onClose();
       resetForm();
+    } catch (error) {
+      Array.isArray(error.data.errors)
+        ? error.data.errors.map((error) => showAlert(toastid, error, false))
+        : showAlert(toastid, "Something went wrong", false);
     }
-  }, [AddUnit, DeleteRecoverUnit, EditUnit, onClose, resetForm]);
+  };
 
   return (
     <>
@@ -84,7 +89,7 @@ const Unit = () => {
                         onOpen(), setModalState("Deactivated");
                       }}
                     >
-                      Deleted Units
+                      Deleted Categories
                     </Link>
                     <Link
                       className="text-decoration-none"
@@ -107,47 +112,54 @@ const Unit = () => {
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetUnit) && GetUnit?.length > 0
-                        ? GetUnit?.map((Unit, index) => {
-                            return (
-                              Unit?.is_deleted === false && (
-                                <TableRow key={Unit._id}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{Unit.name}</TableCell>
-                                  <TableCell>
-                                    {moment(Unit.createdAt).format(
-                                      "MMMM DD, YYYY"
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Update"),
-                                          setValues(Unit);
-                                      }}
-                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Delete"),
-                                          setValues({
-                                            ...Unit,
-                                            is_deleted: true,
-                                          });
-                                      }}
-                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            );
-                          })
-                        : null}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {Array.isArray(data.data) &&
+                        data.data?.map((Unit, index) => {
+                          return (
+                            <TableRow key={Unit.id}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{Unit.name}</TableCell>
+                              <TableCell>
+                                {moment(Unit.createdAt).format("MMMM DD, YYYY")}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Update"),
+                                      setValues(Unit);
+                                  }}
+                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Delete"),
+                                      setValues({
+                                        ...Unit,
+                                        is_deleted: true,
+                                      });
+                                  }}
+                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
@@ -174,16 +186,6 @@ const Unit = () => {
                     onBlur={handleBlur}
                     errorMessage={errors.name}
                   />
-                  <Input
-                    type="text"
-                    value={values.unit_code}
-                    variant="faded"
-                    label="Unit Code"
-                    name="unit_code"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    errorMessage={errors.unit_code}
-                  />
                 </ModalBody>
               </>
             )}
@@ -205,10 +207,11 @@ const Unit = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetUnit?.filter((unit) => unit.is_deleted).map(
-                        (unit) => {
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
+                        data.data.map((unit) => {
                           return (
-                            <TableRow key={unit._id}>
+                            <TableRow key={unit.id}>
                               <TableCell>{unit.name}</TableCell>
                               <TableCell className="text-center">
                                 <Button
@@ -226,8 +229,7 @@ const Unit = () => {
                               </TableCell>
                             </TableRow>
                           );
-                        }
-                      )}
+                        })}
                     </TableBody>
                   </Table>
                 </ModalBody>

@@ -34,7 +34,7 @@ export const CreateUnitAction = (UnitData) => async (dispatch) => {
 export const EditUnitAction = (UnitData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/unit/update/${UnitData?._id}`,
+      `${baseUrl}/unit/update/${UnitData?.id}`,
       UnitData,
       config
     );
@@ -51,7 +51,7 @@ export const EditUnitAction = (UnitData) => async (dispatch) => {
 export const DeleteUnitAction = (UnitData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/unit/delete-recover/${UnitData?._id}`,
+      `${baseUrl}/unit/delete-recover/${UnitData?.id}`,
       { is_deleted: UnitData?.is_deleted },
       config
     );

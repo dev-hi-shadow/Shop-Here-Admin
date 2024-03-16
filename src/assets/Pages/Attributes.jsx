@@ -74,7 +74,7 @@ const Attribute = () => {
 
   return (
     <>
-       <div className="page-wrapper">
+      <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
             <div className=" grid-margin stretch-card ">
@@ -101,117 +101,117 @@ const Attribute = () => {
                       </h6>
                     </div>
                   </div>
-                   <Table removeWrapper>
+                  <Table removeWrapper>
                     <TableHeader>
                       <TableColumn>#</TableColumn>
                       <TableColumn>Attribute</TableColumn>
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                       <TableColumn className="text-center">Values</TableColumn>
-                      <TableColumn  className="text-center">
+                      <TableColumn className="text-center">
                         Add Values
                       </TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
                       {Array.isArray(GetAttribute) &&
-                        GetAttribute?.filter(
-                          (item) =>
-                            item.is_deleted === false && !item?.attribute_id
-                        ).map((Attribute, index) => {
-                          return (
-                            <TableRow key={Attribute._id}>
-                              <TableCell>{index + 1}</TableCell>
-                              <TableCell>{Attribute.name}</TableCell>
-                              <TableCell>
-                                {moment(Attribute.createdAt).format(
-                                  "MMMM DD, YYYY"
-                                )}
-                              </TableCell>
-                              <TableCell  className="text-center">
-                                <i
-                                  onClick={() => {
-                                    setValues(Attribute),
-                                      setModalState("Update"),
-                                      onOpen();
-                                  }}
-                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                  style={{ fontSize: "20px" }}
-                                ></i>
-                                <i
-                                  onClick={() => {
-                                    setValues({ Attribute, is_deleted: true }),
-                                      setModalState("Delete"),
-                                      onOpen();
-                                  }}
-                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                  style={{ fontSize: "20px" }}
-                                ></i>
-                              </TableCell>
-                              <TableCell  className="text-center">
-                                <Dropdown>
-                                  <DropdownTrigger>
-                                    <Button
-                                      variant="bordered"
-                                      className="rounded-3"
-                                    >
-                                      Total{" "}
+                        GetAttribute?.filter((item) => !item?.attributeid).map(
+                          (Attribute, index) => {
+                            return (
+                              <TableRow key={Attribute.id}>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{Attribute.name}</TableCell>
+                                <TableCell>
+                                  {moment(Attribute.createdAt).format(
+                                    "MMMM DD, YYYY"
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <i
+                                    onClick={() => {
+                                      setValues(Attribute),
+                                        setModalState("Update"),
+                                        onOpen();
+                                    }}
+                                    className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                    style={{ fontSize: "20px" }}
+                                  ></i>
+                                  <i
+                                    onClick={() => {
+                                      setValues({
+                                        Attribute,
+                                        is_deleted: true,
+                                      }),
+                                        setModalState("Delete"),
+                                        onOpen();
+                                    }}
+                                    className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                    style={{ fontSize: "20px" }}
+                                  ></i>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Dropdown>
+                                    <DropdownTrigger>
+                                      <Button
+                                        variant="bordered"
+                                        className="rounded-3"
+                                      >
+                                        Total{" "}
+                                        {Array.isArray(GetAttribute) &&
+                                          GetAttribute?.filter(
+                                            (value) =>
+                                              value?.attributeid?.id ==
+                                              Attribute?.id
+                                          ).length}{" "}
+                                        Values
+                                      </Button>
+                                    </DropdownTrigger>
+                                    <DropdownMenu variant="flat" color="danger">
                                       {Array.isArray(GetAttribute) &&
                                         GetAttribute?.filter(
                                           (value) =>
-                                            value.is_deleted === false &&
-                                            value?.attribute_id?._id ==
-                                              Attribute?._id
-                                        ).length}{" "}
-                                      Values
-                                    </Button>
-                                  </DropdownTrigger>
-                                  <DropdownMenu variant="flat" color="danger">
-                                    {Array.isArray(GetAttribute) &&
-                                      GetAttribute?.filter(
-                                        (value) =>
-                                          value.is_deleted === false &&
-                                          value?.attribute_id?._id ==
-                                            Attribute?._id
-                                      )?.map((value) => (
-                                        <DropdownItem
-                                          key={value._id}
-                                          onClick={() => {
-                                            setValues({
-                                              ...value,
-                                              is_deleted: true,
-                                            }),
-                                              setModalState("Delete"),
-                                              onOpen();
-                                          }}
-                                        >
-                                          <div className=" p-0 m-0 flex justify-between items-center">
-                                            <span> {value.name} </span>
-                                            <i className="fa-solid fa-trash text-danger"></i>
-                                          </div>
-                                        </DropdownItem>
-                                      ))}
-                                  </DropdownMenu>
-                                </Dropdown>
-                                <div className="d-flex"></div>
-                              </TableCell >
-                              <TableCell  className="text-center">
-                                <Button
-                                  color="primary"
-                                  variant="flat"
-                                  onClick={() => {
-                                    setModalState("Create"),
-                                      setValues({
-                                        attribute_id: Attribute?._id,
-                                      });
-                                    onOpen();
-                                  }}
-                                >
-                                  Create New Value in {Attribute.name}
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                                             value?.attributeid?.id ==
+                                              Attribute?.id
+                                        )?.map((value) => (
+                                          <DropdownItem
+                                            key={value.id}
+                                            onClick={() => {
+                                              setValues({
+                                                ...value,
+                                                is_deleted: true,
+                                              }),
+                                                setModalState("Delete"),
+                                                onOpen();
+                                            }}
+                                          >
+                                            <div className=" p-0 m-0 flex justify-between items-center">
+                                              <span> {value.name} </span>
+                                              <i className="fa-solid fa-trash text-danger"></i>
+                                            </div>
+                                          </DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                  </Dropdown>
+                                  <div className="d-flex"></div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Button
+                                    color="primary"
+                                    variant="flat"
+                                    onClick={() => {
+                                      setModalState("Create"),
+                                        setValues({
+                                          attributeid: Attribute?.id,
+                                        });
+                                      onOpen();
+                                    }}
+                                  >
+                                    Create New Value in {Attribute.name}
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                        )}
                     </TableBody>
                   </Table>
                 </div>
@@ -263,9 +263,9 @@ const Attribute = () => {
                         (attribute) => attribute.is_deleted
                       ).map((attribute) => {
                         return (
-                          <TableRow key={attribute._id}>
+                          <TableRow key={attribute.id}>
                             <TableCell>
-                              {attribute.name} [{attribute?.attribute_id?.name}]
+                              {attribute.name} [{attribute?.attributeid?.name}]
                             </TableCell>
                             <TableCell>
                               <Button

@@ -4,7 +4,7 @@ export const SignUpInitialState = {
   state: "",
   country: "",
   postal_code: "",
-  is_primary: "",
+  is_primary: false,
   first_name: "",
   last_name: "",
   phone: "",
@@ -13,6 +13,7 @@ export const SignUpInitialState = {
   email: "",
   password: "",
   confirm_password: "",
+  terms_conditions: false,
 };
 
 export const SignInInitialState = {
@@ -81,7 +82,7 @@ export const ProductInitialState = {
   },
   tax_details: {
     is_tax_included: false,
-    tax_id: "",
+    taxid: "",
   },
   is_cod_allowed: true,
   replaceable: true,
@@ -94,6 +95,6 @@ export const ProductInitialState = {
 };
 
 export const StockInitialState = {
-  product_id: "",
+  productid: "",
   stocks: [],
 };

@@ -6,7 +6,7 @@ export const SignUpSchema = yup.object({
   state: yup.string().required().label("State"),
   country: yup.string().required().label("Country"),
   postal_code: yup.string().required().label("Postal code"),
-  is_primary: yup.boolean().required().label("Is primary address"),
+  is_primary: yup.boolean().label("Is primary address"),
   first_name: yup.string().required().label("First name"),
   last_name: yup.string().required().label("Last name"),
   phone: yup.number().required().label("Phone"),
@@ -57,7 +57,7 @@ export const TaxSchema = yup.object({
 });
 
 export const StockSchema = yup.object({
-  product_id: yup.string().trim().required(" can not be an empty!"),
+  productid: yup.string().trim().required(" can not be an empty!"),
   stocks: yup.array(),
 });
 
@@ -78,7 +78,7 @@ export const ProductSchema = yup.object({
     .string()
     .required("Short description can not be an empty!"),
   type: yup.string().required("type can not be an empty"),
-  brand_id: yup.string().required("brand can not be an empty!"),
+  brandid: yup.string().required("brand can not be an empty!"),
   unit_id: yup.string().required("unit can not be an empty!"),
   category_id: yup.string().required("category can not be an empty!"),
   subcategory_id: yup.string().required("Sub category can not be an empty!"),
@@ -91,7 +91,7 @@ export const ProductSchema = yup.object({
   returnable: yup.boolean().oneOf([true, false], "Internal error"),
   tax_details: yup.object().shape({
     is_tax_included: yup.boolean().oneOf([true, false], "Internal error"),
-    tax_id: yup.string().when("is_tax_included", {
+    taxid: yup.string().when("is_tax_included", {
       is: false,
       then: yup.string().required("tax cannot be an empty!"),
       otherwise: yup.string().notRequired(),
@@ -124,7 +124,7 @@ export const ProductSchema = yup.object({
     .array()
     .of(
       yup.object().shape({
-        attribute_ids: yup
+        attributeids: yup
           .array()
           .of(yup.string().trim().required(" can not be an empty!"))
           .required(" can not be an empty!")

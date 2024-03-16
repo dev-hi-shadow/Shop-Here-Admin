@@ -34,7 +34,7 @@ export const CreateCategoryAction = (CategoryData) => async (dispatch) => {
 export const EditCategoryAction = (CategoryData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/category/update/${CategoryData?._id}`,
+      `${baseUrl}/category/update/${CategoryData?.id}`,
       CategoryData,
       config
     );
@@ -48,10 +48,10 @@ export const EditCategoryAction = (CategoryData) => async (dispatch) => {
   }
 };
 
-export const DeleteCategoryAction = (CategoryData) => async (dispatch) => { 
+export const DeleteCategoryAction = (CategoryData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/category/delete-recover/${CategoryData?._id}`,
+      `${baseUrl}/category/delete-recover/${CategoryData?.id}`,
       { is_deleted: CategoryData?.is_deleted },
       config
     );

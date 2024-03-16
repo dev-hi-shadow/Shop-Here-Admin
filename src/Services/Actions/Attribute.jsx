@@ -5,7 +5,7 @@ export const DeleteAttributeValueAction =
   (AttributeData) => async (dispatch) => {
     try {
       const { data } = await axios.put(
-        `${baseUrl}/attribute/value/delete/${AttributeData?._id}`,
+        `${baseUrl}/attribute/value/delete/${AttributeData?.id}`,
         AttributeData,
         config
       );
@@ -21,7 +21,7 @@ export const DeleteAttributeValueAction =
 export const AddAttributeValueAction = (AttributeData) => async (dispatch) => {
   try {
     const { data } = await axios.post(
-      `${baseUrl}/attribute/value/add/${AttributeData?._id}`,
+      `${baseUrl}/attribute/value/add/${AttributeData?.id}`,
       AttributeData,
       config
     );
@@ -67,7 +67,7 @@ export const CreateAttributeAction = (AttributeData) => async (dispatch) => {
 export const EditAttributeAction = (AttributeData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/attribute/update/${AttributeData?._id}`,
+      `${baseUrl}/attribute/update/${AttributeData?.id}`,
       AttributeData,
       config
     );
@@ -84,7 +84,7 @@ export const EditAttributeAction = (AttributeData) => async (dispatch) => {
 export const DeleteAttributeAction = (AttributeData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/attribute/delete-recover/${AttributeData?._id}`,
+      `${baseUrl}/attribute/delete-recover/${AttributeData?.id}`,
       { is_deleted: AttributeData?.is_deleted },
       config
     );

@@ -1,11 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../fetchBaseQuery";
 
-const SubCategory = createApi({
+export const subcategory = createApi({
   baseQuery,
   reducerPath: "subcategory",
   endpoints: (builder) => ({
-    SubCategories: builder.query({
+    GetSubCategories: builder.query({
       query: () => ({
         url: "/sub-categories",
         method: "GET",
@@ -19,25 +19,24 @@ const SubCategory = createApi({
       }),
     }),
     UpdateSubCategory: builder.mutation({
-      query: (id, data) => ({
-        url: `/sub-categories/update/${id}`,
+      query: (data) => ({
+        url: `/sub-categories/update/${data.id}`,
         method: "PUT",
-        body: data,
+        body: { ...data, id: undefined },
       }),
     }),
     DeleteSubCategory: builder.mutation({
-      query: (id, data) => ({
-        url: `/sub-categories/delete/${id}`,
+      query: (data) => ({
+        url: `/sub-categories/delete/${data.id}`,
         method: "DELETE",
-        body: data,
       }),
     }),
   }),
 });
 
 export const {
-  useSubCategoriesQuery,
+  useGetSubCategoriesQuery,
   useCreateSubCategoryMutation,
   useDeleteSubCategoryMutation,
   useUpdateSubCategoryMutation,
-} = SubCategory;
+} = subcategory;

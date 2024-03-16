@@ -1,14 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrandInitialState } from "../Configurations/InitialStates";
 import { BrandSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateBrandAction,
-  DeleteBrandAction,
-  EditBrandAction,
-  GetBrandAction,
-} from "../../Services/Actions/Brand";
+
 import moment from "moment/moment";
 import {
   Button,
@@ -23,21 +17,27 @@ import {
   TableColumn,
   TableRow,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
+import {
+  useCreateBrandMutation,
+  useDeleteBrandMutation,
+  useGetBrandsQuery,
+  useUpdateBrandMutation,
+} from "../../Services/API/Brand";
+import { useAlert } from "../hooks/Toastify";
 
 const Brand = () => {
-  const dispatch = useDispatch();
-  const { DeleteRecoverBrand, GetBrand, EditBrand, AddBrand } = useSelector(
-    (state) => state.brandState
-  );
+  const { data, isSuccess, isLoading } = useGetBrandsQuery();
+  const [CreateBrand] = useCreateBrandMutation();
+  const [UpdateBrand] = useUpdateBrandMutation();
+  const [DeleteBrand] = useDeleteBrandMutation();
+
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    dispatch(GetBrandAction());
-  }, [dispatch]);
+  const { showAlert } = useAlert();
 
   const {
     values,
@@ -52,21 +52,32 @@ const Brand = () => {
     validationSchema: BrandSchema,
     onSubmit: () => handleBrand(values),
   });
-  const handleBrand = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditBrandAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateBrandAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteBrandAction(values));
-    }
-  };
-  useEffect(() => {
-    if (DeleteRecoverBrand || EditBrand || AddBrand) {
+  const handleBrand = async (values = values) => {
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateBrand(values).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateBrand(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteBrand(values).unwrap();
+      }
+      showAlert(toastid, data.message, data.success || data?.status);
       onClose();
       resetForm();
+    } catch (error) {
+      Array.isArray(error.data.errors)
+        ? error.data.errors.map((error) => showAlert(toastid, error, false))
+        : showAlert(toastid, "Something went wrong", false);
     }
-  }, [AddBrand, DeleteRecoverBrand, EditBrand, onClose, resetForm]);
+  };
+  // useEffect(() => {
+  //   if (DeleteRecoverBrand || EditBrand || AddBrand) {
+  //     onClose();
+  //     resetForm();
+  //   }
+  // }, [AddBrand, DeleteRecoverBrand, EditBrand, onClose, resetForm]);
 
   return (
     <>
@@ -107,47 +118,57 @@ const Brand = () => {
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetBrand) && GetBrand?.length > 0
-                        ? GetBrand?.map((Brand, index) => {
-                            return (
-                              Brand?.is_deleted === false && (
-                                <TableRow key={Brand._id}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{Brand.name}</TableCell>
-                                  <TableCell>
-                                    {moment(Brand.createdAt).format(
-                                      "MMMM DD, YYYY"
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Update"),
-                                          setValues(Brand);
-                                      }}
-                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Delete"),
-                                          setValues({
-                                            ...Brand,
-                                            is_deleted: true,
-                                          });
-                                      }}
-                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            );
-                          })
-                        : null}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
+                        data.data?.map((Brand, index) => {
+                          return (
+                            <TableRow key={Brand.id}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{Brand.name}</TableCell>
+                              <TableCell>
+                                {moment(Brand.createdAt).format(
+                                  "MMMM DD, YYYY"
+                                )}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Update"),
+                                      setValues(Brand);
+                                  }}
+                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Delete"),
+                                      setValues({
+                                        ...Brand,
+                                        is_deleted: true,
+                                      });
+                                  }}
+                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
@@ -195,10 +216,11 @@ const Brand = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetBrand?.filter((brand) => brand.is_deleted).map(
-                        (brand) => {
+                      {data.data
+                        ?.filter((brand) => brand.is_deleted)
+                        .map((brand) => {
                           return (
-                            <TableRow key={brand._id}>
+                            <TableRow key={brand.id}>
                               <TableCell>{brand.name}</TableCell>
                               <TableCell className="text-center">
                                 <Button
@@ -216,8 +238,7 @@ const Brand = () => {
                               </TableCell>
                             </TableRow>
                           );
-                        }
-                      )}
+                        })}
                     </TableBody>
                   </Table>
                 </ModalBody>

@@ -25,7 +25,7 @@ const Users = () => {
     const users =
       Array.isArray(GetUsers) &&
       GetUsers.filter((item) => {
-        return item.role_id.name === ActiveFilter;
+        return item.roleid.name === ActiveFilter;
       });
     setUsers(users);
   }, [GetUsers, Location.pathname]);
@@ -125,7 +125,7 @@ const Users = () => {
                   ? Users.length < 0
                     ? "NO DATA FOUND"
                     : Users.map((user) => (
-                        <div key={user._id} className="col-sm-6 col-lg-3">
+                        <div key={user.id} className="col-sm-6 col-lg-3">
                           <Card className="py-4 w-fit">
                             <CardHeader className="overflow-visible py-2">
                               <Image
@@ -137,7 +137,7 @@ const Users = () => {
                             </CardHeader>
                             <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
                               <p className="text-tiny uppercase font-bold">
-                                {user.role_id.name}{" "}
+                                {user.roleid.name}{" "}
                               </p>
                               <small className="text-default-500">
                                 {user.email}

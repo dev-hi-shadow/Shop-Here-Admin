@@ -25494,4 +25494,6 @@ img {
   -moz-osx-font-smoothing: auto;
 }
 
-
+label[data-selected="true"] svg {
+    opacity: 1 !important;
+}

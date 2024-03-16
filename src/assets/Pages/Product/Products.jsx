@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  EditProductAction,
-  GetProductAction,
-} from "../../../Services/Actions/Product";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
+
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import {
@@ -14,37 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
- 
+
 const Products = () => {
-  const productState = useSelector((state) => state.productState);
-  const dispatch = useDispatch();
-  const [Products, setProducts] = useState([]);
   const [ViewProduct, setViewProduct] = useState();
 
-  const handlePublish = (productId, state) => {
-    dispatch(EditProductAction({ _id: productId, is_publish: state }));
-  };
-
-  // const handlePublishVariation = (id, state) => {
-  //   // dispatch(
-  //   //   VariationActiveDeactive({
-  //   //     _id: ViewProduct?._id,
-  //   //     variation_id: id,
-  //   //     is_publish: state,
-  //   //   })
-  //   // );
-  // };
-
-  useEffect(() => {
-    dispatch(GetProductAction());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const ActiveProducts = productState?.GetProduct?.filter((product) => {
-      return product.is_deleted === false;
-    });
-    setProducts(ActiveProducts);
-  }, [productState.GetProduct]);
+  const handlePublish = (productId, state) => {};
 
   return (
     <>
@@ -85,7 +56,7 @@ const Products = () => {
                             />
                           </TableCell>
                           <TableCell>{product?.name} by name</TableCell>
-                          <TableCell>{product?.brand_id?.name}</TableCell>
+                          <TableCell>{product?.brandid?.name}</TableCell>
                           <TableCell>{product?.category_id?.name}</TableCell>
                           <TableCell>Ratting (todo)</TableCell>
                           <TableCell>
@@ -102,7 +73,7 @@ const Products = () => {
                               <button
                                 className="btn btn-green btn-sm"
                                 onClick={() =>
-                                  handlePublish(product?._id, false)
+                                  handlePublish(product?.id, false)
                                 }
                               >
                                 &nbsp; Published&nbsp;
@@ -110,9 +81,7 @@ const Products = () => {
                             ) : (
                               <button
                                 className="btn btn-red btn-sm"
-                                onClick={() =>
-                                  handlePublish(product?._id, true)
-                                }
+                                onClick={() => handlePublish(product?.id, true)}
                               >
                                 Unpublished
                               </button>
@@ -240,7 +209,7 @@ const Products = () => {
                         <p>
                           <span className="">Vandor: </span>
                           <span className="ms-1">
-                            {ViewProduct?.user_id?.name}
+                            {ViewProduct?.userid?.name}
                           </span>
                         </p>
                         <p>
@@ -267,7 +236,7 @@ const Products = () => {
                                 <>
                                   <div className="d-flex mb-1" key={index}>
                                     <p className="badge me-3 bg-red m-0">
-                                      {attribute?.attribute_id?.name}
+                                      {attribute?.attributeid?.name}
                                     </p>
                                     :
                                     {Array.isArray(attribute?.values) &&
@@ -326,7 +295,7 @@ const Products = () => {
                               {Array.isArray(ViewProduct?.price) &&
                                 ViewProduct?.price.map((variation) => {
                                   return (
-                                    <TableRow key={variation?._id}>
+                                    <TableRow key={variation?.id}>
                                       <TableCell className="text-center">
                                         1
                                       </TableCell>
@@ -346,7 +315,7 @@ const Products = () => {
                                             className="text-decoration-none text-red"
                                             // onClick={() =>
                                             //   handlePublishVariation(
-                                            //     variation?._id,
+                                            //     variation?.id,
                                             //     true
                                             //   )
                                             // }
@@ -360,7 +329,7 @@ const Products = () => {
                                             className="text-green text-decoration-none"
                                             // onClick={() =>
                                             //   handlePublishVariation(
-                                            //     variation?._id,
+                                            //     variation?.id,
                                             //     false
                                             //   )
                                             // }

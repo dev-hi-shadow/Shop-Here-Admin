@@ -3,31 +3,67 @@ import { SignUpInitialState } from "../Configurations/InitialStates";
 import { SignUpSchema } from "../Configurations/YupSchema";
 import NextInput from "../Components/NextInput";
 import { Countries } from "../Helpers/Countries";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import moment from "moment";
 import CustomDatePicker from "../Components/DatePicker";
 import { IconEye } from "@tabler/icons-react";
 import { IconEyeClosed } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NextAutoComplete from "../Components/NextAutoComplete";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+} from "@nextui-org/react";
+import NextButton from "../Components/NextButton";
+import NextCheckBox from "../Components/NextCheckBox";
 
 const SignUp = () => {
   const [typePassword, setTypePassword] = useState(true);
+  const [Country, setSelectedCountry] = useState({});
+  const [PhoneCountry, setSelectedPhoneCountry] = useState({});
   const handleSignUpSubmit = (values) => {
-    const body = { ...values };
-    console.log("🚀  body:", body);
+    console.log("values", values);
   };
-  const { values, errors, touched, handleChange, setFieldValue, handleBlur } =
-    useFormik({
-      initialValues: SignUpInitialState,
-      validationSchema: SignUpSchema,
-      onSubmit: () => handleSignUpSubmit(values),
-    });
+
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleSubmit,
+    // handleReset,
+    setFieldValue,
+    resetForm,
+    handleBlur,
+  } = useFormik({
+    initialValues: SignUpInitialState,
+    validationSchema: SignUpSchema,
+    onSubmit: () => handleSignUpSubmit(values),
+    onReset: () => resetForm(),
+  });
+  useEffect(() => {
+    const country = Countries.find((item) => item.name === values.phone_start);
+
+    setSelectedCountry(country);
+    setSelectedPhoneCountry(country); // Assuming this was the intention
+    if (
+      country?.currencies?.length === 1 &&
+      country?.currencies?.[0] !== values.currencies
+    ) {
+      setFieldValue("currencies", country?.currencies?.[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.phone]);
 
   return (
     <>
       <div className="lg:m-10">
-        <form className="relative border border-gray-100 space-y-3  rounded-md bg-white p-6 shadow-xl lg:p-10">
+        <form
+          onSubmit={handleSubmit}
+          className="relative border border-gray-100 space-y-3  rounded-md bg-white p-6 shadow-xl lg:p-10"
+        >
           <h1 className="mb-6 text-xl font-semibold lg:text-2xl">Register</h1>
 
           <div className="grid gap-3 md:grid-cols-2">
@@ -72,235 +108,53 @@ const SignUp = () => {
                 errors={errors}
               />
             </div>
-
-            <NextInput
-              className="flex items-center"
-              classNames={{
-                inputWrapper: ["ps-1"],
-              }}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.phone}
-              variant="bordered"
-              name="phone"
-              type="number"
-              startContent={
-                <>
-                  <NextAutoComplete
-                    ariaLabel="select idd"
-                    ariaLabelledby="select idd "
-                    className="py-0 my-0"
-                    variant={"underlined"}
-                    classNames={{
-                      inputWrapper: ["border-0"],
-                    }}
-                    onSelectionChange={(e) => setFieldValue("phone_start", e)}
-                    onBlur={handleBlur}
-                    selectedKey={values.phone_start}
-                    touched={touched}
-                    errors={errors}
-                    startContentIsImage={true}
-                    startContentSrc={
-                      Countries.find(
-                        (item) =>
-                          item.name === (values.phone_start || values.country)
-                      )?.flag
-                    }
-                    startContentAlt="idd country image"
-                    childArray={Countries}
-                    childAriaLabel="country-idd"
-                    childAriaLabelledby="country-idd"
-                    childTextValueField="name"
-                    childValue="name"
-                    childStartContentIsImage={true}
-                    childStartContent="name"
-                    childValueShow="name"
-                  ></NextAutoComplete>
-                  {/* <Autocomplete
-                    aria-label="select idd country"
-                    aria-labelledby="select idd country"
-                    className="py-0 my-0"
-                    variant={"underlined"}
-                    classNames={{
-                      inputWrapper: ["border-0"],
-                    }}
-                    onSelectionChange={(e) => setFieldValue("phone_start", e)}
-                    onBlur={handleBlur}
-                    selectedKey={values.phone_start}
-                    touched={touched}
-                    errors={errors}
-                    startContent={
-                      <img
-                        className="rounded-full w-3 h-3"
-                        alt={name}
-                        src={
-                          Countries.find(
-                            (item) =>
-                              item.name ===
-                              (values.phone_start || values.country)
-                          )?.flag
-                        }
-                      />
-                    }
-                  >
-                    {Countries.map(({ name, flag }, index) => (
-                      <AutocompleteItem
-                        key={name}
-                        aria-label={`country-idd-${index}`}
-                        aria-labelledby={`country-idd-${index}`}
-                        textValue={name}
-                        value={name}
-                        startContent={
-                          <img
-                            aria-label="image-country-idd"
-                            aria-labelledby="image-country-idd"
-                            className="rounded-full w-3 h-3"
-                            alt={name}
-                            src={flag}
-                          />
-                        }
-                      >
-                        {name}
-                      </AutocompleteItem>
-                    ))}
-                  </Autocomplete> */}
-                  {
-                    Countries.find(
-                      (item) =>
-                        item.name === (values.phone_start || values.country)
-                    )?.idd
+            <div className="grid-cols-3">
+              <>
+                <NextAutoComplete
+                  placeholder="Country IDD"
+                  ariaLabel="select idd"
+                  ariaLabelledby="select idd "
+                  className="py-0 my-0 col-span-1"
+                  variant={"underlined"}
+                  classNames={{
+                    inputWrapper: ["border-0"],
+                  }}
+                  onSelectionChange={(e) => setFieldValue("phone_start", e)}
+                  onBlur={handleBlur}
+                  selectedKey={values.phone_start || values.country}
+                  touched={touched}
+                  errors={errors}
+                  startContentIsImage={
+                    values.phone_start || values.country ? true : false
                   }
-                </>
-              }
-            />
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <NextInput
-              className="col-span-2"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.address}
-              variant="bordered"
-              name="address"
-              placeholder="Address / Street / Landmark"
-              touched={touched}
-              errors={errors}
-            />
-            <NextInput
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.city}
-              variant="bordered"
-              name="city"
-              touched={touched}
-              errors={errors}
-            />
-          </div>
-          <div className="grid gap-3 grid-cols-4">
-            <NextInput
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.username}
-              variant="bordered"
-              name="username"
-              touched={touched}
-              errors={errors}
-            />
-
-            <Autocomplete
-              aria-label={`select country-name`}
-              aria-labelledby={`select-country-idd`}
-              className="py-0 my-0"
-              classNames={{
-                inputWrapper: ["border-0"],
-              }}
-              onSelectionChange={(e) => setFieldValue("country", e)}
-              onBlur={handleBlur}
-              defaultSelectedKey={values.phone_start}
-              selectedKey={values.country || values.phone_start}
-              touched={touched}
-              errors={errors}
-              startContent={
-                <img
-                  aria-label="image-country-name"
-                  aria-labelledby="image-country-name"
-                  key={values.country}
-                  className="rounded-full w-3 h-3"
-                  alt={name}
-                  src={
-                    Countries.find(
-                      (item) =>
-                        item.name === (values.country || values.phone_start)
-                    )?.flag
-                  }
+                  startContentSrc={PhoneCountry?.flag}
+                  startContentAlt="idd country image"
+                  childArray={Countries}
+                  childAriaLabel="country-idd"
+                  childAriaLabelledby="country-idd"
+                  childTextValueField="name"
+                  childValue="name"
+                  childStartContentIsImage={true}
+                  childStartContentSrc="flag"
+                  childStartContent="name"
+                  childKey="name"
+                  childValueShow="name"
                 />
-              }
-            >
-              {Countries.map(({ name, flag }, index) => (
-                <AutocompleteItem
-                  key={name}
-                  aria-label={`country-idd-${index}`}
-                  aria-labelledby={`country-idd-${index}`}
-                  textValue={name}
-                  value={name}
-                  startContent={
-                    <img
-                      className="rounded-full w-3 h-3"
-                      alt={name}
-                      src={flag}
-                    />
-                  }
-                >
-                  {name}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-            <NextInput
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.password}
-              variant="bordered"
-              name="password"
-              endContent={
-                <button
-                  className="focus:outline-none"
-                  type="button"
-                  onClick={() => setTypePassword(!typePassword)}
-                >
-                  {typePassword ? (
-                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
-                  ) : (
-                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
-                  )}
-                </button>
-              }
-              type={typePassword ? "password" : "text"}
-              touched={touched}
-              errors={errors}
-            />
-            <NextInput
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.confirm_password}
-              endContent={
-                <button
-                  className="focus:outline-none"
-                  type="button"
-                  onClick={() => setTypePassword(!typePassword)}
-                >
-                  {typePassword ? (
-                    <IconEye className="text-2xl text-default-400 pointer-events-none" />
-                  ) : (
-                    <IconEyeClosed className="text-2xl text-default-400 pointer-events-none" />
-                  )}
-                </button>
-              }
-              type={typePassword ? "password" : "text"}
-              variant="bordered"
-              name="confirm_password"
-              touched={touched}
-              errors={errors}
-            />
+                {PhoneCountry?.idd}
+              </>
+              <NextInput
+                className="col-span-2"
+                classNames={{
+                  inputWrapper: ["ps-1"],
+                }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.phone}
+                variant="bordered"
+                name="phone"
+                type="number"
+              />
+            </div>
           </div>
           <div className="grid gap-3 grid-cols-4">
             <NextInput
@@ -377,83 +231,154 @@ const SignUp = () => {
               errors={errors}
             />
           </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <NextInput
+              className="col-span-2"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.address}
+              variant="bordered"
+              name="address"
+              placeholder="Address / Street / Landmark"
+              touched={touched}
+              errors={errors}
+            />
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.city}
+              variant="bordered"
+              name="city"
+              touched={touched}
+              errors={errors}
+            />
+          </div>
 
-          <div className="grid gap-3 lg:grid-cols-2">
-            <div>
-              <label className=""> Gender </label>
-              <div className="relative w-56 mt-2 bg-gray-100 rounded-lg">
-                <input
-                  className="peer hidden"
-                  type="checkbox"
-                  name="select-1"
-                  id="select-1"
-                />
-                <label
-                  htmlFor="select-1"
-                  className="flex w-full cursor-pointer rounded-lg select-none border p-2 px-3 text-sm text-gray-700 ring-blue-400 peer-checked:ring"
-                >
-                  Select Option{" "}
-                </label>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="pointer-events-none absolute right-5 top-3 h-4 text-gray-600 transition peer-checked:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-                <ul className="max-h-0 select-none flex-col overflow-hidden rounded-b-lg shadow-md transition-all duration-300 peer-checked:max-h-56 peer-checked:py-3">
-                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
-                    Male
-                  </li>
-                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
-                    Female
-                  </li>
-                  <li className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">
-                    Other
-                  </li>
-                </ul>
-              </div>
+          <div className="grid gap-3 grid-cols-4">
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.state}
+              variant="bordered"
+              name="state"
+              touched={touched}
+              errors={errors}
+            />
+            <div className="flex flex-col">
+              <NextAutoComplete
+                ariaLabel={`select country`}
+                ariaLabelledby={`select-country`}
+                className="py-0 my-0"
+                onSelectionChange={(e) => setFieldValue("country", e)}
+                onBlur={handleBlur}
+                defaultSelectedKey={values.phone_start}
+                selectedKey={values.country || values.phone_start}
+                touched={touched}
+                errors={errors}
+                startContentIsImage={
+                  (values.country || values.phone_start) && true
+                }
+                startContentSrc={Country?.flag}
+                placeholder="Country"
+                startContentAlt="Country name"
+                childArray={Countries}
+                childAriaLabel="country-add"
+                childAriaLabelledby="country-add"
+                childKey="name"
+                childTextValueField="name"
+                childValue="name"
+                childStartContentIsImage={true}
+                childStartContentSrc="flag"
+                childStartContentAlt="name"
+                childValueShow="name"
+              />
+              <span className="px-1  mt-1 text-gray-600 text-small">
+                {values.currencies &&
+                  `preffered curruncy : ${values?.currencies?.split("-")[1]} `}
+              </span>
             </div>
-            <div>
-              <label className="">
-                {" "}
-                Phone: <span className="text-sm text-gray-400">
-                  (optional)
-                </span>{" "}
-              </label>
-              <input
-                type="text"
-                placeholder="+543 5445 0543"
-                className="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"
+            <NextInput
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.postal_code}
+              variant="bordered"
+              name="postal_code"
+              type={"number"}
+              touched={touched}
+              errors={errors}
+            />
+            <Dropdown className="my-1">
+              <DropdownTrigger>
+                <Button variant="bordered" className="  ">
+                  {values.gender}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="gender"
+                variant="flat"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={[values.gender]}
+                onSelectionChange={(e) => setFieldValue("gender", e)}
+              >
+                <DropdownItem key="Male">Male</DropdownItem>
+                <DropdownItem key="Female">Female</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+
+          {!values.currencies && values.country && (
+            <div className="grid-cols-2">
+              <NextAutoComplete
+                childArray={
+                  Country?.currencies || [
+                    "Cambodian riel - ៛",
+                    "United States dollar - $",
+                  ]
+                }
+                placeholder="Please Select Curruncy"
+                ariaLabel="curruncy"
+                ariaLabelledby="curruncy"
+                onSelectionChange={(e) => setFieldValue("curruncy", e)}
+                onBlur={handleBlur}
+                touched={touched}
+                errors={errors}
+                startContentIsImage={false}
+                selectedKey={values.currency}
+                // startContent={values.currency}
+                childAriaLabel="currency"
+                childAriaLabelledby="currency"
+                childKey={null}
               />
             </div>
-          </div>
+          )}
 
-          <div className="checkbox">
-            <input type="checkbox" id="chekcbox1" checked="" />
-            <label htmlFor="checkbox1">
-              I agree to the{" "}
-              <a href="#" target="_blank" className="text-blue-600">
-                {" "}
-                Terms and Conditions{" "}
-              </a>{" "}
-            </label>
+          <div className="flex flex-col gap-y-3">
+            <NextCheckBox
+              value={values.is_primary}
+              name="is_primary"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              isRequired={true}
+              label="Save as primary address"
+            />
+            <NextCheckBox
+              value={values.terms_conditions}
+              name="terms_conditions"
+              onChange={handleChange}
+              isRequired={true}
+              onBlur={handleBlur}
+              label="I have agreed all terms and conditions"
+            />
           </div>
-
           <div>
-            <button
-              type="button"
-              className="mt-5 w-full rounded-md bg-blue-600 p-2 text-center font-semibold text-white"
-            >
-              Get Started
-            </button>
+            <NextButton
+              type="submit"
+              color="primary"
+              varient={"flat"}
+              buttonText="Get Started"
+              className="w-full"
+            />
           </div>
         </form>
       </div>

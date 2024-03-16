@@ -34,7 +34,7 @@ export const CreateBrandAction = (BrandData) => async (dispatch) => {
 export const EditBrandAction = (BrandData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/brand/update/${BrandData?._id}`,
+      `${baseUrl}/brand/update/${BrandData?.id}`,
       BrandData,
       config
     );
@@ -51,7 +51,7 @@ export const EditBrandAction = (BrandData) => async (dispatch) => {
 export const DeleteBrandAction = (BrandData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/brand/delete-recover/${BrandData?._id}`,
+      `${baseUrl}/brand/delete-recover/${BrandData?.id}`,
       { is_deleted: BrandData?.is_deleted },
       config
     );

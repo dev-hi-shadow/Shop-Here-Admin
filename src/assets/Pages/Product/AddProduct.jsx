@@ -146,12 +146,12 @@ const AddProduct = () => {
     setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
   };
 
-  const HandleVarients = (attribute_ids, event) => {
+  const HandleVarients = (attributeids, event) => {
     if (event.target.checked) {
-      setSelectedVarientionRows([...SelectedVarientionRows, attribute_ids]);
+      setSelectedVarientionRows([...SelectedVarientionRows, attributeids]);
     } else {
       const updateValues = [...SelectedVarientionRows];
-      const index = SelectedVarientionRows.indexOf(attribute_ids);
+      const index = SelectedVarientionRows.indexOf(attributeids);
       updateValues.splice(index, 1);
       setSelectedVarientionRows([...updateValues]);
     }
@@ -166,7 +166,7 @@ const AddProduct = () => {
       if (index === attributes.length) {
         // Create the combination object with additional fields
         const combinationObject = {
-          attribute_ids: currentCombination.map((item) => item.value_id),
+          attributeids: currentCombination.map((item) => item.valueid),
           manufacture_price: null,
           retail_price: null,
           special_price: null,
@@ -180,8 +180,8 @@ const AddProduct = () => {
 
       attributeValues.forEach((valueId) => {
         currentCombination.push({
-          attribute_id: attributeId,
-          value_id: valueId,
+          attributeid: attributeId,
+          valueid: valueId,
         });
         generateValueCombinations(
           attributes,
@@ -212,9 +212,7 @@ const AddProduct = () => {
         SelectedVarientionRows.length > 0
       ) {
         const UpdateVarientionValues = values.variations.filter((item) => {
-          return !SelectedVarientionRows.includes(
-            item.attribute_ids.toString()
-          );
+          return !SelectedVarientionRows.includes(item.attributeids.toString());
         });
         setFieldValue("variations", UpdateVarientionValues);
 
@@ -229,7 +227,7 @@ const AddProduct = () => {
 
           const FilteredValues = finded[Attribute].filter((preVal) => {
             return UpdateVarientionValues.some((value) => {
-              return value.attribute_ids.includes(preVal);
+              return value.attributeids.includes(preVal);
             });
           });
 
@@ -523,15 +521,13 @@ const AddProduct = () => {
                           {Array.isArray(GetBrand) &&
                             GetBrand.map((brand) => {
                               return (
-                                brand.is_deleted === false && (
-                                  <SelectItem
-                                    key={brand._id}
-                                    value={brand._id}
-                                    textValue={brand.name}
-                                  >
-                                    {brand.name}
-                                  </SelectItem>
-                                )
+                                <SelectItem
+                                  key={brand.id}
+                                  value={brand.id}
+                                  textValue={brand.name}
+                                >
+                                  {brand.name}
+                                </SelectItem>
                               );
                             })}
                         </Select>
@@ -557,16 +553,14 @@ const AddProduct = () => {
                         >
                           {Array.isArray(GetCategory) &&
                             GetCategory.map((category) => {
-                              return (
-                                category.is_deleted === false && (
-                                  <SelectItem
-                                    key={category._id}
-                                    value={category._id}
-                                    textValue={category.name}
-                                  >
-                                    {category.name}
-                                  </SelectItem>
-                                )
+                              return category(
+                                <SelectItem
+                                  key={category.id}
+                                  value={category.id}
+                                  textValue={category.name}
+                                >
+                                  {category.name}
+                                </SelectItem>
                               );
                             })}
                         </Select>
@@ -574,33 +568,33 @@ const AddProduct = () => {
                           className="mb-3"
                           isRequired
                           color={
-                            touched.subcategory_id &&
-                            errors.subcategory_id &&
+                            touched.sub_category_id &&
+                            errors.sub_category_id &&
                             "danger"
                           }
                           label="Sub Category"
                           isInvalid={
-                            touched.subcategory_id && errors.subcategory_id
+                            touched.sub_category_id && errors.sub_category_id
                           }
                           selectedKeys={
-                            values.subcategory_id && [values.subcategory_id]
+                            values.sub_category_id && [values.sub_category_id]
                           }
                           onBlur={handleBlur}
                           errorMessage={
-                            touched.subcategory_id && errors.subcategory_id
+                            touched.sub_category_id && errors.sub_category_id
                           }
-                          name="subcategory_id"
+                          name="sub_category_id"
                           onChange={handleChange}
                         >
                           {Array.isArray(GetSubCategory) &&
                             GetSubCategory.filter(
                               (item) =>
-                                item.category_id._id === values.category_id
+                                item.category_id.id === values.category_id
                             ).map((subcategory) => {
                               return (
                                 <SelectItem
-                                  key={subcategory._id}
-                                  value={subcategory._id}
+                                  key={subcategory.id}
+                                  value={subcategory.id}
                                   textValue={subcategory.name}
                                 >
                                   {subcategory.name}
@@ -622,16 +616,14 @@ const AddProduct = () => {
                         >
                           {Array.isArray(GetUnit) &&
                             GetUnit.map((unit) => {
-                              return (
-                                unit.is_deleted === false && (
-                                  <SelectItem
-                                    key={unit._id}
-                                    value={unit._id}
-                                    textValue={unit.name}
-                                  >
-                                    {unit.name} [{unit.unit_code}]
-                                  </SelectItem>
-                                )
+                              return unit(
+                                <SelectItem
+                                  key={unit.id}
+                                  value={unit.id}
+                                  textValue={unit.name}
+                                >
+                                  {unit.name} [{unit.unit_code}]
+                                </SelectItem>
                               );
                             })}
                         </Select>
@@ -669,39 +661,37 @@ const AddProduct = () => {
                             className="mb-3"
                             label="Tax"
                             color={
-                              touched.tax_details?.tax_id &&
-                              errors.tax_details?.tax_id &&
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid &&
                               "danger"
                             }
-                            name="tax_details?.tax_id"
+                            name="tax_details?.taxid"
                             isInvalid={
-                              touched.tax_details?.tax_id &&
-                              errors.tax_details?.tax_id
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid
                             }
                             onBlur={handleBlur}
                             errorMessage={
-                              touched.tax_details?.tax_id &&
-                              errors.tax_details?.tax_id
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid
                             }
                             onChange={handleChange}
                             selectedKeys={
-                              values.tax_details?.tax_id && [
-                                values.tax_details?.tax_id,
+                              values.tax_details?.taxid && [
+                                values.tax_details?.taxid,
                               ]
                             }
                           >
                             {Array.isArray(GetTax) &&
                               GetTax.map((tax) => {
-                                return (
-                                  tax.is_deleted === false && (
-                                    <SelectItem
-                                      key={tax._id}
-                                      value={tax._id}
-                                      textValue={tax.name}
-                                    >
-                                      {tax.name} [{tax.value}]
-                                    </SelectItem>
-                                  )
+                                return tax(
+                                  <SelectItem
+                                    key={tax.id}
+                                    value={tax.id}
+                                    textValue={tax.name}
+                                  >
+                                    {tax.name} [{tax.value}]
+                                  </SelectItem>
                                 );
                               })}
                           </Select>
@@ -913,11 +903,11 @@ const AddProduct = () => {
                               >
                                 {Array.isArray(GetAttribute) &&
                                   GetAttribute.filter(
-                                    (filterItem) => !filterItem.attribute_id
+                                    (filterItem) => !filterItem.attributeid
                                   ).map((attribute) => (
                                     <SelectItem
                                       textValue={attribute.name}
-                                      key={attribute._id}
+                                      key={attribute.id}
                                       value={attribute.value}
                                     >
                                       {attribute.name}
@@ -947,13 +937,13 @@ const AddProduct = () => {
                                   {Array.isArray(GetAttribute) &&
                                     GetAttribute.filter(
                                       (item) =>
-                                        item.attribute_id?._id ===
+                                        item.attributeid?.id ===
                                         VariableAttributeCategory
                                     ).map((attribute) => (
                                       <ListboxItem
                                         textValue={attribute.name}
-                                        key={attribute._id}
-                                        value={attribute._id}
+                                        key={attribute.id}
+                                        value={attribute.id}
                                       >
                                         {attribute.name}
                                       </ListboxItem>
@@ -1056,19 +1046,19 @@ const AddProduct = () => {
                           <TableBody emptyContent="No Data Found">
                             {Array.isArray(values.variations) &&
                               values.variations.map((variation, index) => (
-                                <TableRow key={variation.attribute_ids}>
+                                <TableRow key={variation.attributeids}>
                                   <TableCell>
                                     <Checkbox
                                       onChange={(event) =>
                                         HandleVarients(
-                                          variation.attribute_ids.toString(),
+                                          variation.attributeids.toString(),
                                           event
                                         )
                                       }
                                     />
                                   </TableCell>
                                   <TableCell>
-                                    {variation.attribute_ids
+                                    {variation.attributeids
                                       .map((item) =>
                                         CustomFind(GetAttribute, item, "name")
                                       )
@@ -1211,12 +1201,12 @@ const AddProduct = () => {
                                   GetAddresses.filter(
                                     (item) =>
                                       item.is_pickup_address &&
-                                      item.seller_id === profile?._id
+                                      item.seller_id === profile?.id
                                   ).map((address) => (
                                     <ListboxItem
                                       textValue={address.name}
-                                      key={address._id}
-                                      value={address._id}
+                                      key={address.id}
+                                      value={address.id}
                                     >
                                       {address.name}
                                     </ListboxItem>

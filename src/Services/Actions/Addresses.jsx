@@ -33,7 +33,7 @@ export const CreateAddressesAction = (AddressesData) => async (dispatch) => {
 export const EditAddressesAction = (AddressesData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/addresses/update/${AddressesData?._id}`,
+      `${baseUrl}/addresses/update/${AddressesData?.id}`,
       AddressesData,
       config
     );
@@ -50,7 +50,7 @@ export const EditAddressesAction = (AddressesData) => async (dispatch) => {
 export const DeleteAddressesAction = (AddressesData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/addresses/delete-recover/${AddressesData?._id}`,
+      `${baseUrl}/addresses/delete-recover/${AddressesData?.id}`,
       { is_deleted: AddressesData?.is_deleted },
       config
     );

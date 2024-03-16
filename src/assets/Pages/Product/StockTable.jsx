@@ -36,15 +36,15 @@ const StockTable = ({
     setRemovedCombinations([
       ...RemovedCombinations,
       combination
-        .map(({ value }) => value._id)
+        .map(({ value }) => value.id)
         .sort()
         .toString(),
     ]);
     const UpdatePrices = [...ProductValues.price];
     const PriceIndex = UpdatePrices?.findIndex((price) => {
-      const array1 = price?.attribute_ids?.sort().toString();
+      const array1 = price?.attributeids?.sort().toString();
       const array2 = combination
-        .map(({ value }) => value._id)
+        .map(({ value }) => value.id)
         .sort()
         .toString();
       return array1 === array2;
@@ -56,9 +56,9 @@ const StockTable = ({
     }
     const UpdateStocks = [...values.stocks];
     const StockIndex = UpdateStocks?.findIndex((stock) => {
-      const array1 = stock?.attribute_ids?.sort().toString();
+      const array1 = stock?.attributeids?.sort().toString();
       const array2 = combination
-        .map(({ value }) => value._id)
+        .map(({ value }) => value.id)
         .sort()
         .toString();
       return array1 === array2;
@@ -70,8 +70,7 @@ const StockTable = ({
     }
   };
 
-  const handleStockIn = () => {
-  };
+  const handleStockIn = () => {};
 
   return (
     <div className="card">
@@ -94,7 +93,7 @@ const StockTable = ({
                 return combination.length > 0 ? (
                   !RemovedCombinations.includes(
                     combination
-                      .map(({ value }) => value._id)
+                      .map(({ value }) => value.id)
                       .sort()
                       .toString()
                   ) && (

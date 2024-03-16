@@ -34,7 +34,7 @@ export const CreateUsersAction = (UsersData) => async (dispatch) => {
 export const EditUsersAction = (UsersData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/users/update/${UsersData?._id}`,
+      `${baseUrl}/users/update/${UsersData?.id}`,
       UsersData,
       config
     );
@@ -51,7 +51,7 @@ export const EditUsersAction = (UsersData) => async (dispatch) => {
 export const DeleteUsersAction = (UsersData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/users/delete-recover/${UsersData?._id}`,
+      `${baseUrl}/users/delete-recover/${UsersData?.id}`,
       { is_deleted: UsersData?.is_deleted },
       config
     );

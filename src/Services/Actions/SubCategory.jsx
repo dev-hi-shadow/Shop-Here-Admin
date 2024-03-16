@@ -35,7 +35,7 @@ export const CreateSubCategoryAction =
 export const EditSubCategoryAction = (SubCategoryData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/sub-category/update/${SubCategoryData?._id}`,
+      `${baseUrl}/sub-category/update/${SubCategoryData?.id}`,
       SubCategoryData,
       config
     );
@@ -53,7 +53,7 @@ export const DeleteSubCategoryAction =
   (SubCategoryData) => async (dispatch) => {
     try {
       const { data } = await axios.put(
-        `${baseUrl}/sub-category/delete-recover/${SubCategoryData?._id}`,
+        `${baseUrl}/sub-category/delete-recover/${SubCategoryData?.id}`,
         { is_deleted: SubCategoryData?.is_deleted },
         config
       );

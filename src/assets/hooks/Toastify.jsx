@@ -19,9 +19,9 @@ export const useAlert = () => {
 };
 
 export const ToastProvider = ({ children }) => {
-  const showAlert = (toast_id, message, type, ...rest) => {
-     if (toast_id) {
-      toast.update(toast_id, {
+  const showAlert = (toastid, message, type, ...rest) => {
+    if (toastid) {
+      toast.update(toastid, {
         render: message,
         type: type === "info" ? "info" : type === true ? "success" : "error",
         icon:

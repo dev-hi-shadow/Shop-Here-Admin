@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CategoryInitialState } from "../Configurations/InitialStates";
 import { CategorySchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
@@ -17,6 +17,7 @@ import {
   TableColumn,
   TableRow,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
@@ -29,7 +30,8 @@ import {
 } from "../../Services/API/Category";
 
 const Category = () => {
-  const [Categories, setCategories] = useState(null);
+const { data, isSuccess, isLoading } = useGetCategoriesQuery();
+
   const [CreateCategory] = useCreateCategoryMutation();
   const [UpdateCategory] = useUpdateCategoryMutation();
   const [DeleteCategory] = useDeleteCategoryMutation();
@@ -51,7 +53,7 @@ const Category = () => {
     onSubmit: () => handleCategory(values),
   });
   const handleCategory = async (values) => {
-    const toast_id = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
     try {
       let data;
       if (ModalState === "Update") {
@@ -61,19 +63,14 @@ const Category = () => {
       } else if (["Delete", "Deactivated"].includes(ModalState)) {
         data = await DeleteCategory(values).unwrap();
       }
-      showAlert(toast_id, data.message, data.success || data?.status);
+      showAlert(toastid, data.message, data.success || data?.status);
       onClose();
       resetForm();
     } catch (error) {
-      showAlert(toast_id, "Something got wrong", false);
+      showAlert(toastid, "Something got wrong", false);
     }
   };
-  const { data, isSuccess, isError } = useGetCategoriesQuery();
-  useEffect(() => {
-    if (isSuccess && !isError) {
-      setCategories(data?.data);
-    }
-  }, [data, isError, isSuccess]);
+
   return (
     <>
       <div className="page-wrapper">
@@ -82,7 +79,10 @@ const Category = () => {
             <div className="card">
               <div className="card-body">
                 <div className="d-flex justify-content-between ">
-                  <h6 className="card-title">Total {} Categories</h6>
+                  <h6 className="card-title">
+                    Total {Array.isArray(data?.data) && data?.data.length}
+                    Categories
+                  </h6>
                   <div className="d-flex gap-3">
                     <Link
                       className="text-red-600  text-decoration-none"
@@ -113,42 +113,54 @@ const Category = () => {
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(Categories) && Categories?.length > 0
-                        ? Categories?.map((Category, index) => {
-                            return (
-                              <TableRow key={Category._id}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>{Category.name}</TableCell>
-                                <TableCell>
-                                  {moment(Category.created_at).format(
-                                    "MMMM DD, YYYY"
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  <i
-                                    onClick={() => {
-                                      onOpen(),
-                                        setModalState("Update"),
-                                        setValues(Category);
-                                    }}
-                                    className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                    style={{ fontSize: "20px" }}
-                                  ></i>
-                                  <i
-                                    onClick={() => {
-                                      onOpen(),
-                                        setModalState("Delete"),
-                                        setValues(Category);
-                                    }}
-                                    className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                    style={{ fontSize: "20px" }}
-                                  ></i>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        : null}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
+                        data.data?.map((Category, index) => {
+                          return (
+                            <TableRow key={Category.id}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{Category.name}</TableCell>
+                              <TableCell>
+                                {moment(Category.created_at).format(
+                                  "MMMM DD, YYYY"
+                                )}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Update"),
+                                      setValues(Category);
+                                  }}
+                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Delete"),
+                                      setValues(Category);
+                                  }}
+                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
@@ -200,7 +212,7 @@ const Category = () => {
                         (category) => category.is_deleted
                       ).map((category) => {
                         return (
-                          <TableRow key={category._id}>
+                          <TableRow key={category.id}>
                             <TableCell>{category.name}</TableCell>
                             <TableCell className="text-center">
                               <Button

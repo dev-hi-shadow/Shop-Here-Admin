@@ -112,8 +112,8 @@ const Tax = () => {
                       {Array.isArray(GetTax) && GetTax?.length > 0
                         ? GetTax?.map((Tax, index) => {
                             return (
-                              Tax?.is_deleted === false && (
-                                <TableRow key={Tax._id}>
+                              Tax && (
+                                <TableRow key={Tax.id}>
                                   <TableCell>{index + 1}</TableCell>
                                   <TableCell>{Tax.name}</TableCell>
                                   <TableCell>
@@ -208,7 +208,7 @@ const Tax = () => {
                     <TableBody emptyContent={"No rows to display."}>
                       {GetTax?.filter((tax) => tax.is_deleted).map((tax) => {
                         return (
-                          <TableRow key={tax._id}>
+                          <TableRow key={tax.id}>
                             <TableCell>{tax.name}</TableCell>
                             <TableCell className="text-center">
                               <Button

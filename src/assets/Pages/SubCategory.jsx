@@ -1,18 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SubCategoryInitialState } from "../Configurations/InitialStates";
 import { SubCategorySchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateSubCategoryAction,
-  DeleteSubCategoryAction,
-  EditSubCategoryAction,
-  GetSubCategoryAction,
-} from "../../Services/Actions/SubCategory";
 import moment from "moment/moment";
 import {
-  Autocomplete,
-  AutocompleteItem,
   Button,
   Input,
   Modal,
@@ -25,35 +16,48 @@ import {
   TableColumn,
   TableRow,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { TableBody, TableHeader } from "@react-stately/table";
-import { GetCategoryAction } from "../../Services/Actions/Category";
+import {
+  useGetSubCategoriesQuery,
+  useCreateSubCategoryMutation,
+  useUpdateSubCategoryMutation,
+  useDeleteSubCategoryMutation,
+} from "../../Services/API/SubCategory";
+import { useAlert } from "../hooks/Toastify";
+import { useGetCategoriesQuery } from "../../Services/API/Category";
+import NextAutoComplete from "../Components/NextAutoComplete";
 
 const SubCategory = () => {
-  const dispatch = useDispatch();
-  const {
-    DeleteRecoverSubCategory,
-    GetSubCategory,
-    EditSubCategory,
-    AddSubCategory,
-  } = useSelector((state) => state.subcategoryState);
-  const { GetCategory } = useSelector((state) => state.categoryState);
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isSuccess, isLoading, data } = useGetSubCategoriesQuery();
+  const [CreateSubCategory] = useCreateSubCategoryMutation();
+  const [UpdateSubCategory] = useUpdateSubCategoryMutation();
+  const [DeleteSubCategory] = useDeleteSubCategoryMutation();
+  const { showAlert } = useAlert();
+  const { data: GetCategory } = useGetCategoriesQuery();
 
-  useEffect(() => {
-    dispatch(GetSubCategoryAction());
-    dispatch(GetCategoryAction());
-  }, [dispatch]);
-
-  const handleSubCategory = (values = values) => {
-    if (ModalState === "Update") {
-      dispatch(EditSubCategoryAction(values));
-    } else if (ModalState === "Create") {
-      dispatch(CreateSubCategoryAction(values));
-    } else if (["Delete", "Deactivated"].includes(ModalState)) {
-      dispatch(DeleteSubCategoryAction(values));
+  const handleSubCategory = async (values = values) => {
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    try {
+      let data;
+      if (ModalState === "Update") {
+        data = await UpdateSubCategory(values).unwrap();
+      } else if (ModalState === "Create") {
+        data = await CreateSubCategory(values).unwrap();
+      } else if (["Delete", "Deactivated"].includes(ModalState)) {
+        data = await DeleteSubCategory(values).unwrap();
+      }
+      showAlert(toastid, data.message, data.success || data?.status);
+      onClose();
+      resetForm();
+    } catch (error) {
+      Array.isArray(error.data.errors)
+        ? error.data.errors.map((error) => showAlert(toastid, error, false))
+        : showAlert(toastid, "Something went wrong", false);
     }
   };
   const {
@@ -64,26 +68,12 @@ const SubCategory = () => {
     handleBlur,
     resetForm,
     setFieldValue,
-    setFieldTouched,
-    setValues,
+     setValues,
   } = useFormik({
     initialValues: SubCategoryInitialState,
     validationSchema: SubCategorySchema,
     onSubmit: handleSubCategory,
   });
-
-  useEffect(() => {
-    if (DeleteRecoverSubCategory || EditSubCategory || AddSubCategory) {
-      onClose();
-      resetForm();
-    }
-  }, [
-    AddSubCategory,
-    DeleteRecoverSubCategory,
-    EditSubCategory,
-    onClose,
-    resetForm,
-  ]);
 
   return (
     <>
@@ -124,54 +114,61 @@ const SubCategory = () => {
                       <TableColumn>Created At</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(GetSubCategory) &&
-                      GetSubCategory?.length > 0
-                        ? GetSubCategory?.map((SubCategory, index) => {
-                            return (
-                              SubCategory?.is_deleted === false && (
-                                <TableRow key={SubCategory._id}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell>{SubCategory.name}</TableCell>
-                                  <TableCell>
-                                    {moment(SubCategory.createdAt).format(
-                                      "MMMM DD, YYYY"
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Update"),
-                                          setValues({
-                                            ...SubCategory,
-                                            category_id:
-                                              SubCategory.category_id._id,
-                                          });
-                                      }}
-                                      className="fa-solid fa-pen me-3 text-warning  mr-2 "
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                    <i
-                                      onClick={() => {
-                                        onOpen(),
-                                          setModalState("Delete"),
-                                          setValues({
-                                            ...SubCategory,
-                                            category_id:
-                                              SubCategory.category_id._id,
-                                            is_deleted: true,
-                                          });
-                                      }}
-                                      className="fa-solid fa-trash ms-3 text-danger ml-2"
-                                      style={{ fontSize: "20px" }}
-                                    ></i>
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            );
-                          })
-                        : null}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {isSuccess &&
+                        Array.isArray(data.data) &&
+                        data.data?.map((SubCategory, index) => {
+                          return (
+                            <TableRow key={SubCategory.id}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{SubCategory.name}</TableCell>
+                              <TableCell>
+                                {moment(SubCategory.createdAt).format(
+                                  "MMMM DD, YYYY"
+                                )}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Update"),
+                                      setValues({
+                                        ...SubCategory,
+                                        category_id: SubCategory.category.id,
+                                      });
+                                  }}
+                                  className="fa-solid fa-pen me-3 text-warning  mr-2 "
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                                <i
+                                  onClick={() => {
+                                    onOpen(),
+                                      setModalState("Delete"),
+                                      setValues({
+                                        ...SubCategory,
+                                        category_id: SubCategory.category_id.id,
+                                        is_deleted: true,
+                                      });
+                                  }}
+                                  className="fa-solid fa-trash ms-3 text-danger ml-2"
+                                  style={{ fontSize: "20px" }}
+                                ></i>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
@@ -180,7 +177,6 @@ const SubCategory = () => {
           </div>
         </div>
       </div>
-
       <Modal size={"lg"} isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           <ModalHeader className="p-3">{ModalState} SubCategory</ModalHeader>
@@ -198,23 +194,23 @@ const SubCategory = () => {
                     onBlur={handleBlur}
                     errorMessage={errors.name}
                   />
-                  <Autocomplete
-                    label="Parent Category"
-                    placeholder="Search an category"
-                    name="category_id"
-                    selectedKey={values.category_id}
-                    onBlur={(e) => setFieldTouched("category_id", e)}
+                   <NextAutoComplete
+                    ariaLabel={`select category`}
+                    ariaLabelledby={`select-category`}
+                    className="py-0 my-0"
                     onSelectionChange={(e) => setFieldValue("category_id", e)}
-                  >
-                    {Array.isArray(GetCategory) &&
-                      GetCategory.filter(
-                        (category) => category.is_deleted === false
-                      ).map((item) => (
-                        <AutocompleteItem key={item._id} value={item._id}>
-                          {item.name}
-                        </AutocompleteItem>
-                      ))}
-                  </Autocomplete>
+                    onBlur={handleBlur}
+                    defaultSelectedKey={values.category_id}
+                    selectedKey={values.category_id}
+                    errors={errors}
+                    childArray={GetCategory?.data}
+                    childAriaLabel="country-add"
+                    childAriaLabelledby="country-add"
+                    childKey="id"
+                    childTextValueField="name"
+                    childValue="name"
+                    childValueShow="name"
+                  />
                 </ModalBody>
               </>
             )}
@@ -236,29 +232,29 @@ const SubCategory = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {GetSubCategory?.filter(
-                        (subcategory) => subcategory.is_deleted
-                      ).map((subcategory) => {
-                        return (
-                          <TableRow key={subcategory._id}>
-                            <TableCell>{subcategory.name}</TableCell>
-                            <TableCell className="text-center">
-                              <Button
-                                color="success"
-                                variant="light"
-                                onClick={async () => {
-                                  handleSubCategory({
-                                    ...subcategory,
-                                    is_deleted: false,
-                                  });
-                                }}
-                              >
-                                Recover
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                      {data.data
+                        ?.filter((subcategory) => subcategory.is_deleted)
+                        .map((subcategory) => {
+                          return (
+                            <TableRow key={subcategory.id}>
+                              <TableCell>{subcategory.name}</TableCell>
+                              <TableCell className="text-center">
+                                <Button
+                                  color="success"
+                                  variant="light"
+                                  onClick={async () => {
+                                    handleSubCategory({
+                                      ...subcategory,
+                                      is_deleted: false,
+                                    });
+                                  }}
+                                >
+                                  Recover
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </ModalBody>

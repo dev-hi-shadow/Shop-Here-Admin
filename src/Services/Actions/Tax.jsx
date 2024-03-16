@@ -29,7 +29,7 @@ export const CreateTaxAction = (TaxData) => async (dispatch) => {
 export const EditTaxAction = (TaxData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/tax/update/${TaxData?._id}`,
+      `${baseUrl}/tax/update/${TaxData?.id}`,
       TaxData,
       config
     );
@@ -46,7 +46,7 @@ export const EditTaxAction = (TaxData) => async (dispatch) => {
 export const DeleteTaxAction = (TaxData) => async (dispatch) => {
   try {
     const { data } = await axios.put(
-      `${baseUrl}/tax/delete-recover/${TaxData?._id}`,
+      `${baseUrl}/tax/delete-recover/${TaxData?.id}`,
       { is_deleted: TaxData?.is_deleted },
       config
     );
