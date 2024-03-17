@@ -16,11 +16,13 @@ const NextCheckBox = ({
   isDisabled = false,
   isReadOnly = false,
   color = "primary",
+  ...rest
 }) => {
   return (
     <div>
       <Checkbox
         size="sm"
+        {...rest}
         onBlur={onBlur}
         name={name}
         isInvalid={isInvalid || (touched[name] && errors[name])}
@@ -29,7 +31,6 @@ const NextCheckBox = ({
         variant={variant}
         color={color}
         isRequired={isRequired}
-        labe
         isSelected={value}
         onChange={onChange}
       >

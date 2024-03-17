@@ -132,8 +132,8 @@ const Tax = () => {
                       }
                     >
                       {isSuccess &&
-                        Array.isArray(data.data) &&
-                        data.data?.map((Tax, index) => {
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows?.map((Tax, index) => {
                           return (
                             <TableRow key={Tax.id}>
                               <TableCell>{index + 1}</TableCell>
@@ -220,7 +220,7 @@ const Tax = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {data.data
+                      {data.data.rows
                         ?.filter((tax) => tax.is_deleted)
                         .map((tax) => {
                           return (

@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
+    "@nextui-org/use-infinite-scroll": "^2.1.2",
     "@react-spring/web": "^9.7.3",
     "@reduxjs/toolkit": "^1.9.7",
     "@tabler/icons-react": "^2.45.0",
+    "@tinymce/tinymce-react": "^4.3.2",
     "antd": "^5.15.1",
     "axios": "^1.5.0",
     "dayjs": "^1.11.10",

@@ -30,7 +30,7 @@ import {
 } from "../../Services/API/Category";
 
 const Category = () => {
-const { data, isSuccess, isLoading } = useGetCategoriesQuery();
+  const { data, isSuccess, isLoading } = useGetCategoriesQuery();
 
   const [CreateCategory] = useCreateCategoryMutation();
   const [UpdateCategory] = useUpdateCategoryMutation();
@@ -127,8 +127,8 @@ const { data, isSuccess, isLoading } = useGetCategoriesQuery();
                       }
                     >
                       {isSuccess &&
-                        Array.isArray(data.data) &&
-                        data.data?.map((Category, index) => {
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows?.map((Category, index) => {
                           return (
                             <TableRow key={Category.id}>
                               <TableCell>{index + 1}</TableCell>

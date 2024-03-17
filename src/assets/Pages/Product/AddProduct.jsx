@@ -1,17 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { ProductSchema } from "../../Configurations/YupSchema";
 import { ProductInitialState } from "../../Configurations/InitialStates";
-import { GetCategoryAction } from "../../../Services/Actions/Category";
-import { GetSubCategoryAction } from "../../../Services/Actions/SubCategory";
-import { GetBrandAction } from "../../../Services/Actions/Brand";
-import { GetUnitAction } from "../../../Services/Actions/Unit";
-import { GetAttributeAction } from "../../../Services/Actions/Attribute";
 
-import { GetProductAction } from "../../../Services/Actions/Product";
 import { Select, SelectItem } from "@nextui-org/select";
 import {
   Autocomplete,
@@ -37,8 +30,7 @@ import {
   TableRow,
   Tabs,
 } from "@nextui-org/react";
-import { GetTaxAction } from "../../../Services/Actions/Tax";
-import { GetCountriesAction } from "../../../Services/Actions/Countries";
+
 import {
   IconAdjustmentsHorizontal,
   IconFileInfo,
@@ -50,44 +42,23 @@ import {
   IconHelpHexagon,
   IconTrash,
 } from "@tabler/icons-react";
-import { GetAddressesAction } from "../../../Services/Actions/Addresses";
 
 import { CustomFind, ORDER_STATUSES } from "../../Helpers";
+import NextInput from "../../Components/NextUI/NextInput";
+import NextCheckBox from "../../Components/NextUI/NextCheckBox";
+import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 
 const AddProduct = () => {
-  const dispatch = useDispatch();
-  const { GetBrand } = useSelector((state) => state.brandState);
-  const { GetCategory } = useSelector((state) => state.categoryState);
-  const { GetSubCategory } = useSelector((state) => state.subcategoryState);
-  const { GetAttribute } = useSelector((state) => state.attributeState);
-  const { GetUnit } = useSelector((state) => state.unitState);
-  const { GetTax } = useSelector((state) => state.taxState);
-  const { GetCountries } = useSelector((state) => state.countryState);
-  const { profile } = useSelector((state) => state.authentication);
-  const { GetAddresses } = useSelector((state) => state.addressesState);
-  const { DeleteRecoverProduct, EditProduct, AddProduct } = useSelector(
-    (state) => state.productState
-  );
   const [ActiveTab, setActiveTab] = useState(0);
   const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
   const [VariableAttributeCategory, setVariableAttributeCategory] =
     useState(null);
+  const [, scrollerRef] = useInfiniteScroll({});
+  console.log("🚀  scrollerRef:", scrollerRef);
 
   const handleProduct = () => {
     //  dispatch(CreateProductAction(values));
   };
-
-  useLayoutEffect(() => {
-    dispatch(GetBrandAction());
-    dispatch(GetAddressesAction());
-    dispatch(GetCountriesAction());
-    dispatch(GetCategoryAction());
-    dispatch(GetSubCategoryAction());
-    dispatch(GetUnitAction());
-    dispatch(GetAttributeAction());
-    dispatch(GetProductAction());
-    dispatch(GetTaxAction());
-  }, [dispatch]);
 
   const {
     values,
@@ -105,11 +76,6 @@ const AddProduct = () => {
     validationSchema: ProductSchema,
     onSubmit: (values) => handleProduct(values),
   });
-  useEffect(() => {
-    if (DeleteRecoverProduct || EditProduct || AddProduct) {
-      resetForm();
-    }
-  }, [AddProduct, DeleteRecoverProduct, EditProduct, resetForm]);
 
   const handleAttributeSelect = (
     ArgsAttribure,
@@ -264,50 +230,7 @@ const AddProduct = () => {
                   >
                     <Card className="h-full">
                       <CardBody>
-                        <div className="mb-3 flex justify-self-auto ">
-                          <div className="form-selectgroup flex me-3 align-items-center">
-                            <label className="form-label me-2">Type : </label>
-                            <label className="form-selectgroup-item">
-                              <input
-                                type="radio"
-                                name="type"
-                                value="Standard"
-                                onBlur={handleBlur}
-                                className="form-selectgroup-input"
-                                onChange={handleChange}
-                                checked={values.type === "Standard"}
-                              />
-                              <span
-                                className={`form-selectgroup-label  ${
-                                  touched.type &&
-                                  errors.type &&
-                                  "border border-danger"
-                                }`}
-                              >
-                                Standard
-                              </span>
-                            </label>
-                            <label className="form-selectgroup-item">
-                              <input
-                                type="radio"
-                                name="type"
-                                value="Pack Of"
-                                onBlur={handleBlur}
-                                className="form-selectgroup-input"
-                                onChange={handleChange}
-                                checked={values.type === "Pack Of"}
-                              />
-                              <span
-                                className={`form-selectgroup-label  ${
-                                  touched.type &&
-                                  errors.type &&
-                                  "border border-danger"
-                                }`}
-                              >
-                                Pack Of
-                              </span>
-                            </label>
-                          </div>
+                        <div className="mb-3 flex">
                           <div className="form-selectgroup d-flex align-items-center me-2">
                             <label className="form-label me-2">
                               Freshness :
@@ -415,53 +338,39 @@ const AddProduct = () => {
                           </div>
                         </div>
 
-                        <Input
-                          className="mb-3"
+                        <NextInput
                           type="text"
-                          label="Name"
                           name="name"
+                          placeholder=""
                           onChange={handleChange}
-                          isRequired
                           onBlur={handleBlur}
-                          isInvalid={errors.name && touched.name}
-                          errorMessage={touched.name && errors.name}
+                          touched={touched}
+                          errors={errors}
                           value={values.name}
                         />
-                        <Input
-                          className="mb-3"
-                          type="text"
+
+                        <NextInput
                           label="SKU Code"
                           name="SKU"
                           onChange={handleChange}
                           isRequired
                           value={values.SKU}
                           onBlur={handleBlur}
-                          isInvalid={errors.SKU && touched.SKU}
-                          errorMessage={
-                            errors.SKU && touched.SKU ? errors.SKU : null
-                          }
+                          touched={touched}
+                          errors={errors}
                         />
-                        <Input
-                          className="mb-3"
-                          type="text"
+
+                        <NextInput
                           label="Short Description"
                           name="short_description"
                           onChange={handleChange}
-                          isRequired
-                          onBlur={handleBlur}
-                          isInvalid={
-                            errors.short_description &&
-                            touched.short_description
-                          }
-                          errorMessage={
-                            errors.short_description &&
-                            touched.short_description
-                              ? errors.short_description
-                              : null
-                          }
                           value={values.short_description}
+                          onBlur={handleBlur}
+                          touched={touched}
+                          errors={errors}
                         />
-                        <div className="mb-3">
+
+                        <div className="my-2">
                           <label htmlFor="name">Product Main Description</label>
                           <ReactQuill
                             theme="snow"
@@ -518,7 +427,7 @@ const AddProduct = () => {
                           errorMessage={touched.brand_id && errors.brand_id}
                           onChange={handleChange}
                         >
-                          {Array.isArray(GetBrand) &&
+                          {/* {Array.isArray(GetBrand) &&
                             GetBrand.map((brand) => {
                               return (
                                 <SelectItem
@@ -529,9 +438,10 @@ const AddProduct = () => {
                                   {brand.name}
                                 </SelectItem>
                               );
-                            })}
+                            })} */}
                         </Select>
                         <Select
+                          scrollRef={scrollerRef}
                           className="mb-3"
                           isRequired
                           label="Category"
@@ -551,9 +461,16 @@ const AddProduct = () => {
                           }
                           onChange={handleChange}
                         >
-                          {Array.isArray(GetCategory) &&
-                            GetCategory.map((category) => {
-                              return category(
+                          {
+                            // Array.isArray(GetCategory) &&
+                            // GetCategory
+                            [
+                              {
+                                id: 1,
+                                name: "Category 1",
+                              },
+                            ].map((category) => {
+                              return (
                                 <SelectItem
                                   key={category.id}
                                   value={category.id}
@@ -562,9 +479,10 @@ const AddProduct = () => {
                                   {category.name}
                                 </SelectItem>
                               );
-                            })}
+                            })
+                          }
                         </Select>
-                        <Select
+                        {/* <Select
                           className="mb-3"
                           isRequired
                           color={
@@ -601,7 +519,7 @@ const AddProduct = () => {
                                 </SelectItem>
                               );
                             })}
-                        </Select>
+                        </Select> */}
                         <Select
                           isRequired
                           className="mb-3"
@@ -614,7 +532,7 @@ const AddProduct = () => {
                           onChange={handleChange}
                           selectedKeys={values.unit_id && [values.unit_id]}
                         >
-                          {Array.isArray(GetUnit) &&
+                          {/* {Array.isArray(GetUnit) &&
                             GetUnit.map((unit) => {
                               return unit(
                                 <SelectItem
@@ -625,30 +543,30 @@ const AddProduct = () => {
                                   {unit.name} [{unit.unit_code}]
                                 </SelectItem>
                               );
-                            })}
+                            })} */}
                         </Select>
                         <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <Checkbox
-                              className="max-h-fit  h-fit"
+                            <NextCheckBox
+                              className="ms-2 my-2  max-h-fit  h-fit"
                               name="tax_details.is_tax_included"
+                              label="tax included"
                               isSelected={values.tax_details.is_tax_included}
                               onBlur={handleBlur}
                               onChange={handleChange}
                             >
                               Is Tax Included
-                            </Checkbox>
+                            </NextCheckBox>
                           </div>
                           <div>
-                            <Checkbox
-                              className="max-h-fit  h-fit"
+                            <NextCheckBox
+                              className="my-2 max-h-fit  h-fit"
                               name="cancellable.is_cancellable"
+                              label="Is cancellable"
                               isSelected={values.cancellable.is_cancellable}
                               onBlur={handleBlur}
                               onChange={handleChange}
-                            >
-                              Is Cancellable
-                            </Checkbox>
+                            ></NextCheckBox>
                           </div>
 
                           <div></div>
@@ -682,7 +600,7 @@ const AddProduct = () => {
                               ]
                             }
                           >
-                            {Array.isArray(GetTax) &&
+                            {/* {Array.isArray(GetTax) &&
                               GetTax.map((tax) => {
                                 return tax(
                                   <SelectItem
@@ -693,7 +611,7 @@ const AddProduct = () => {
                                     {tax.name} [{tax.value}]
                                   </SelectItem>
                                 );
-                              })}
+                              })} */}
                           </Select>
                           <Select
                             isRequired={values.cancellable.is_cancellable}
@@ -804,7 +722,7 @@ const AddProduct = () => {
                           />
                         </div>
                         <div className="grid grid-cols-4 gap-1">
-                          <Autocomplete
+                          {/* <Autocomplete
                             isLoading={!Array.isArray(GetCountries)}
                             label="Made In"
                             className="max-w-xs my-3"
@@ -830,8 +748,8 @@ const AddProduct = () => {
                                   {country.name.common}
                                 </AutocompleteItem>
                               ))}
-                          </Autocomplete>
-                          <Autocomplete
+                          </Autocomplete> */}
+                          {/* <Autocomplete
                             name="assembled_in"
                             onSelectionChange={(e) =>
                               setFieldValue("assembled_in", e)
@@ -857,11 +775,12 @@ const AddProduct = () => {
                                   {country.name.common}
                                 </AutocompleteItem>
                               ))}
-                          </Autocomplete>
+                          </Autocomplete> */}
                         </div>
                       </CardBody>
                     </Card>
                   </Tab>
+                  {/* 
                   <Tab
                     className="w-full max-h-full mx-1 p-2"
                     key="Price"
@@ -1340,6 +1259,7 @@ const AddProduct = () => {
                       </CardBody>
                     </Card>
                   </Tab>
+                  */}
                   <Tab
                     key="-"
                     title={

@@ -132,8 +132,8 @@ const Brand = () => {
                       }
                     >
                       {isSuccess &&
-                        Array.isArray(data.data) &&
-                        data.data?.map((Brand, index) => {
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows?.map((Brand, index) => {
                           return (
                             <TableRow key={Brand.id}>
                               <TableCell>{index + 1}</TableCell>
@@ -216,7 +216,7 @@ const Brand = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {data.data
+                      {data.data.rows
                         ?.filter((brand) => brand.is_deleted)
                         .map((brand) => {
                           return (

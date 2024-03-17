@@ -19,6 +19,10 @@ import {
   Spinner,
   Autocomplete,
   AutocompleteItem,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 
 import { Link } from "react-router-dom";
@@ -31,19 +35,22 @@ import {
 } from "../../Services/API/SubCategory";
 import { useAlert } from "../hooks/Toastify";
 import { useGetCategoriesQuery } from "../../Services/API/Category";
+import { useGetSubCategoriesTaxQuery } from "../../Services/API/SubCategotyTax";
 
 const SubCategory = () => {
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isSuccess, isLoading, data } = useGetSubCategoriesQuery();
   const [CreateSubCategory] = useCreateSubCategoryMutation();
   const [UpdateSubCategory] = useUpdateSubCategoryMutation();
   const [DeleteSubCategory] = useDeleteSubCategoryMutation();
   const { showAlert } = useAlert();
+
   const { data: GetCategory } = useGetCategoriesQuery();
+  const { isSuccess, isLoading, data } = useGetSubCategoriesQuery();
+  const { data: SubCategoryTaxes } = useGetSubCategoriesTaxQuery();
 
   const handleSubCategory = async (values = values) => {
-     const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
+    const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
     try {
       let data;
       if (ModalState === "Update") {
@@ -77,7 +84,6 @@ const SubCategory = () => {
     onSubmit: handleSubCategory,
   });
 
-  console.log(values);
   return (
     <>
       <div className="page-wrapper">
@@ -113,8 +119,9 @@ const SubCategory = () => {
                   >
                     <TableHeader>
                       <TableColumn>#</TableColumn>
-                      <TableColumn>SubCategory</TableColumn>
+                      <TableColumn>Sub Category</TableColumn>
                       <TableColumn>Created At</TableColumn>
+                      <TableColumn>Taxes</TableColumn>
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody
@@ -131,16 +138,54 @@ const SubCategory = () => {
                       }
                     >
                       {isSuccess &&
-                        Array.isArray(data.data) &&
-                        data.data?.map((SubCategory, index) => {
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows?.map((SubCategory, index) => {
                           return (
                             <TableRow key={SubCategory.id}>
                               <TableCell>{index + 1}</TableCell>
                               <TableCell>{SubCategory.name}</TableCell>
                               <TableCell>
-                                {moment(SubCategory.createdAt).format(
+                                {moment(SubCategory.created_at).format(
                                   "MMMM DD, YYYY"
                                 )}
+                              </TableCell>
+                              <TableCell>
+                                <Dropdown>
+                                  <DropdownTrigger>
+                                    <Button variant="flat" color="primary">
+                                      Open Tax List
+                                    </Button>
+                                  </DropdownTrigger>
+                                  <DropdownMenu
+                                    selectionMode="none"
+                                    variant="flat"
+                                    color="primary"
+                                    aria-label="Action event example"
+                                  >
+                                    {Array.isArray(SubCategoryTaxes?.data) &&
+                                      SubCategoryTaxes.data
+                                        .filter(
+                                          (SubCategoryTax) =>
+                                            SubCategoryTax.sub_category_id ===
+                                            SubCategory.id
+                                        )
+                                        .map((SubCategoryTax) => (
+                                          <DropdownItem
+                                            isDisabled
+                                            key={SubCategoryTax.id}
+                                          >
+                                            <div className="flex justify-between">
+                                              <span>
+                                                {SubCategoryTax.tax.name}
+                                              </span>
+                                              <span>
+                                                {SubCategoryTax.percentage}
+                                              </span>
+                                            </div>
+                                          </DropdownItem>
+                                        ))}
+                                  </DropdownMenu>
+                                </Dropdown>
                               </TableCell>
                               <TableCell className="text-center">
                                 <i
@@ -207,8 +252,8 @@ const SubCategory = () => {
                     onSelectionChange={(e) => setFieldValue("category_id", e)}
                     onBlur={handleBlur}
                   >
-                    {Array.isArray(GetCategory.data) &&
-                      GetCategory.data.map((item) => (
+                    {Array.isArray(GetCategory.data.rows) &&
+                      GetCategory.data.rows.map((item) => (
                         <AutocompleteItem
                           key={item.id}
                           value={item.id?.toString()}
@@ -238,7 +283,7 @@ const SubCategory = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {data.data
+                      {data.data.rows
                         ?.filter((subcategory) => subcategory.is_deleted)
                         .map((subcategory) => {
                           return (

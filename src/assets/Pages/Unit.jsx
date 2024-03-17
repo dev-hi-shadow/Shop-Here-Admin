@@ -134,8 +134,8 @@ const Unit = () => {
                       }
                     >
                       {isSuccess &&
-                        Array.isArray(data.data) &&
-                        data.data?.map((Unit, index) => {
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows?.map((Unit, index) => {
                           return (
                             <TableRow key={Unit.id}>
                               <TableCell>{index + 1}</TableCell>
@@ -226,8 +226,8 @@ const Unit = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {Array.isArray(data.data) &&
-                        data.data.map((unit) => {
+                      {Array.isArray(data.data.rows) &&
+                        data.data.rows.map((unit) => {
                           return (
                             <TableRow key={unit.id}>
                               <TableCell>{unit.name}</TableCell>

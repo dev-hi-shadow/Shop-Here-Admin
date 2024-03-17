@@ -181,8 +181,8 @@ const Attribute = () => {
                                         className="rounded-3"
                                       >
                                         Total{" "}
-                                        {Array.isArray(data.data) &&
-                                          data.data?.filter(
+                                        {Array.isArray(data.data.rows) &&
+                                          data.data.rows?.filter(
                                             (value) =>
                                               value?.attribute_id ==
                                               Attribute?.id
@@ -191,8 +191,8 @@ const Attribute = () => {
                                       </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu variant="flat" color="danger">
-                                      {Array.isArray(data.data) &&
-                                        data.data
+                                      {Array.isArray(data.data.rows) &&
+                                        data.data.rows
                                           ?.filter(
                                             (value) =>
                                               value?.attribute_id ==
@@ -292,7 +292,7 @@ const Attribute = () => {
                       <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
-                      {data.data
+                      {data.data.rows
                         ?.filter((attribute) => attribute.is_deleted)
                         .map((attribute) => {
                           return (

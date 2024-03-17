@@ -40,6 +40,7 @@ import { attribute } from "./API/Attribute";
 import { unit } from "./API/Unit";
 import { tax } from "./API/Tax";
 import { address } from "./API/Address";
+import { subcategory_tax } from "./API/SubCategotyTax";
 
 // SLICES
 import authSlice from "./Slices/Auth";
@@ -50,6 +51,7 @@ import taxSlice from "./Slices/Tax";
 import unitSlice from "./Slices/Unit";
 import addressSlice from "./Slices/Address";
 import attributeSlice from "./Slices/Attribute";
+import SubCategoryTaxSlice from "./Slices/SubCategoryTax";
 
 const rootReducer = combineReducers({
   [auth.reducerPath]: auth.reducer,
@@ -60,6 +62,7 @@ const rootReducer = combineReducers({
   [attribute.reducerPath]: attribute.reducer,
   [category.reducerPath]: category.reducer,
   [subcategory.reducerPath]: subcategory.reducer,
+  [subcategory_tax.reducerPath]: subcategory_tax.reducer,
   authSlice,
   taxSlice,
   unitSlice,
@@ -68,6 +71,7 @@ const rootReducer = combineReducers({
   attributeSlice,
   brandSlice,
   subcategorySlice,
+  SubCategoryTaxSlice,
 });
 
 export const Store = configureStore({
@@ -81,6 +85,7 @@ export const Store = configureStore({
       address.middleware,
       attribute.middleware,
       category.middleware,
-      subcategory.middleware
+      subcategory.middleware,
+      subcategory_tax.middleware
     ),
 });

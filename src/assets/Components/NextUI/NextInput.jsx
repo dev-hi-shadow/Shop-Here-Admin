@@ -7,13 +7,14 @@ const NextInput = ({
   onChange = () => console.log("please add onChange"),
   onBlur = () => console.log("please add onBlur"),
   value = "",
-  variant = "faded",
+  // variant = "faded",
   name = "",
   type = "text",
   isRequired = true,
   placeholder = "",
   touched = {},
   errors = {},
+  label = "",
   startContent = "",
   endContent = "",
   helperText = "",
@@ -21,18 +22,19 @@ const NextInput = ({
 }) => {
   return (
     <Input
-      className={`my-1 ${className}`}
+      className={`my-2 ${className}`}
       onChange={onChange}
       onBlur={onBlur}
       value={value}
-      variant={variant}
+      // variant={variant}
+      label={label || Capitalize(name.split("_").join(" "))}
       name={name}
       startContent={startContent}
       endContent={endContent}
       type={type}
       helperText={helperText}
       isRequired={isRequired || true}
-      placeholder={placeholder || Capitalize(name.split("_").join(" "))}
+      placeholder={placeholder}
       isInvalid={touched[name] && errors[name]}
       errorMessage={touched[name] && errors[name]}
       {...rest}
