@@ -963,8 +963,7 @@ const AddProduct = () => {
                               </AutocompleteItem>
                             ))}
                           </Autocomplete>
-                          {console.log(values)}
-                          {/* <Autocomplete
+                           {/* <Autocomplete
                             isLoading={!Array.isArray(GetCountries)}
                             label="Made In"
                             className="max-w-xs my-3"
@@ -1347,8 +1346,7 @@ const AddProduct = () => {
                               : "Add More Faq(s)"}
                           </Link>
                         </div>
-                        {console.log(values.faqs)}
-                        <Divider className="bg-black mt-2" />
+                         <Divider className="bg-black mt-2" />
                         <div className="h-full max-h-full min-h-full">
                           {Array.isArray(values.faqs) &&
                             values.faqs.map((faq, index) => (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import {
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -11,9 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
+import { useGetProductsQuery } from "../../../Services/API/Product";
 
 const Products = () => {
-  const [ViewProduct, setViewProduct] = useState();
+  const {
+    data: ProductsData,
+    isSuccess: ProductsSuccess,
+    isError: ProductsError,
+    isLoading: ProductsLoading,
+  } = useGetProductsQuery();
+   const [ViewProduct, setViewProduct] = useState();
   const handlePublish = (productId, state) => {};
   return (
     <>
@@ -39,9 +47,17 @@ const Products = () => {
                   <TableColumn>Publish</TableColumn>
                   <TableColumn className="text-center">Action</TableColumn>
                 </TableHeader>
-                <TableBody emptyContent={"No rows to display."}>
-                  {Array.isArray(Products) &&
-                    Products.map((product, index) => {
+                <TableBody
+                  emptyContent={
+                    ProductsLoading ? (
+                      <Spinner size="sm" label="Loading..." color="warning" />
+                    ) : (
+                      "No data Found"
+                    )
+                  }
+                >
+                  {ProductsSuccess &&
+                    ProductsData.data.rows.map((product, index) => {
                       return (
                         <TableRow key={index + 1}>
                           <TableCell>{index + 1}</TableCell>
@@ -53,9 +69,9 @@ const Products = () => {
                               height="auto"
                             />
                           </TableCell>
-                          <TableCell>{product?.name} by name</TableCell>
-                          <TableCell>{product?.brandid?.name}</TableCell>
-                          <TableCell>{product?.category_id?.name}</TableCell>
+                          <TableCell>{product?.name} by {product?.brand?.name}</TableCell>
+                          <TableCell>{product?.brand?.name}</TableCell>
+                          <TableCell>{product?.category?.name}</TableCell>
                           <TableCell>Ratting (todo)</TableCell>
                           <TableCell>
                             <a

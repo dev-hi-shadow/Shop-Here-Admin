@@ -6,7 +6,7 @@ import { SignInSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
 import { Button, Input } from "@nextui-org/react";
 import { useAlert } from "../hooks/Toastify";
-import { useLoginMutation, useProfileQuery } from "../../Services/API/auth";
+import { useLoginMutation, useProfileQuery } from "../../Services/API/Auth";
 import { useEffect, useState } from "react";
 
 const SignIn = () => {
@@ -31,8 +31,7 @@ const SignIn = () => {
   const handleSignInSubmit = async (formData) => {
     try {
       const data = await login(formData).unwrap();
-      console.log("🚀  data:", data)
-      window.localStorage.setItem("accessToken", data.data.token);
+       window.localStorage.setItem("accessToken", data.data.token);
       showAlert("Signin Successful");
       Navigate("/dashboard");
     } catch (err) {

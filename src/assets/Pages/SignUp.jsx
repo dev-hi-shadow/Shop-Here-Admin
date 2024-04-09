@@ -23,9 +23,8 @@ const SignUp = () => {
   const [typePassword, setTypePassword] = useState(true);
   const [Country, setSelectedCountry] = useState({});
   const [PhoneCountry, setSelectedPhoneCountry] = useState({});
-  const handleSignUpSubmit = (values) => {
-    console.log("values", values);
-  };
+  const handleSignUpSubmit = () => {
+   };
 
   const {
     values,

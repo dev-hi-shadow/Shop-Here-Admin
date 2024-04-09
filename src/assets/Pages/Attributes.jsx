@@ -34,8 +34,7 @@ import {
 import { useAlert } from "../hooks/Toastify";
 const Attribute = () => {
   const { isLoading, data } = useGetAttributesQuery();
-  console.log("🚀  data:", data);
-  const [CreateAttribute] = useCreateAttributeMutation();
+   const [CreateAttribute] = useCreateAttributeMutation();
   const [UpdateAttribute] = useUpdateAttributeMutation();
   const [DeleteAttribute] = useDeleteAttributeMutation();
   const { showAlert } = useAlert();
