@@ -12,6 +12,10 @@ export const authSlice = createSlice({
         state.user = action.payload;
       }
     );
+    builder.addMatcher(auth.endpoints.logout.matchFulfilled, (state) => {
+      state.user = null;
+      state.logout = true;
+    });
   },
 });
 export default authSlice.reducer;

@@ -1,34 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { address } from "../API/Address";
+import { faq } from "../API/Faqs";
 
-export const addressSlice = createSlice({
-  name: "address",
+export const faqSlice = createSlice({
+  name: "faq",
   initialState: {},
   reducers: {
     // Define synchronous reducers here if needed
   },
   extraReducers: (builder) => {
     builder
+      .addMatcher(faq.endpoints.GetFaqs.matchFulfilled, (state, action) => {
+        state.faqs = action.payload;
+      })
       .addMatcher(
-        address.endpoints.GetAddresses.matchFulfilled,
-        (state, action) => {
-          state.addresss = action.payload;
-        }
-      )
-      .addMatcher(
-        address.endpoints.CreateAddress.matchFulfilled,
+        faq.endpoints.CreateFaq.matchFulfilled,
         (state, action) => {
           state.create = action.payload;
         }
       )
       .addMatcher(
-        address.endpoints.UpdateAddress.matchFulfilled,
+        faq.endpoints.UpdateFaq.matchFulfilled,
         (state, action) => {
           state.update = action.payload;
         }
       )
       .addMatcher(
-        address.endpoints.DeleteAddress.matchFulfilled,
+        faq.endpoints.DeleteFaq.matchFulfilled,
         (state, action) => {
           state.delete = action.payload;
         }
@@ -36,4 +33,4 @@ export const addressSlice = createSlice({
   },
 });
 
-export default addressSlice.reducer;
+export default faqSlice.reducer;

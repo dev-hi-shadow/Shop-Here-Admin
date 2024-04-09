@@ -1,33 +1,34 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../fetchBaseQuery";
 
-export const address = createApi({
+
+export const faq = createApi({
   baseQuery,
-  reducerPath: "address",
+  reducerPath: "faqs",
   endpoints: (builder) => ({
-    GetAddresses: builder.query({
+    GetFaqs: builder.query({
       query: () => ({
-        url: "/addresses",
+        url: "/faqs",
         method: "GET",
       }),
     }),
-    CreateAddress: builder.mutation({
+    CreateFaq: builder.mutation({
       query: (data) => ({
-        url: "/addresses/create",
+        url: "/faqs/create",
         method: "POST",
         body: data,
       }),
     }),
-    UpdateAddress: builder.mutation({
+    UpdateFaq: builder.mutation({
       query: (data) => ({
-        url: `/addresses/update/${data.id}`,
+        url: `/faqs/update/${data.id}`,
         method: "PUT",
         body: { ...data, id: undefined },
       }),
     }),
-    DeleteAddress: builder.mutation({
+    DeleteFaq: builder.mutation({
       query: (data) => ({
-        url: `/addressess/delete/${data.id}`,
+        url: `/faqs/delete/${data.id}`,
         method: "DELETE",
       }),
     }),
@@ -35,8 +36,8 @@ export const address = createApi({
 });
 
 export const {
-  useGetAddressesQuery,
-  useCreateAddressMutation,
-  useDeleteAddressMutation,
-  useUpdateAddressMutation,
-} = address;
+  useGetFaqsQuery,
+  useCreateFaqMutation,
+  useDeleteFaqMutation,
+  useUpdateFaqMutation,
+} = faq

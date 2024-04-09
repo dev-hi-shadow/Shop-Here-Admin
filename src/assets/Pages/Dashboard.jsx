@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody } from "@nextui-org/react";
+import CountUp from "react-countup";
+
 // import { useAlert } from "../hooks/Toastify";
 // import { useEffect } from "react";
 const Dashboard = () => {
   const Navigate = useNavigate();
   // const { showAlert } = useAlert();
-
 
   return (
     <>
@@ -44,9 +45,15 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="h1 mb-3">75%</div>
+                      <div className="h1 mb-3">
+                        {" "}
+                        <CountUp end={75} />%
+                      </div>
                       <div className="d-flex mb-2">
-                        <div>{(item.length * 4).toFixed(2)}%</div>
+                        <div>
+                          {" "}
+                          <CountUp end={(item.length * 4).toFixed(2)} />%
+                        </div>
                         <div className="ms-auto">
                           <span className="text-green d-inline-flex align-items-center lh-1">
                             7%{" "}
@@ -124,7 +131,7 @@ const Dashboard = () => {
                             </span>
                           </div>
                           <div className="col">
-                            <div className="font-weight-medium">132 Sales</div>
+                            <div className="font-weight-medium"><CountUp end={132}/> Sales</div>
                             <div className="text-muted">
                               12 waiting payments
                             </div>
@@ -165,7 +172,7 @@ const Dashboard = () => {
                             </span>
                           </div>
                           <div className="col">
-                            <div className="font-weight-medium">78 Orders</div>
+                            <div className="font-weight-medium"><CountUp end={78}/> Orders</div>
                             <div className="text-muted">32 shipped</div>
                           </div>
                         </div>
@@ -201,7 +208,7 @@ const Dashboard = () => {
                             </span>
                           </div>
                           <div className="col">
-                            <div className="font-weight-medium">623 Shares</div>
+                            <div className="font-weight-medium"><CountUp end={378}/> Shares</div>
                             <div className="text-muted">16 today</div>
                           </div>
                         </div>
@@ -237,7 +244,7 @@ const Dashboard = () => {
                             </span>
                           </div>
                           <div className="col">
-                            <div className="font-weight-medium">132 Likes</div>
+                            <div className="font-weight-medium"><CountUp end={778}/> Likes</div>
                             <div className="text-muted">21 today</div>
                           </div>
                         </div>
@@ -1176,609 +1183,6 @@ const Dashboard = () => {
                 >
                   <div className="card-body"></div>
                 </Link>
-              </div>
-
-              <div className="col-md-12 col-lg-8">
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title">Tasks</h3>
-                  </div>
-                  <div className="table-responsive">
-                    <table className="table card-table table-vcenter">
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                            checked
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Extend the data model.
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          August 04, 2021
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            2/7
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            3
-                          </Link>
-                        </td>
-                        <td>
-                          <span
-                            className="avatar avatar-sm"
-                            style={{
-                              backgroundImage:
-                                "url(./static/avatars/000m..jpg)",
-                            }}
-                          ></span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Verify the event flow.
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          January 03, 2019
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            3/10
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            6
-                          </Link>
-                        </td>
-                        <td>
-                          <span className="avatar avatar-sm">JL</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Database backup and maintenance
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          December 28, 2018
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            0/6
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            1
-                          </Link>
-                        </td>
-                        <td>
-                          <span
-                            className="avatar avatar-sm"
-                            style={{
-                              backgroundImage:
-                                "url(./static/avatars/002m..jpg)",
-                            }}
-                          ></span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                            checked
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Identify the implementation team.
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          November 07, 2020
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            6/10
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            12
-                          </Link>
-                        </td>
-                        <td>
-                          <span
-                            className="avatar avatar-sm"
-                            style={{
-                              backgroundImage:
-                                "url(./static/avatars/003m..jpg)",
-                            }}
-                          ></span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Define users and workflow
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          November 23, 2021
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            3/7
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            5
-                          </Link>
-                        </td>
-                        <td>
-                          <span
-                            className="avatar avatar-sm"
-                            style={{
-                              backgroundImage:
-                                "url(./static/avatars/000f..jpg)",
-                            }}
-                          ></span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="w-1 pe-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input m-0 align-middle"
-                            aria-label="Select task"
-                            checked
-                          />
-                        </td>
-                        <td className="w-100">
-                          <Link to="#" className="text-reset">
-                            Check Pull Requests
-                          </Link>
-                        </td>
-                        <td className="text-nowrap text-muted">
-                          {/* Download SVG icon from http://tabler-icons.io/i/calendar */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                            <path d="M16 3v4" />
-                            <path d="M8 3v4" />
-                            <path d="M4 11h16" />
-                            <path d="M11 15h1" />
-                            <path d="M12 15v3" />
-                          </svg>
-                          January 14, 2021
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/check */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 12l5 5l10 -10" />
-                            </svg>
-                            2/9
-                          </Link>
-                        </td>
-                        <td className="text-nowrap">
-                          <Link to="#" className="text-muted">
-                            {/* Download SVG icon from http://tabler-icons.io/i/message */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M8 9h8" />
-                              <path d="M8 13h6" />
-                              <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-                            </svg>
-                            3
-                          </Link>
-                        </td>
-                        <td>
-                          <span
-                            className="avatar avatar-sm"
-                            style={{
-                              backgroundImage:
-                                "url(./static/avatars/001f..jpg)",
-                            }}
-                          ></span>
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                </div>
               </div>
               <div className="col-12">
                 <div className="card">

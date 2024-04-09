@@ -34,6 +34,7 @@ import {
 import { useAlert } from "../hooks/Toastify";
 const Attribute = () => {
   const { isLoading, data } = useGetAttributesQuery();
+  console.log("🚀  data:", data);
   const [CreateAttribute] = useCreateAttributeMutation();
   const [UpdateAttribute] = useUpdateAttributeMutation();
   const [DeleteAttribute] = useDeleteAttributeMutation();
@@ -137,8 +138,8 @@ const Attribute = () => {
                         )
                       }
                     >
-                      {Array.isArray(data?.data) &&
-                        data?.data
+                      {Array.isArray(data?.data?.rows) &&
+                        data?.data?.rows
                           ?.filter((item) => !item.attribute)
                           .map((Attribute, index) => {
                             return (

@@ -31,9 +31,10 @@ const SignIn = () => {
   const handleSignInSubmit = async (formData) => {
     try {
       const data = await login(formData).unwrap();
-      window.localStorage.setItem("accessToken", data.token);
+      console.log("🚀  data:", data)
+      window.localStorage.setItem("accessToken", data.data.token);
       showAlert("Signin Successful");
-      Navigate("/");
+      Navigate("/dashboard");
     } catch (err) {
       showAlert(
         `Signin Failed: ${err.data ? err.data.error : "An error occurred"}`

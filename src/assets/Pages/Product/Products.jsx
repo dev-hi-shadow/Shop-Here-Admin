@@ -14,9 +14,7 @@ import {
 
 const Products = () => {
   const [ViewProduct, setViewProduct] = useState();
-
   const handlePublish = (productId, state) => {};
-
   return (
     <>
       <div className="page-wrapper">

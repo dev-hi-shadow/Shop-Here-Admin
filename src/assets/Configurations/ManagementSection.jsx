@@ -1,5 +1,4 @@
-import { LogoutAction } from "../../Services/Actions/Authentication";
-import SignUp from "../Pages/SignUp.jsx";
+ import SignUp from "../Pages/SignUp.jsx";
 import SignIn from "../Pages/SignIn.jsx";
 import Brand from "../Pages/Brand.jsx";
 import Category from "../Pages/Category.jsx";
@@ -15,7 +14,7 @@ import Dashboard from "../Pages/Dashboard";
 import Notifications from "../Pages/Notifications/Alerts.jsx";
 import GlobalAlerts from "../Pages/Notifications/GlobalAlerts.jsx";
 import Alerts from "../Pages/Notifications/Alerts.jsx";
-export const PageRoutes = [
+ export const PageRoutes = [
   { path: "/", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
   { path: "/dashboard", element: <Dashboard /> },
@@ -115,6 +114,5 @@ export const SideBarConfig = [
       "primary:#121331,secondary:#ebe6ef,tertiary:#f9c9c0,quaternary:#f24c00,quinary:#3a3347,senary:#b26836,septenary:#206bc4",
     Title: "Logout",
     redirects: null,
-    onClickFunction: LogoutAction,
-  },
+   },
 ];

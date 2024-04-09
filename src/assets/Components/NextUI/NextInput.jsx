@@ -7,7 +7,6 @@ const NextInput = ({
   onChange = () => console.log("please add onChange"),
   onBlur = () => console.log("please add onBlur"),
   value = "",
-  // variant = "faded",
   name = "",
   type = "text",
   isRequired = true,
@@ -18,6 +17,8 @@ const NextInput = ({
   startContent = "",
   endContent = "",
   helperText = "",
+  errorMessage = "",
+  isInvalid = "",
   ...rest
 }) => {
   return (
@@ -35,8 +36,8 @@ const NextInput = ({
       helperText={helperText}
       isRequired={isRequired || true}
       placeholder={placeholder}
-      isInvalid={touched[name] && errors[name]}
-      errorMessage={touched[name] && errors[name]}
+      isInvalid={isInvalid || (touched[name] && errors[name])}
+      errorMessage={errorMessage || (touched[name] && errors[name])}
       {...rest}
     />
   );

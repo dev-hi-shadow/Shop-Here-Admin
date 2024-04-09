@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./assets/Main/Footer.jsx";
 import {
   disable_sidebar,
@@ -12,12 +12,15 @@ import PageNotFound from "./assets/Pages/PageNotFound.jsx";
 
 function App() {
   const Location = useLocation();
+  const Navigate = useNavigate();
   const [ActivePage, setActivePage] = useState();
   useEffect(() => {
+    if (!localStorage.getItem("accessToken")) {
+      Navigate("/");
+    }
     setActivePage(Location?.pathname);
   }, [Location?.pathname]);
-  
- 
+
   return (
     <>
       {!disable_sidebar.includes(ActivePage) && <Sidebar />}

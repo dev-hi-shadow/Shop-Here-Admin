@@ -1,17 +1,16 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { ProductSchema } from "../../Configurations/YupSchema";
 import { ProductInitialState } from "../../Configurations/InitialStates";
+import _ from "lodash";
 
-import { Select, SelectItem } from "@nextui-org/select";
-import {
+ import {
   Autocomplete,
   AutocompleteItem,
-  Avatar,
-  Button,
-  Card,
+    Card,
   CardBody,
   Checkbox,
   Chip,
@@ -43,18 +42,35 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-import { CustomFind, ORDER_STATUSES } from "../../Helpers";
+import { ORDER_STATUSES } from "../../Helpers";
 import NextInput from "../../Components/NextUI/NextInput";
 import NextCheckBox from "../../Components/NextUI/NextCheckBox";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useGetCategoriesQuery } from "../../../Services/API/Category";
+import { useGetSubCategoriesQuery } from "../../../Services/API/SubCategory";
+import { useGetAddressesQuery } from "../../../Services/API/Address";
+// import { useGetSubCategoriesTaxQuery } from "../../../Services/API/SubCategotyTax";
+import { useGetBrandsQuery } from "../../../Services/API/Brand";
+import { useGetUnitsQuery } from "../../../Services/API/Unit";
+import { useGetTaxesQuery } from "../../../Services/API/Tax";
+import { Countries } from "../../Helpers/Countries";
+import { useGetAttributesQuery } from "../../../Services/API/Attribute";
+import NextButton from "../../Components/NextUI/NextButton";
 
 const AddProduct = () => {
   const [ActiveTab, setActiveTab] = useState(0);
-  const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
+   const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
+  const [SelectedAttributes, setSelectedAttributes] = useState([]);
   const [VariableAttributeCategory, setVariableAttributeCategory] =
     useState(null);
-  const [, scrollerRef] = useInfiniteScroll({});
-  console.log("🚀  scrollerRef:", scrollerRef);
+  const [SelectedCity, setSelectedCity] = useState(null);
+  const Categories = useGetCategoriesQuery();
+  const SubCategories = useGetSubCategoriesQuery();
+  const Addresses = useGetAddressesQuery();
+  // const SubCategortTaxes = useGetSubCategoriesTaxQuery();
+  const Attributes = useGetAttributesQuery();
+  const Brands = useGetBrandsQuery();
+  const Units = useGetUnitsQuery();
+  const Taxes = useGetTaxesQuery();
 
   const handleProduct = () => {
     //  dispatch(CreateProductAction(values));
@@ -77,49 +93,50 @@ const AddProduct = () => {
     onSubmit: (values) => handleProduct(values),
   });
 
-  const handleAttributeSelect = (
-    ArgsAttribure,
-    ArgsSelectedItems,
-    ArgsType = "add"
-  ) => {
-    let selectedItems = Array.from(ArgsSelectedItems);
-    let attribute = ArgsAttribure;
-    let type = ArgsType;
-    const UpdateArray = values.attributes;
-    const index = UpdateArray.findIndex((item) =>
-      Object.prototype?.hasOwnProperty?.call(item, attribute)
-    );
+  // const handleAttributeSelect = (
+  //   ArgsAttribure,
+  //   ArgsSelectedItems,
+  //   ArgsType = "add"
+  // ) => {
+  //   let selectedItems = Array.from(ArgsSelectedItems);
+  //   let attribute = ArgsAttribure;
+  //   let type = ArgsType;
+  //   const UpdateArray = values.attributes;
+  //   const index = UpdateArray.findIndex((item) =>
+  //     Object.prototype?.hasOwnProperty?.call(item, attribute)
+  //   );
 
-    if (type === "deleteAttribute") {
-      attribute = Object.keys(UpdateArray[index])[0];
-      let UpdateValue = UpdateArray[index][attribute];
-      const valueindex = UpdateValue.findIndex((item) => {
-        return item === selectedItems.join("").toString();
-      });
-      UpdateValue.splice(valueindex, 1);
-      selectedItems = UpdateValue;
-    }
+  //   if (type === "deleteAttribute") {
+  //     attribute = Object.keys(UpdateArray[index])[0];
+  //     let UpdateValue = UpdateArray[index][attribute];
+  //     const valueindex = UpdateValue.findIndex((item) => {
+  //       return item === selectedItems.join("").toString();
+  //     });
+  //     UpdateValue.splice(valueindex, 1);
+  //     selectedItems = UpdateValue;
+  //   }
 
-    if (index === -1) {
-      UpdateArray.push({ [attribute]: selectedItems });
-    } else {
-      if (selectedItems.length <= 0) {
-        UpdateArray.splice(index, 1);
-      } else {
-        UpdateArray[index] = { [attribute]: selectedItems };
-      }
-    }
-    setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
-  };
+  //   if (index === -1) {
+  //     UpdateArray.push({ [attribute]: selectedItems });
+  //   } else {
+  //     if (selectedItems.length <= 0) {
+  //       UpdateArray.splice(index, 1);
+  //     } else {
+  //       UpdateArray[index] = { [attribute]: selectedItems };
+  //     }
+  //   }
+  //   setFieldValue(`attributes`, [...UpdateArray] || initialValues.attributes);
+  // };
 
-  const HandleVarients = (attributeids, event) => {
+  const HandleVarients = (event, index) => {
     if (event.target.checked) {
-      setSelectedVarientionRows([...SelectedVarientionRows, attributeids]);
+      // If the checkbox is checked, add the index to the selected rows
+      setSelectedVarientionRows((prevSelected) => [...prevSelected, index]);
     } else {
-      const updateValues = [...SelectedVarientionRows];
-      const index = SelectedVarientionRows.indexOf(attributeids);
-      updateValues.splice(index, 1);
-      setSelectedVarientionRows([...updateValues]);
+      // If the checkbox is unchecked, remove the index from the selected rows
+      setSelectedVarientionRows((prevSelected) =>
+        prevSelected.filter((item) => item !== index)
+      );
     }
   };
   useEffect(() => {
@@ -196,7 +213,6 @@ const AddProduct = () => {
               return value.attributeids.includes(preVal);
             });
           });
-
           return { [Attribute]: FilteredValues };
         }).filter((item) => typeof item === "object");
 
@@ -210,6 +226,65 @@ const AddProduct = () => {
     }
   };
 
+  function cartesian(...args) {
+    if (args.length === 0 || args.some((arg) => arg.length === 0)) {
+      return [[]];
+    }
+    return args.reduce(
+      (a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())),
+      [[]]
+    );
+  }
+
+  useEffect(() => {
+    const hasSelectedAttributes =
+      Object.values(SelectedAttributes).length > 0 &&
+      Object.values(SelectedAttributes).every((attr) => attr.length > 0);
+
+    if (hasSelectedAttributes) {
+      const attributeValues = Object.values(SelectedAttributes).map((attr) =>
+        attr.map((item) => item.name)
+      );
+      const allCombinations = cartesian(...attributeValues);
+      const formattedCombinations = allCombinations.map((combination) => ({
+        variation_name: combination.join(" "),
+        manufacture_price: null, // Corrected spelling
+        retail_price: null,
+        special_price: null,
+        width: null,
+        height: null,
+        depth: null,
+        weight: null,
+        SKU: combination?.SKU || Math.floor(Math.random() * 9999999),
+      }));
+      setFieldValue("variations", formattedCombinations);
+    } else {
+      setFieldValue("variations", []);
+    }
+
+   }, [SelectedAttributes, setFieldValue]);
+
+  useEffect(() => {
+    let newRecord = [];
+    values.attributes.forEach((item) => {
+      newRecord.push(
+        _.pick(
+          Attributes.data.data.rows.find((att) => {
+            return att.id == item;
+          }),
+          ["id", "name", "attribute.name"]
+        )
+      );
+    });
+    setSelectedAttributes(_.groupBy(newRecord, (item) => item.attribute.name));
+  }, [Attributes?.data?.data?.rows, values.attributes]);
+
+  const handleDeleteAttribute = (id) => {
+    const updatedAttributes = new Set([...values.attributes]);
+    const idToRemove = String(id);
+    updatedAttributes.delete(idToRemove);
+    setFieldValue("attributes", updatedAttributes);
+  };
   return (
     <>
       <div className="page-wrapper">
@@ -413,7 +488,7 @@ const AddProduct = () => {
                   >
                     <Card className="h-full">
                       <CardBody>
-                        <Select
+                        {/* <Select
                           className="mb-3"
                           isRequired
                           color={
@@ -427,7 +502,7 @@ const AddProduct = () => {
                           errorMessage={touched.brand_id && errors.brand_id}
                           onChange={handleChange}
                         >
-                          {/* {Array.isArray(GetBrand) &&
+                          {Array.isArray(GetBrand) &&
                             GetBrand.map((brand) => {
                               return (
                                 <SelectItem
@@ -438,10 +513,27 @@ const AddProduct = () => {
                                   {brand.name}
                                 </SelectItem>
                               );
-                            })} */}
-                        </Select>
-                        <Select
-                          scrollRef={scrollerRef}
+                            })}
+                        </Select> */}
+
+                        <Autocomplete
+                          isRequired
+                          className="mb-3"
+                          label="Brand"
+                          name="brand_id"
+                          selectedKey={values.brand_id}
+                          onSelectionChange={(e) =>
+                            setFieldValue("brand_id", e)
+                          }
+                        >
+                          {Brands.isSuccess &&
+                            Brands.data.data.rows?.map((brand) => (
+                              <AutocompleteItem key={brand.id}>
+                                {brand.name}
+                              </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
+                        {/* <Select
                           className="mb-3"
                           isRequired
                           label="Category"
@@ -481,7 +573,25 @@ const AddProduct = () => {
                               );
                             })
                           }
-                        </Select>
+                        </Select> */}
+
+                        <Autocomplete
+                          isRequired
+                          className="mb-3"
+                          label="Category"
+                          name="category_id"
+                          selectedKey={values.category_id}
+                          onSelectionChange={(e) =>
+                            setFieldValue("category_id", e)
+                          }
+                        >
+                          {Categories.isSuccess &&
+                            Categories.data.data.rows?.map((category) => (
+                              <AutocompleteItem key={category.id}>
+                                {category.name}
+                              </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
                         {/* <Select
                           className="mb-3"
                           isRequired
@@ -520,7 +630,26 @@ const AddProduct = () => {
                               );
                             })}
                         </Select> */}
-                        <Select
+                        <Autocomplete
+                          isRequired
+                          className="mb-3"
+                          label="Sub Category"
+                          name="subcategory_id"
+                          selectedKey={values.subcategory_id}
+                          onSelectionChange={(e) =>
+                            setFieldValue("subcategory_id", e)
+                          }
+                        >
+                          {SubCategories.isSuccess &&
+                            SubCategories.data.data.rows?.map(
+                              (sub_category) => (
+                                <AutocompleteItem key={sub_category.id}>
+                                  {sub_category.name}
+                                </AutocompleteItem>
+                              )
+                            )}
+                        </Autocomplete>
+                        {/* <Select
                           isRequired
                           className="mb-3"
                           label="Unit"
@@ -532,7 +661,7 @@ const AddProduct = () => {
                           onChange={handleChange}
                           selectedKeys={values.unit_id && [values.unit_id]}
                         >
-                          {/* {Array.isArray(GetUnit) &&
+                          {Array.isArray(GetUnit) &&
                             GetUnit.map((unit) => {
                               return unit(
                                 <SelectItem
@@ -543,8 +672,24 @@ const AddProduct = () => {
                                   {unit.name} [{unit.unit_code}]
                                 </SelectItem>
                               );
-                            })} */}
-                        </Select>
+                            })}
+                        </Select> */}
+
+                        <Autocomplete
+                          isRequired
+                          className="mb-3"
+                          label="Unit"
+                          name="unit_id"
+                          selectedKey={values.unit_id}
+                          onSelectionChange={(e) => setFieldValue("unit_id", e)}
+                        >
+                          {Units.isSuccess &&
+                            Units.data.data.rows?.map((Unit) => (
+                              <AutocompleteItem key={Unit.id}>
+                                {Unit.name}
+                              </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
                         <div className="grid grid-cols-3 gap-3">
                           <div>
                             <NextCheckBox
@@ -568,12 +713,10 @@ const AddProduct = () => {
                               onChange={handleChange}
                             ></NextCheckBox>
                           </div>
-
-                          <div></div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-3 my-2">
-                          <Select
+                          {/* <Select
                             isRequired={!values.tax_details.is_tax_included}
                             isDisabled={values.tax_details.is_tax_included}
                             className="mb-3"
@@ -600,7 +743,7 @@ const AddProduct = () => {
                               ]
                             }
                           >
-                            {/* {Array.isArray(GetTax) &&
+                            {Array.isArray(GetTax) &&
                               GetTax.map((tax) => {
                                 return tax(
                                   <SelectItem
@@ -611,9 +754,73 @@ const AddProduct = () => {
                                     {tax.name} [{tax.value}]
                                   </SelectItem>
                                 );
-                              })} */}
-                          </Select>
-                          <Select
+                              })}
+                          </Select> */}
+                          <Autocomplete
+                            key={values.tax_details.is_tax_included}
+                            isRequired={!values.tax_details.is_tax_included}
+                            isDisabled={values.tax_details.is_tax_included}
+                            color={
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid &&
+                              "danger"
+                            }
+                            isInvalid={
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid
+                            }
+                            onBlur={handleBlur}
+                            errorMessage={
+                              touched.tax_details?.taxid &&
+                              errors.tax_details?.taxid
+                            }
+                            className="mb-3"
+                            label="Tax"
+                            name="tax_id"
+                            selectedKey={values.tax_id}
+                            onSelectionChange={(e) =>
+                              setFieldValue("tax_id", e)
+                            }
+                          >
+                            {Taxes.isSuccess &&
+                              Taxes.data.data.rows?.map((tax) => (
+                                <AutocompleteItem key={tax.id}>
+                                  {tax.name}
+                                </AutocompleteItem>
+                              ))}
+                          </Autocomplete>
+
+                          <Autocomplete
+                            isRequired={values.cancellable.is_cancellable}
+                            isDisabled={
+                              values.cancellable.is_cancellable === false
+                            }
+                            label="Till Cancellable Status "
+                            name="cancellable_till"
+                            isInvalid={
+                              touched.cancellable?.cancellable_till &&
+                              errors.cancellable?.cancellable_till
+                            }
+                            onBlur={handleBlur}
+                            errorMessage={
+                              touched.cancellable?.cancellable_till &&
+                              errors.cancellable?.cancellable_till
+                            }
+                            className="mb-3"
+                            selectedKey={values.cancellable_till}
+                            onSelectionChange={(e) =>
+                              setFieldValue("cancellable_till", e)
+                            }
+                          >
+                            {Object.entries(ORDER_STATUSES).map(
+                              ([key, value]) => (
+                                <AutocompleteItem key={key}>
+                                  {value.name}
+                                </AutocompleteItem>
+                              )
+                            )}
+                          </Autocomplete>
+                          {/* <Select
                             isRequired={values.cancellable.is_cancellable}
                             isDisabled={
                               values.cancellable.is_cancellable === false
@@ -648,80 +855,115 @@ const AddProduct = () => {
                                 </SelectItem>
                               )
                             )}
-                          </Select>
-
-                          <div></div>
+                          </Select> */}
                         </div>
 
-                        <div className="grid grid-cols-4 gap-1">
-                          <Input
+                        <div className="grid grid-cols-4 gap-1 my-2">
+                          <NextInput
                             type="number"
-                            label="Warranty [Months]"
                             name="warranty_period"
-                            onChange={handleChange}
-                            isRequired
-                            onBlur={handleBlur}
-                            isInvalid={
-                              errors.warranty_period && touched.warranty_period
-                            }
-                            errorMessage={
-                              touched.warranty_period && errors.warranty_period
-                            }
                             value={values.warranty_period}
+                            label="Warranty [Months]"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            touched={touched}
+                            errors={errors}
                           />
-                          <Input
+                          <NextInput
                             type="number"
                             label="Guarantee [Months] "
                             name="guarantee_period"
                             onChange={handleChange}
-                            isRequired
                             onBlur={handleBlur}
-                            isInvalid={
-                              errors.guarantee_period &&
-                              touched.guarantee_period
-                            }
-                            errorMessage={
-                              touched.guarantee_period &&
-                              errors.guarantee_period
-                            }
+                            touched={touched}
+                            errors={errors}
                             value={values.guarantee_period}
                           />
-                          <Input
+                          <NextInput
                             type="number"
                             label="Min Order Quantity "
                             name="min_order_quantity"
                             onChange={handleChange}
-                            isRequired
                             onBlur={handleBlur}
-                            isInvalid={
-                              errors.min_order_quantity &&
-                              touched.min_order_quantity
-                            }
-                            errorMessage={
-                              touched.min_order_quantity &&
-                              errors.min_order_quantity
-                            }
+                            touched={touched}
+                            errors={errors}
                             value={values.min_order_quantity}
                           />
-                          <Input
+                          <NextInput
                             type="number"
                             label="Max Order Quantity"
                             name="max_order_quantity"
                             onChange={handleChange}
-                            isRequired
                             onBlur={handleBlur}
-                            isInvalid={
-                              errors.max_order_quantity &&
-                              touched.max_order_quantity
-                            }
-                            errorMessage={
-                              touched.max_order_quantity &&
-                              errors.max_order_quantity
-                            }
+                            touched={touched}
+                            errors={errors}
                             value={values.max_order_quantity}
                           />
                         </div>
-                        <div className="grid grid-cols-4 gap-1">
+
+                        <div className="grid grid-cols-4 gap-1 my-2">
+                          <Autocomplete
+                            isRequired
+                            label="Made in "
+                            name="made_in"
+                            isInvalid={touched.made_in && errors.made_in}
+                            onBlur={handleBlur}
+                            errorMessage={touched.made_in && errors.made_in}
+                            selectedKey={values.made_in}
+                            onSelectionChange={(e) =>
+                              setFieldValue("made_in", e)
+                            }
+                          >
+                            {Countries.map((item) => (
+                              <AutocompleteItem
+                                key={item.name}
+                                startContent={
+                                  <>
+                                    <img
+                                      className="rounded-full w-3 h-3"
+                                      alt={item.name}
+                                      src={item.flag}
+                                    />
+                                  </>
+                                }
+                              >
+                                {item.name}
+                              </AutocompleteItem>
+                            ))}
+                          </Autocomplete>
+                          <Autocomplete
+                            label="Assembled in "
+                            name="assembled_in"
+                            isInvalid={
+                              touched.assembled_in && errors.assembled_in
+                            }
+                            onBlur={handleBlur}
+                            errorMessage={
+                              touched.assembled_in && errors.assembled_in
+                            }
+                            selectedKey={values.assembled_in}
+                            onSelectionChange={(e) =>
+                              setFieldValue("assembled_in", e)
+                            }
+                          >
+                            {Countries.map((item) => (
+                              <AutocompleteItem
+                                key={item.name}
+                                startContent={
+                                  <>
+                                    <img
+                                      className="rounded-full w-3 h-3"
+                                      alt={item.name}
+                                      src={item.flag}
+                                    />
+                                  </>
+                                }
+                              >
+                                {item.name}
+                              </AutocompleteItem>
+                            ))}
+                          </Autocomplete>
+                          {console.log(values)}
                           {/* <Autocomplete
                             isLoading={!Array.isArray(GetCountries)}
                             label="Made In"
@@ -780,7 +1022,6 @@ const AddProduct = () => {
                       </CardBody>
                     </Card>
                   </Tab>
-                  {/* 
                   <Tab
                     className="w-full max-h-full mx-1 p-2"
                     key="Price"
@@ -805,282 +1046,203 @@ const AddProduct = () => {
                         <div className="row">
                           <div className="col-6">
                             <span className="fs-3">Variable Attibutes</span>
-                            <div className="mb-2">
-                              <Select
-                                label="Select an attribute category"
-                                className="my-2"
-                                selectedKeys={
-                                  VariableAttributeCategory && [
-                                    VariableAttributeCategory,
-                                  ]
+                            <Autocomplete
+                              className="my-2"
+                              label="Attribute"
+                              onSelectionChange={setVariableAttributeCategory}
+                            >
+                              {Attributes.isSuccess &&
+                                _.filter(
+                                  Attributes.data.data.rows,
+                                  (item) => !item.attribute_id
+                                ).map((attribute) => (
+                                  <AutocompleteItem key={attribute.id}>
+                                    {attribute.name}
+                                  </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                            <div className=" overflow-y-scroll border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
+                              <Listbox
+                                aria-label="Multiple selection example"
+                                color="primary"
+                                variant="flat"
+                                selectionMode="multiple"
+                                selectedKeys={values.attributes}
+                                onSelectionChange={(e) =>
+                                  setFieldValue(
+                                    "attributes",
+                                    new Set(Array.from(e))
+                                  )
                                 }
-                                onChange={(e) =>
-                                  setVariableAttributeCategory(e.target.value)
-                                }
-                                onBlur={handleBlur}
-                                name="Attribute"
                               >
-                                {Array.isArray(GetAttribute) &&
-                                  GetAttribute.filter(
-                                    (filterItem) => !filterItem.attrbute.id
-                                  ).map((attribute) => (
-                                    <SelectItem
-                                      textValue={attribute.name}
-                                      key={attribute.id}
-                                      value={attribute.value}
-                                    >
-                                      {attribute.name}
-                                    </SelectItem>
-                                  ))}
-                              </Select>
-                              <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
-                                <Listbox
-                                  aria-label="Multiple selection example"
-                                  variant="flat"
-                                  selectionMode="multiple"
-                                  selectedKeys={
-                                    values.attributes?.find((attribute) =>
-                                      Object.prototype.hasOwnProperty?.call(
-                                        attribute,
+                                {Attributes.isSuccess &&
+                                  _.filter(
+                                    Attributes.data.data.rows,
+                                    (item) =>
+                                      item.attribute_id &&
+                                      item.attribute_id ==
                                         VariableAttributeCategory
-                                      )
-                                    )?.[VariableAttributeCategory]
-                                  }
-                                  onSelectionChange={(event) =>
-                                    handleAttributeSelect(
-                                      VariableAttributeCategory,
-                                      event
-                                    )
-                                  }
-                                >
-                                  {Array.isArray(GetAttribute) &&
-                                    GetAttribute.filter(
-                                      (item) =>
-                                        item.attrbute.id?.id ===
-                                        VariableAttributeCategory
-                                    ).map((attribute) => (
+                                  ).map((item) => {
+                                    return (
                                       <ListboxItem
-                                        textValue={attribute.name}
-                                        key={attribute.id}
-                                        value={attribute.id}
+                                        key={item.id}
+                                        value={item.id.toString()}
                                       >
-                                        {attribute.name}
+                                        {item.name}
                                       </ListboxItem>
-                                    ))}
-                                </Listbox>
-                              </div>
+                                    );
+                                  })}
+                              </Listbox>
                             </div>
                           </div>
                           <div className="  col-6">
                             <span className="fs-3">Selected Attibutes</span>
-                            <div className="my-2">
-                              {Array.isArray(values.attributes) &&
-                              values.attributes.length > 0
-                                ? values.attributes.map((attribute) => {
-                                    const attributeKey =
-                                      Object.keys(attribute)[0];
-                                    const attributeValues =
-                                      attribute[attributeKey];
-
-                                    return (
-                                      <div
-                                        className="d-flex items-center my-2"
-                                        key={attributeKey}
-                                      >
+                            {Object.keys(SelectedAttributes).map(
+                              (category, index) => (
+                                <div key={index} className="my-2 flex flex-row">
+                                  <span className="badge badge-outline text-yellow px-4 me-2">
+                                    {category}
+                                  </span>
+                                  :
+                                  <ScrollShadow
+                                    hideScrollBar
+                                    className="w-[300px] ms-2 flex flex-row"
+                                    overflowCheck={"horizontal"}
+                                    offset={200}
+                                  >
+                                    {SelectedAttributes[category].map(
+                                      (attribute, attributeIndex) => (
                                         <Chip
+                                          className="h-fit ps-0 me-1 hover:bg-red-200 hover:transition hover:delay-75 hover:ease-in-out "
+                                          key={`${category}-${attributeIndex}`}
+                                          onClose={() =>
+                                            handleDeleteAttribute(attribute.id)
+                                          }
                                           variant="flat"
-                                          color="primary"
-                                          size="lg"
-                                          className=" py-2 h-fit"
                                         >
-                                          {CustomFind(
-                                            GetAttribute,
-                                            attributeKey,
-                                            "name"
-                                          )}
+                                          {attribute.name}
                                         </Chip>
-                                        <p className="p-0 mx-1 fs-2"> : </p>
-                                        <ScrollShadow
-                                          orientation="horizontal"
-                                          className="max-w-[100%] flex"
-                                        >
-                                          {attributeValues.map((item) => (
-                                            <Chip
-                                              className="h-fit p-1 mx-2"
-                                              key={item}
-                                              variant="bordered"
-                                              onClose={() =>
-                                                handleAttributeSelect(
-                                                  attributeKey,
-                                                  item,
-                                                  "deleteAttribute"
-                                                )
-                                              }
-                                            >
-                                              {CustomFind(
-                                                GetAttribute,
-                                                item,
-                                                "name"
-                                              )}
-                                            </Chip>
-                                          ))}
-                                        </ScrollShadow>
-                                      </div>
-                                    );
-                                  })
-                                : "No attributes Selected"}
-                            </div>
+                                      )
+                                    )}
+                                  </ScrollShadow>
+                                </div>
+                              )
+                            )}
                           </div>
                         </div>
-
                         <div className="flex justify-between items-center">
                           <span className="text-medium">Variation Table</span>
-                          <Button
+                          <NextButton
                             size="sm"
-                            className="text-danger-600"
+                            color="danger"
+                            variant="flat"
+                            buttonText="Delete Rows"
                             startContent={<IconTrash />}
+                            isDisabled={SelectedVarientionRows.length < 1}
                             onPress={DeleteVarients}
                           >
                             Delete Rows
-                          </Button>
+                          </NextButton>
                         </div>
                         <Table
                           aria-labelledby="Variation-Table"
                           removeWrapper={true}
-                          // selectionMode="multiple"
-                          // onSelectionChange={HandleVarients}
-                          // selectedKeys={SelectedVarientionRows}
-                          className="mt-3 h-[350] overflow-y-scroll"
+                          className="mt-3"
                         >
                           <TableHeader>
+                            <TableColumn className="w-fit p-0"></TableColumn>
                             <TableColumn>#</TableColumn>
+                            <TableColumn>SKU</TableColumn>
                             <TableColumn>Name</TableColumn>
-                            <TableColumn>Manucature Price</TableColumn>
+                            <TableColumn>Manufacture Price</TableColumn>
                             <TableColumn>Retail Price</TableColumn>
-                            <TableColumn>Special Price</TableColumn>
-                            <TableColumn>Tax</TableColumn>
+                            <TableColumn>
+                              Tax{" "}
+                              {values.tax_details.is_tax_included
+                                ? "[included]"
+                                : null}
+                            </TableColumn>
                             <TableColumn>Margin</TableColumn>
-                            <TableColumn>Action</TableColumn>
                           </TableHeader>
-                          <TableBody emptyContent="No Data Found">
+                          <TableBody emptyContent={"Variations Not Found"}>
                             {Array.isArray(values.variations) &&
-                              values.variations.map((variation, index) => (
-                                <TableRow key={variation.attributeids}>
-                                  <TableCell>
-                                    <Checkbox
-                                      onChange={(event) =>
-                                        HandleVarients(
-                                          variation.attributeids.toString(),
-                                          event
-                                        )
-                                      }
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    {variation.attributeids
-                                      .map((item) =>
-                                        CustomFind(GetAttribute, item, "name")
-                                      )
-                                      .join("-")}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      values={variation.menufacture_price}
-                                      name={`variation.[${index}].menufacture_price`}
-                                      type="number"
-                                      label=" Price"
-                                      onChange={handleChange}
-                                      onBlue={handleBlur}
-                                      isInvalid={
-                                        touched?.variations?.[index]
-                                          ?.manufacture_price &&
-                                        errors?.variations?.[index]
-                                          ?.manufacture_price
-                                      }
-                                      errorMessage={
-                                        touched?.variations?.[index]
-                                          ?.manufacture_price &&
-                                        errors?.variations?.[index]
-                                          ?.manufacture_price
-                                      }
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      values={variation.retail_price}
-                                      name={`variation.[${index}].retail_price`}
-                                      type="number"
-                                      label=" Price"
-                                      onChange={handleChange}
-                                      onBlue={handleBlur}
-                                      isInvalid={
-                                        touched?.variations?.[index]
-                                          ?.retail_price &&
-                                        errors?.variations?.[index]
-                                          ?.retail_price
-                                      }
-                                      errorMessage={
-                                        touched?.variations?.[index]
-                                          ?.manufacture_price &&
-                                        errors?.variations?.[index]
-                                          ?.retail_price
-                                      }
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      values={variation.special_price}
-                                      name={`variation.[${index}].special_price`}
-                                      type="number"
-                                      label=" Price"
-                                      onChange={handleChange}
-                                      onBlue={handleBlur}
-                                      isInvalid={
-                                        touched?.variations?.[index]
-                                          ?.special_price &&
-                                        errors?.variations?.[index]
-                                          ?.special_price
-                                      }
-                                      errorMessage={
-                                        touched?.variations?.[index]
-                                          ?.manufacture_price &&
-                                        errors?.variations?.[index]
-                                          ?.special_price
-                                      }
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      type="number"
-                                      label="Tax"
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      type="number"
-                                      label="Price"
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Input
-                                      size="sm"
-                                      className="rounded"
-                                      type="number"
-                                      label="Price"
-                                    />
-                                  </TableCell>
-                                </TableRow>
-                              ))}
+                              values.variations.map((variation, index) => {
+                                return (
+                                  <TableRow key={index}>
+                                    <TableCell className="w-fit p-0 text-center">
+                                      <Checkbox
+                                        key={index}
+                                        isSelected={SelectedVarientionRows.includes(
+                                          index
+                                        )}
+                                        size="sm"
+                                        onChange={(event) =>
+                                          HandleVarients(event, index)
+                                        }
+                                      />
+                                    </TableCell>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{variation.SKU}</TableCell>
+                                    <TableCell>
+                                      {variation.variation_name}
+                                    </TableCell>
+                                    <TableCell>
+                                      <NextInput
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        label="Menufacture Price"
+                                        size="sm"
+                                        type="number"
+                                        name={`variations.${index}.menufacture_price`}
+                                        value={
+                                          values.variations[index]
+                                            .menufacture_price
+                                        }
+                                        errorMessage={
+                                          touched?.variations?.[index]
+                                            ?.menufacture_price &&
+                                          errors?.variations?.[index]
+                                            ?.menufacture_price
+                                        }
+                                        isInvalid={
+                                          touched?.variations?.[index]
+                                            ?.menufacture_price &&
+                                          errors?.variations?.[index]
+                                            ?.menufacture_price
+                                        }
+                                      />
+                                    </TableCell>
+
+                                    <TableCell>
+                                      <NextInput
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        label="Retail Price"
+                                        type="number"
+                                        size="sm"
+                                        name={`variations.${index}.retail_price`}
+                                        value={
+                                          values.variations[index].retail_price
+                                        }
+                                        errorMessage={
+                                          touched?.variations?.[index]
+                                            ?.retail_price &&
+                                          errors?.variations?.[index]
+                                            ?.retail_price
+                                        }
+                                        isInvalid={
+                                          touched?.variations?.[index]
+                                            ?.retail_price &&
+                                          errors?.variations?.[index]
+                                            ?.retail_price
+                                        }
+                                      />
+                                    </TableCell>
+                                    <TableCell>Tax</TableCell>
+                                    <TableCell>Margin</TableCell>
+                                  </TableRow>
+                                );
+                              })}
                           </TableBody>
                         </Table>
                       </CardBody>
@@ -1110,26 +1272,47 @@ const AddProduct = () => {
                             <span className="ms-1  mb-2 text-medium">
                               Select Pickup Locations
                             </span>
-                            <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
+                            <Autocomplete
+                              className="my-2"
+                              label="Attribute"
+                              selectedKey={SelectedCity}
+                              onSelectionChange={setSelectedCity}
+                            >
+                              {Attributes.isSuccess &&
+                                Addresses?.data?.data?.rows?.map((address) => (
+                                  <AutocompleteItem key={address.city}>
+                                    {`${address.city}`}
+                                  </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                            <div className=" overflow-y-scroll border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
                               <Listbox
                                 aria-label="Multiple selection example"
+                                color="primary"
                                 variant="flat"
                                 selectionMode="multiple"
+                                selectedKeys={values.pickup_locations}
+                                onSelectionChange={(e) =>
+                                  setFieldValue(
+                                    "pickup_locations",
+                                    new Set(Array.from(e))
+                                  )
+                                }
                               >
-                                {Array.isArray(GetAddresses) &&
-                                  GetAddresses.filter(
-                                    (item) =>
-                                      item.is_pickup_address &&
-                                      item.seller_id === profile?.id
-                                  ).map((address) => (
-                                    <ListboxItem
-                                      textValue={address.name}
-                                      key={address.id}
-                                      value={address.id}
-                                    >
-                                      {address.name}
-                                    </ListboxItem>
-                                  ))}
+                                {Addresses.isSuccess &&
+                                  _.filter(
+                                    Addresses.data.data.rows,
+                                    (address) => address.city === SelectedCity
+                                  ).map((item) => {
+                                    return (
+                                      <ListboxItem
+                                        key={item.id}
+                                        value={item.id.toString()}
+                                      >
+                                        {item.address}
+                                      </ListboxItem>
+                                    );
+                                  })}
                               </Listbox>
                             </div>
                           </div>
@@ -1147,13 +1330,15 @@ const AddProduct = () => {
                             className="text-decoration-none border-none"
                             variant="bordered"
                             onClick={() => {
-                              const add = {
-                                question: null,
-                                answer: null,
-                              };
                               setValues({
                                 ...values,
-                                faqs: [...values.faqs, [add]],
+                                faqs: [
+                                  ...values.faqs,
+                                  {
+                                    question: null,
+                                    answer: null,
+                                  },
+                                ],
                               });
                             }}
                           >
@@ -1162,8 +1347,8 @@ const AddProduct = () => {
                               : "Add More Faq(s)"}
                           </Link>
                         </div>
+                        {console.log(values.faqs)}
                         <Divider className="bg-black mt-2" />
-
                         <div className="h-full max-h-full min-h-full">
                           {Array.isArray(values.faqs) &&
                             values.faqs.map((faq, index) => (
@@ -1172,7 +1357,7 @@ const AddProduct = () => {
                                   {" "}
                                   Question - {index + 1}
                                 </span>
-                                <Input
+                                <NextInput
                                   type="text"
                                   className="my-2"
                                   name={`faqs.${index}.question`}
@@ -1259,7 +1444,6 @@ const AddProduct = () => {
                       </CardBody>
                     </Card>
                   </Tab>
-                  */}
                   <Tab
                     key="-"
                     title={

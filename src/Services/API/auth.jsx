@@ -7,14 +7,14 @@ export const auth = createApi({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
-        url: "/users/signin",
+        url: "/auth/signin",
         method: "POST",
         body: credentials,
       }),
     }),
     signup: builder.mutation({
       query: (credentials) => ({
-        url: "/users/signup",
+        url: "/auth/signup",
         method: "POST",
         body: credentials,
       }),
@@ -25,6 +25,12 @@ export const auth = createApi({
         method: "GET",
       }),
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: "/users/logout",
+        method: "GET",
+      }),
+    }),
   }),
 });
-export const { useLoginMutation, useSignupMutation, useProfileQuery } = auth;
+export const { useLoginMutation, useSignupMutation, useProfileQuery , useLogoutMutation } = auth;

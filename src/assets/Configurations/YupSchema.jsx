@@ -106,6 +106,12 @@ export const ProductSchema = yup.object({
         .required("cancellable till status cannot be an empty!"),
     }),
   }),
+  faqs: yup.array().of(
+    yup.object().shape({
+      question: yup.string().required("Question can not be an empty!"),
+      answer: yup.string().required("Answer can not be an empty!"),
+    })
+  ),
   is_cod_allowed: yup.boolean().oneOf([true, false], "Internal error"),
   replaceable: yup.boolean().oneOf([true, false], "Internal error"),
   friendly_url: yup.string().nullable(),
@@ -115,7 +121,6 @@ export const ProductSchema = yup.object({
     .number()
     .nullable()
     .positive([0, "Warranty can not be negative"]),
-
   guarantee_period: yup
     .number()
     .nullable()
@@ -124,21 +129,24 @@ export const ProductSchema = yup.object({
     .array()
     .of(
       yup.object().shape({
-        attributeids: yup
-          .array()
-          .of(yup.string().trim().required(" can not be an empty!"))
-          .required(" can not be an empty!")
-          .min(1),
+        variation_name: yup.string().required(" can not be an empty"),
         manufacture_price: yup
           .number()
-          .required("manufacture price is required")
-          .positive([0, "manufacture price can not be negative"]),
+          .required("manufacture price can not be an empty")
+          .positive()
+          .min(0),
         retail_price: yup
           .number()
-          .required("retail price is required ")
-          .positive([0, "retail price can not be negative"]),
+          .required(" retail price can not be an empty")
+          .positive()
+          .min(0),
+        special_price: yup.number().positive().nullable(),
+        width: yup.number().nullable(),
+        height: yup.number().nullable(),
+        depth: yup.number().nullable(),
+        weight: yup.number().nullable(),
+        SKU: yup.number().required("SKU can not be an empty").positive().min(6),
       })
     )
-    .required(" can not be an empty!")
     .min(1),
 });

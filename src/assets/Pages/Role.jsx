@@ -1,28 +1,23 @@
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { RoleInitialState } from "../Configurations/InitialStates";
 import { RoleSchema } from "../Configurations/YupSchema";
 import { useFormik } from "formik";
-import {
-  CreateRoleAction,
-  DeleteRoleAction,
-  EditRoleAction,
-  GetRoleAction,
-} from "../../Services/Actions/Role";
+ 
 import moment from "moment/moment";
 
 const Role = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const roleState = useSelector((state) => state.roleState);
   const ModalCloseRef = useRef();
   const [ModalState, setModalState] = useState("");
 
-  const handleRole = (values) => {
-    const body = { ...values };
+  const handleRole = ( ) => {
+    // const body = { ...values };
     if (ModalState === "Edit") {
-      dispatch(EditRoleAction(body));
+      // dispatch(EditRoleAction(body));
     } else {
-      dispatch(CreateRoleAction(body));
+      // dispatch(CreateRoleAction(body));
     }
   };
   const handleEditRole = (Role) => {
@@ -38,9 +33,7 @@ const Role = () => {
     setModalState("Delete");
   };
 
-  useEffect(() => {
-    dispatch(GetRoleAction());
-  }, [dispatch]);
+ 
 
   const {
     values,
@@ -257,7 +250,7 @@ const Role = () => {
                   type="button"
                   className="btn btn-danger"
                   onClick={() => {
-                    dispatch(DeleteRoleAction({ ...values, is_deleted: true }));
+                    // dispatch(DeleteRoleAction({ ...values, is_deleted: true }));
                   }}
                 >
                   Yes, Delete {values?.name}
@@ -304,11 +297,11 @@ const Role = () => {
                                     <button
                                       type="button"
                                       className="btn btn-success"
-                                      onClick={() => {
-                                        dispatch(
-                                          DeleteRoleAction({ id: Role?.id })
-                                        );
-                                      }}
+                                      // onClick={() => {
+                                      //   dispatch(
+                                      //     DeleteRoleAction({ id: Role?.id })
+                                      //   );
+                                      // }}
                                     >
                                       {" "}
                                       Recover{" "}

@@ -1,7 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { GetUsersAction } from "../../Services/Actions/Users";
-import {
+import {  useSelector } from "react-redux";
+import { useEffect,   useState } from "react";
+ import {
   Button,
   Card,
   CardBody,
@@ -15,7 +14,7 @@ import { USER_ROLES } from "../Helpers";
 
 const Users = () => {
   const { GetUsers } = useSelector((state) => state.userState);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const Navigate = useNavigate();
   const [Users, setUsers] = useState(null);
 
@@ -29,10 +28,7 @@ const Users = () => {
       });
     setUsers(users);
   }, [GetUsers, Location.pathname]);
-
-  useLayoutEffect(() => {
-    dispatch(GetUsersAction());
-  }, [dispatch]);
+ 
 
   return (
     <>
