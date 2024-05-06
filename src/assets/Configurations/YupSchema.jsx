@@ -27,7 +27,8 @@ export const SignInSchema = yup.object({
 });
 
 export const BrandSchema = yup.object({
-  name: yup.string().trim().required(" can not be an empty!"),
+  name: yup.string().trim().required("Name can not be an empty!"),
+  image: yup.string().required("Logo/Image can not be an empty!"),
 });
 
 export const RoleSchema = yup.object({
