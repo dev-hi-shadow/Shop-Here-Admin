@@ -24,6 +24,7 @@ export const SignInInitialState = {
 export const BrandInitialState = {
   name: "",
   verified: false,
+  image: "",
 };
 
 export const CategoryInitialState = {

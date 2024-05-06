@@ -2,58 +2,30 @@
 import { Button } from "@nextui-org/react";
 const NextButton = ({
   isLoading = false,
-  color,
-  varient,
+  color = "primary",
+  varient = "flat",
   isDisabled,
   isIconOnly,
   StartContent,
-  StartContentAlt,
-  StartContentIsImage,
-  StartContentSrc,
   EndContent,
-  EndContentAlt,
-  EndContentIsImage,
-  EndContentSrc,
   buttonText,
   type,
-  className="",
+  onClick = () => console.log("please provide onClick functions"),
+  className = "",
   ...rest
 }) => {
   return (
     <div>
       <Button
+        onPress={onClick}
         color={color}
         className={className}
         variant={varient}
         isLoading={isLoading}
         isDisabled={isDisabled}
         isIconOnly={isIconOnly}
-        startContent={
-          !StartContentIsImage ? (
-            [StartContent]
-          ) : (
-            <img
-              aria-label="image-country-idd"
-              aria-labelledby="image-country-idd"
-              className="rounded-full w-3 h-3"
-              alt={[StartContentAlt]}
-              src={[StartContentSrc]}
-            />
-          )
-        }
-        endContent={
-          !EndContentIsImage ? (
-            [EndContent]
-          ) : (
-            <img
-              aria-label="image-country-idd"
-              aria-labelledby="image-country-idd"
-              className="rounded-full w-3 h-3"
-              alt={[EndContentAlt]}
-              src={[EndContentSrc]}
-            />
-          )
-        }
+        startContent={StartContent}
+        endContent={EndContent}
         type={type || "button"}
         {...rest}
       >
