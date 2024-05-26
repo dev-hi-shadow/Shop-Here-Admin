@@ -19,7 +19,7 @@ const NextButton = ({
       <Button
         onPress={onClick}
         color={color}
-        className={className}
+        className={"h-10 min-h-10 " + className}
         variant={varient}
         isLoading={isLoading}
         isDisabled={isDisabled}

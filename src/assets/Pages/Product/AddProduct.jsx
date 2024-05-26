@@ -7,10 +7,10 @@ import { ProductSchema } from "../../Configurations/YupSchema";
 import { ProductInitialState } from "../../Configurations/InitialStates";
 import _ from "lodash";
 
- import {
+import {
   Autocomplete,
   AutocompleteItem,
-    Card,
+  Card,
   CardBody,
   Checkbox,
   Chip,
@@ -58,7 +58,7 @@ import NextButton from "../../Components/NextUI/NextButton";
 
 const AddProduct = () => {
   const [ActiveTab, setActiveTab] = useState(0);
-   const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
+  const [SelectedVarientionRows, setSelectedVarientionRows] = useState([]);
   const [SelectedAttributes, setSelectedAttributes] = useState([]);
   const [VariableAttributeCategory, setVariableAttributeCategory] =
     useState(null);
@@ -130,11 +130,9 @@ const AddProduct = () => {
 
   const HandleVarients = (event, index) => {
     if (event.target.checked) {
-      // If the checkbox is checked, add the index to the selected rows
-      setSelectedVarientionRows((prevSelected) => [...prevSelected, index]);
+       setSelectedVarientionRows((prevSelected) => [...prevSelected, index]);
     } else {
-      // If the checkbox is unchecked, remove the index from the selected rows
-      setSelectedVarientionRows((prevSelected) =>
+       setSelectedVarientionRows((prevSelected) =>
         prevSelected.filter((item) => item !== index)
       );
     }
@@ -177,8 +175,7 @@ const AddProduct = () => {
 
       return index === 0 ? allCombinations : undefined;
     }
-
-    if (values.attributes && values.attributes.length >= 0) {
+     if (values.attributes && values.attributes.length >= 0) {
       const newCombinations = generateValueCombinations(values.attributes);
       setFieldValue("variations", newCombinations);
     }
@@ -246,9 +243,11 @@ const AddProduct = () => {
         attr.map((item) => item.name)
       );
       const allCombinations = cartesian(...attributeValues);
-      const formattedCombinations = allCombinations.map((combination) => ({
+      const formattedCombinations = allCombinations.map((combination) => {
+        console.log("combination" ,combination)
+        return {
         variation_name: combination.join(" "),
-        manufacture_price: null, // Corrected spelling
+        manufacture_price: null,  
         retail_price: null,
         special_price: null,
         width: null,
@@ -256,13 +255,13 @@ const AddProduct = () => {
         depth: null,
         weight: null,
         SKU: combination?.SKU || Math.floor(Math.random() * 9999999),
-      }));
+}}
+);
       setFieldValue("variations", formattedCombinations);
     } else {
       setFieldValue("variations", []);
     }
-
-   }, [SelectedAttributes, setFieldValue]);
+  }, [SelectedAttributes, setFieldValue]);
 
   useEffect(() => {
     let newRecord = [];
@@ -518,6 +517,12 @@ const AddProduct = () => {
 
                         <Autocomplete
                           isRequired
+                          classNames={{
+                            selectorButton: [
+                              "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                            ],
+                            clearButton: ["hidden"],
+                          }}
                           className="mb-3"
                           label="Brand"
                           name="brand_id"
@@ -577,6 +582,12 @@ const AddProduct = () => {
 
                         <Autocomplete
                           isRequired
+                          classNames={{
+                            selectorButton: [
+                              "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                            ],
+                            clearButton: ["hidden"],
+                          }}
                           className="mb-3"
                           label="Category"
                           name="category_id"
@@ -632,6 +643,12 @@ const AddProduct = () => {
                         </Select> */}
                         <Autocomplete
                           isRequired
+                          classNames={{
+                            selectorButton: [
+                              "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                            ],
+                            clearButton: ["hidden"],
+                          }}
                           className="mb-3"
                           label="Sub Category"
                           name="subcategory_id"
@@ -677,6 +694,12 @@ const AddProduct = () => {
 
                         <Autocomplete
                           isRequired
+                          classNames={{
+                            selectorButton: [
+                              "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                            ],
+                            clearButton: ["hidden"],
+                          }}
                           className="mb-3"
                           label="Unit"
                           name="unit_id"
@@ -757,6 +780,12 @@ const AddProduct = () => {
                               })}
                           </Select> */}
                           <Autocomplete
+                            classNames={{
+                              selectorButton: [
+                                "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                              ],
+                              clearButton: ["hidden"],
+                            }}
                             key={values.tax_details.is_tax_included}
                             isRequired={!values.tax_details.is_tax_included}
                             isDisabled={values.tax_details.is_tax_included}
@@ -791,6 +820,12 @@ const AddProduct = () => {
                           </Autocomplete>
 
                           <Autocomplete
+                            classNames={{
+                              selectorButton: [
+                                "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                              ],
+                              clearButton: ["hidden"],
+                            }}
                             isRequired={values.cancellable.is_cancellable}
                             isDisabled={
                               values.cancellable.is_cancellable === false
@@ -903,6 +938,12 @@ const AddProduct = () => {
 
                         <div className="grid grid-cols-4 gap-1 my-2">
                           <Autocomplete
+                            classNames={{
+                              selectorButton: [
+                                "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                              ],
+                              clearButton: ["hidden"],
+                            }}
                             isRequired
                             label="Made in "
                             name="made_in"
@@ -932,6 +973,12 @@ const AddProduct = () => {
                             ))}
                           </Autocomplete>
                           <Autocomplete
+                            classNames={{
+                              selectorButton: [
+                                "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                              ],
+                              clearButton: ["hidden"],
+                            }}
                             label="Assembled in "
                             name="assembled_in"
                             isInvalid={
@@ -963,7 +1010,7 @@ const AddProduct = () => {
                               </AutocompleteItem>
                             ))}
                           </Autocomplete>
-                           {/* <Autocomplete
+                          {/* <Autocomplete
                             isLoading={!Array.isArray(GetCountries)}
                             label="Made In"
                             className="max-w-xs my-3"
@@ -1046,6 +1093,12 @@ const AddProduct = () => {
                           <div className="col-6">
                             <span className="fs-3">Variable Attibutes</span>
                             <Autocomplete
+                              classNames={{
+                                selectorButton: [
+                                  "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                                ],
+                                clearButton: ["hidden"],
+                              }}
                               className="my-2"
                               label="Attribute"
                               onSelectionChange={setVariableAttributeCategory}
@@ -1272,6 +1325,12 @@ const AddProduct = () => {
                               Select Pickup Locations
                             </span>
                             <Autocomplete
+                              classNames={{
+                                selectorButton: [
+                                  "w-8  min-w-8 max-w-8 max-h-8  h-8, min-h-8",
+                                ],
+                                clearButton: ["hidden"],
+                              }}
                               className="my-2"
                               label="Attribute"
                               selectedKey={SelectedCity}
@@ -1346,7 +1405,7 @@ const AddProduct = () => {
                               : "Add More Faq(s)"}
                           </Link>
                         </div>
-                         <Divider className="bg-black mt-2" />
+                        <Divider className="bg-black mt-2" />
                         <div className="h-full max-h-full min-h-full">
                           {Array.isArray(values.faqs) &&
                             values.faqs.map((faq, index) => (
